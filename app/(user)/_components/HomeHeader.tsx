@@ -20,8 +20,7 @@ export function HomeHeader() {
           </div>
           <span className="font-bold text-lg sm:text-xl md:text-2xl">
             Smile{" "}
-            <span className="text-primary hidden sm:inline">PRO</span>
-            <span className="text-primary sm:hidden">P</span>
+            <span className="text-primary">PRO</span>
           </span>
         </Link>
 

@@ -13,8 +13,7 @@ export function Footer() {
             </div>
             <span className="font-bold text-lg sm:text-xl md:text-2xl">
             Smile{" "}
-            <span className="text-primary hidden sm:inline">PRO</span>
-            <span className="text-primary sm:hidden">P</span>
+            <span className="text-primary">PRO</span>
           </span>
           </Link>
           <p className="text-muted-foreground mt-4 text-sm">Modern practice management for dental clinics</p>
