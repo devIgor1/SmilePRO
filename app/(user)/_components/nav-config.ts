@@ -16,7 +16,7 @@ export const authButtons = {
     variant: "default" as const,
   },
   professionals: {
-    label: "Proffessionals",
+    label: "Professionals",
     href: "/professionals",
     variant: "ghost" as const,
   },
