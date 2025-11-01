@@ -4,9 +4,13 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Smile } from "lucide-react"
 import { MobileNav } from "./MobileNav"
+import { UserMenu } from "./UserMenu"
 import { authButtons, navItems } from "./nav-config"
+import { useAuth } from "@/hooks/use-auth"
 
 export function HomeHeader() {
+  const { isAuthenticated, isLoading } = useAuth()
+
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -32,25 +36,35 @@ export function HomeHeader() {
               {item.label}
             </Link>
           ))}
-          <Link href={authButtons.signIn.href}>
-            <Button
-              variant={authButtons.signIn.variant}
-              size="default"
-              className="hidden lg:flex"
-            >
-              {authButtons.signIn.label}
-            </Button>
-          </Link>
-          <Link href={authButtons.getStarted.href}>
-            <Button size="default" className="hidden lg:flex">
-              {authButtons.getStarted.label}
-            </Button>
-          </Link>
-          <Link href={authButtons.signIn.href} className="lg:hidden">
-            <Button variant={authButtons.signIn.variant} size="default">
-              {authButtons.signIn.label}
-            </Button>
-          </Link>
+          {!isLoading && (
+            <>
+              {isAuthenticated ? (
+                <UserMenu />
+              ) : (
+                <>
+                  <Link href={authButtons.signIn.href}>
+                    <Button
+                      variant={authButtons.signIn.variant}
+                      size="default"
+                      className="hidden lg:flex"
+                    >
+                      {authButtons.signIn.label}
+                    </Button>
+                  </Link>
+                  <Link href={authButtons.getStarted.href}>
+                    <Button size="default" className="hidden lg:flex">
+                      {authButtons.getStarted.label}
+                    </Button>
+                  </Link>
+                  <Link href={authButtons.signIn.href} className="lg:hidden">
+                    <Button variant={authButtons.signIn.variant} size="default">
+                      {authButtons.signIn.label}
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </>
+          )}
         </nav>
 
         {/* Mobile Navigation */}
