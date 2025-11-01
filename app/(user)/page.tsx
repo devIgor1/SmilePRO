@@ -4,6 +4,7 @@ import { Features } from "./_components/Features";
 import { Professionals } from "./_components/Professionals";
 import { Pricing } from "./_components/Pricing";
 import { CTA } from "./_components/CTA";
+import { Footer } from "./_components/Footer";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <Professionals />
       <Pricing />
       <CTA />
+      <Footer />
     </div>
   );
 }
