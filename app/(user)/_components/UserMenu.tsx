@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { LogOut, Settings, UserCircle } from "lucide-react"
+import { List, LogOut, Settings, User, UserCircle } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from "@/hooks/use-auth"
 
@@ -46,7 +46,19 @@ export function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        
+
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard/services" className="flex items-center">
+            <List className="mr-2 h-4 w-4" />
+            <span>Services</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard/profile" className="flex items-center">
+            <User className="mr-2 h-4 w-4" />
+            <span>Profile</span>
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/dashboard" className="flex items-center">
             <Settings className="mr-2 h-4 w-4" />
