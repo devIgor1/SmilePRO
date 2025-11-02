@@ -113,6 +113,7 @@ model User {
   phone         String? @default("")
   status        Boolean @default(true)
   timezone      String? 
+  timeslots String[] @default([])
   stripe_customer_id String? 
 
 
