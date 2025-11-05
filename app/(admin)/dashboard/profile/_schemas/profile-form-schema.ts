@@ -22,6 +22,7 @@ export const profileFormSchema = z.object({
     .or(z.literal("")),
   status: z.boolean(),
   timezone: z.string().optional().or(z.literal("")),
+  timeslots: z.array(z.string()).default([]),
 });
 
 export type ProfileFormData = z.infer<typeof profileFormSchema>;

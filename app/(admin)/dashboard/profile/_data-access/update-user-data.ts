@@ -9,6 +9,7 @@ interface UpdateUserDataParams {
   address?: string;
   status?: boolean;
   timezone?: string;
+  timeslots?: string[];
 }
 
 export async function updateUserData(data: UpdateUserDataParams) {
@@ -29,6 +30,7 @@ export async function updateUserData(data: UpdateUserDataParams) {
         ...(data.address !== undefined && { address: data.address || null }),
         ...(data.status !== undefined && { status: data.status }),
         ...(data.timezone !== undefined && { timezone: data.timezone || null }),
+        ...(data.timeslots !== undefined && { timeslots: data.timeslots }),
       },
     });
 

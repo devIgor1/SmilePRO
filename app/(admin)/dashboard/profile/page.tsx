@@ -54,6 +54,7 @@ export default async function Profile() {
               address: userData.address,
               status: userData.status,
               timezone: userData.timezone,
+              timeslots: userData.timeslots || [],
             }}
           />
         </div>
