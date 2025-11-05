@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Sidebar,
@@ -12,10 +12,17 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import { Smile, LayoutDashboard, Calendar, CreditCard, Settings, User } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+} from "@/components/ui/sidebar";
+import {
+  Smile,
+  LayoutDashboard,
+  Calendar,
+  CreditCard,
+  Settings,
+  User,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navigationItems = [
   {
@@ -43,22 +50,29 @@ const navigationItems = [
     href: "/dashboard/profile",
     icon: User,
   },
-]
+];
 
 export function DashboardSidebar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
   return (
     <Sidebar className="border-r border-sidebar-border">
       <SidebarHeader className="border-b border-sidebar-border bg-gradient-to-br from-primary/5 via-background to-background">
-        <div className="flex items-center gap-3 px-3 py-4">
-          <div className="bg-primary text-primary-foreground flex size-10 items-center justify-center rounded-lg shadow-sm ring-1 ring-primary/20">
-            <Smile className="size-5" />
+        <Link
+          href="/"
+          className="flex items-center gap-3 px-3 py-4 transition-all hover:bg-primary/10 rounded-lg -mx-2 -my-1 cursor-pointer group"
+        >
+          <div className="bg-primary text-primary-foreground flex size-10 items-center justify-center rounded-lg shadow-sm ring-1 ring-primary/20 transition-all group-hover:scale-110 group-hover:shadow-md group-hover:ring-primary/40">
+            <Smile className="size-5 transition-transform group-hover:scale-110" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-lg leading-tight">Smile PRO</span>
-            <span className="text-primary/70 text-xs font-medium">Dashboard</span>
+            <span className="font-bold text-lg leading-tight transition-colors group-hover:text-primary">
+              Smile PRO
+            </span>
+            <span className="text-primary/70 text-xs font-medium transition-colors group-hover:text-primary">
+              Dashboard
+            </span>
           </div>
-        </div>
+        </Link>
       </SidebarHeader>
       <SidebarContent className="px-2 py-4">
         <SidebarGroup>
@@ -68,7 +82,7 @@ export function DashboardSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => {
-                const isActive = pathname === item.href
+                const isActive = pathname === item.href;
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
@@ -78,12 +92,14 @@ export function DashboardSidebar() {
                       className={`text-base ${isActive ? "bg-primary/10 text-primary font-medium shadow-sm ring-1 ring-primary/10" : "hover:bg-accent/50"}`}
                     >
                       <Link href={item.href}>
-                        <item.icon className={`size-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                        <item.icon
+                          className={`size-5 ${isActive ? "text-primary" : "text-muted-foreground"}`}
+                        />
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                )
+                );
               })}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -96,6 +112,5 @@ export function DashboardSidebar() {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
-
