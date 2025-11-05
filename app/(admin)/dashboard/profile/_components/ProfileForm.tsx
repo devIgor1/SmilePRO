@@ -11,9 +11,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { updateUserData } from "../_data-access/update-user-data";
-import { User, Mail, Phone, MapPin, Check, Loader2 } from "lucide-react";
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Check,
+  Loader2,
+  Globe,
+  ToggleLeft,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { formatPhoneNumber } from "@/lib/utils";
+import {
+  profileFormSchema,
+  type ProfileFormData,
+} from "../_schemas/profile-form-schema";
 
 interface ProfileFormProps {
   initialData: {
@@ -21,8 +34,23 @@ interface ProfileFormProps {
     email: string | null;
     phone: string | null;
     address: string | null;
+    status: boolean;
+    timezone: string | null;
   };
 }
+
+const COMMON_TIMEZONES = [
+  "America/Sao_Paulo",
+  "America/New_York",
+  "America/Chicago",
+  "America/Denver",
+  "America/Los_Angeles",
+  "Europe/London",
+  "Europe/Paris",
+  "Asia/Tokyo",
+  "Asia/Shanghai",
+  "Australia/Sydney",
+];
 
 export function ProfileForm({ initialData }: ProfileFormProps) {
   const router = useRouter();
@@ -32,15 +60,26 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
     name: initialData.name || "",
     phone: initialData.phone ? formatPhoneNumber(initialData.phone) : "",
     address: initialData.address || "",
+    status: initialData.status ?? true,
+    timezone: initialData.timezone || "",
   });
   const [isDirty, setIsDirty] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: string, value: string | boolean) => {
     if (field === "phone") {
-      const formatted = formatPhoneNumber(value);
+      const formatted = formatPhoneNumber(value as string);
       setFormData((prev) => ({ ...prev, [field]: formatted }));
     } else {
       setFormData((prev) => ({ ...prev, [field]: value }));
+    }
+    // Clear error for this field when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
     setIsDirty(true);
   };
@@ -48,13 +87,29 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate form data
+    const validationResult = profileFormSchema.safeParse(formData);
+
+    if (!validationResult.success) {
+      const fieldErrors: Record<string, string> = {};
+      validationResult.error.issues.forEach((issue) => {
+        if (issue.path[0]) {
+          fieldErrors[issue.path[0].toString()] = issue.message;
+        }
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
     startTransition(async () => {
       try {
-        await updateUserData(formData);
+        await updateUserData(validationResult.data);
         setIsDirty(false);
+        setErrors({});
         router.refresh();
       } catch (error) {
         console.error("Failed to update profile:", error);
+        setErrors({ submit: "Failed to update profile. Please try again." });
       }
     });
   };
@@ -83,8 +138,13 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                 value={formData.name}
                 onChange={(e) => handleChange("name", e.target.value)}
                 placeholder="Enter your name"
-                className="bg-background border-primary/20 focus-visible:border-primary"
+                className={`bg-background border-primary/20 focus-visible:border-primary ${
+                  errors.name ? "border-destructive" : ""
+                }`}
               />
+              {errors.name && (
+                <p className="text-xs text-destructive">{errors.name}</p>
+              )}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-semibold text-foreground flex items-center gap-2">
@@ -112,8 +172,13 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                 onChange={(e) => handleChange("phone", e.target.value)}
                 placeholder="21 99999-9999"
                 maxLength={15}
-                className="bg-background border-primary/20 focus-visible:border-primary"
+                className={`bg-background border-primary/20 focus-visible:border-primary ${
+                  errors.phone ? "border-destructive" : ""
+                }`}
               />
+              {errors.phone && (
+                <p className="text-xs text-destructive">{errors.phone}</p>
+              )}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-semibold text-foreground flex items-center gap-2">
@@ -127,8 +192,62 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                 placeholder="Enter your address"
                 className="bg-background border-primary/20 focus-visible:border-primary"
               />
+              {errors.address && (
+                <p className="text-xs text-destructive">{errors.address}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Globe className="h-4 w-4 text-primary" />
+                Timezone
+              </label>
+              <Input
+                type="text"
+                value={formData.timezone}
+                onChange={(e) => handleChange("timezone", e.target.value)}
+                placeholder="America/Sao_Paulo"
+                list="timezones"
+                className="bg-background border-primary/20 focus-visible:border-primary"
+              />
+              <datalist id="timezones">
+                {COMMON_TIMEZONES.map((tz) => (
+                  <option key={tz} value={tz} />
+                ))}
+              </datalist>
+              {errors.timezone && (
+                <p className="text-xs text-destructive">{errors.timezone}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <ToggleLeft className="h-4 w-4 text-primary" />
+                Status
+              </label>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleChange("status", !formData.status)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                    formData.status ? "bg-primary" : "bg-muted"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      formData.status ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+                <span className="text-sm text-muted-foreground">
+                  {formData.status ? "Active" : "Inactive"}
+                </span>
+              </div>
             </div>
           </div>
+          {errors.submit && (
+            <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3">
+              <p className="text-sm text-destructive">{errors.submit}</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
