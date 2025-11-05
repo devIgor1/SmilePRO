@@ -52,6 +52,8 @@ export default async function Profile() {
               email: userData.email,
               phone: userData.phone,
               address: userData.address,
+              status: userData.status,
+              timezone: userData.timezone,
             }}
           />
         </div>

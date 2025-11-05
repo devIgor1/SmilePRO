@@ -7,6 +7,8 @@ interface UpdateUserDataParams {
   name?: string;
   phone?: string;
   address?: string;
+  status?: boolean;
+  timezone?: string;
 }
 
 export async function updateUserData(data: UpdateUserDataParams) {
@@ -22,9 +24,11 @@ export async function updateUserData(data: UpdateUserDataParams) {
         id: session.user.id,
       },
       data: {
-        ...(data.name !== undefined && { name: data.name }),
-        ...(data.phone !== undefined && { phone: data.phone }),
-        ...(data.address !== undefined && { address: data.address }),
+        ...(data.name !== undefined && { name: data.name || null }),
+        ...(data.phone !== undefined && { phone: data.phone || null }),
+        ...(data.address !== undefined && { address: data.address || null }),
+        ...(data.status !== undefined && { status: data.status }),
+        ...(data.timezone !== undefined && { timezone: data.timezone || null }),
       },
     });
 
