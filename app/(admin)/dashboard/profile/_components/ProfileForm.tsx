@@ -4,12 +4,24 @@ import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { updateUserData } from "../_data-access/update-user-data";
 import {
   User,
@@ -20,6 +32,8 @@ import {
   Loader2,
   Globe,
   ToggleLeft,
+  Clock,
+  Info,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { formatPhoneNumber } from "@/lib/utils";
@@ -27,6 +41,7 @@ import {
   profileFormSchema,
   type ProfileFormData,
 } from "../_schemas/profile-form-schema";
+import { TimeSlotsDialog } from "./TimeSlotsDialog";
 
 interface ProfileFormProps {
   initialData: {
@@ -36,6 +51,7 @@ interface ProfileFormProps {
     address: string | null;
     status: boolean;
     timezone: string | null;
+    timeslots: string[];
   };
 }
 
@@ -62,6 +78,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
     address: initialData.address || "",
     status: initialData.status ?? true,
     timezone: initialData.timezone || "",
+    timeslots: initialData.timeslots || [],
   });
   const [isDirty, setIsDirty] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -201,19 +218,25 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                 <Globe className="h-4 w-4 text-primary" />
                 Timezone
               </label>
-              <Input
-                type="text"
-                value={formData.timezone}
-                onChange={(e) => handleChange("timezone", e.target.value)}
-                placeholder="America/Sao_Paulo"
-                list="timezones"
-                className="bg-background border-primary/20 focus-visible:border-primary"
-              />
-              <datalist id="timezones">
-                {COMMON_TIMEZONES.map((tz) => (
-                  <option key={tz} value={tz} />
-                ))}
-              </datalist>
+              <Select
+                value={formData.timezone || ""}
+                onValueChange={(value) => handleChange("timezone", value)}
+              >
+                <SelectTrigger
+                  className={`w-full bg-background border-primary/20 focus:border-primary ${
+                    errors.timezone ? "border-destructive" : ""
+                  }`}
+                >
+                  <SelectValue placeholder="Select timezone" />
+                </SelectTrigger>
+                <SelectContent>
+                  {COMMON_TIMEZONES.map((tz) => (
+                    <SelectItem key={tz} value={tz}>
+                      {tz}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               {errors.timezone && (
                 <p className="text-xs text-destructive">{errors.timezone}</p>
               )}
@@ -222,6 +245,16 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
               <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <ToggleLeft className="h-4 w-4 text-primary" />
                 Status
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button type="button" className="inline-flex">
+                      <Info className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground transition-colors" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Indicates whether your clinic is open or closed</p>
+                  </TooltipContent>
+                </Tooltip>
               </label>
               <div className="flex items-center gap-3">
                 <button
@@ -241,6 +274,46 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                   {formData.status ? "Active" : "Inactive"}
                 </span>
               </div>
+            </div>
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Clock className="h-4 w-4 text-primary" />
+                Available Times
+              </label>
+              <TimeSlotsDialog
+                selectedTimes={formData.timeslots}
+                onTimesChange={(times) => {
+                  setFormData((prev) => ({ ...prev, timeslots: times }));
+                  setIsDirty(true);
+                  if (errors.timeslots) {
+                    setErrors((prev) => {
+                      const newErrors = { ...prev };
+                      delete newErrors.timeslots;
+                      return newErrors;
+                    });
+                  }
+                }}
+              />
+              {formData.timeslots.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {formData.timeslots.slice(0, 5).map((time) => (
+                    <span
+                      key={time}
+                      className="text-xs bg-primary/10 text-primary px-2 py-1 rounded"
+                    >
+                      {time}
+                    </span>
+                  ))}
+                  {formData.timeslots.length > 5 && (
+                    <span className="text-xs text-muted-foreground px-2 py-1">
+                      +{formData.timeslots.length - 5} more
+                    </span>
+                  )}
+                </div>
+              )}
+              {errors.timeslots && (
+                <p className="text-xs text-destructive">{errors.timeslots}</p>
+              )}
             </div>
           </div>
           {errors.submit && (
