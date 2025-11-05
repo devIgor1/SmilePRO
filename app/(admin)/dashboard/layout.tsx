@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,20 +12,20 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { DashboardSidebar } from "./_components/DashboardSidebar"
+} from "@/components/ui/breadcrumb";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { DashboardSidebar } from "./_components/DashboardSidebar";
 
 function DashboardBreadcrumb() {
-  const pathname = usePathname()
-  
-  const pathSegments = pathname.split("/").filter(Boolean)
-  const isDashboardRoot = pathname === "/dashboard"
-  
+  const pathname = usePathname();
+
+  const pathSegments = pathname.split("/").filter(Boolean);
+  const isDashboardRoot = pathname === "/dashboard";
+
   // Get all segments after dashboard
-  const subSegments = pathSegments.slice(1)
-  
+  const subSegments = pathSegments.slice(1);
+
   return (
     <Breadcrumb>
       <BreadcrumbList>
@@ -39,15 +39,16 @@ function DashboardBreadcrumb() {
           )}
         </BreadcrumbItem>
         {subSegments.map((segment, index) => {
-          const href = "/dashboard/" + subSegments.slice(0, index + 1).join("/")
-          const isLast = index === subSegments.length - 1
-          
+          const href =
+            "/dashboard/" + subSegments.slice(0, index + 1).join("/");
+          const isLast = index === subSegments.length - 1;
+
           // Format segment name
           const formattedName = segment
             .split("-")
             .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ")
-          
+            .join(" ");
+
           return (
             <div key={href} className="flex items-center gap-1.5">
               <BreadcrumbSeparator />
@@ -61,17 +62,17 @@ function DashboardBreadcrumb() {
                 )}
               </BreadcrumbItem>
             </div>
-          )
+          );
         })}
       </BreadcrumbList>
     </Breadcrumb>
-  )
+  );
 }
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <SidebarProvider>
@@ -87,6 +88,5 @@ export default function DashboardLayout({
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }
-
