@@ -1,15 +1,17 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { Smile } from "lucide-react"
-import { MobileNav } from "./MobileNav"
-import { UserMenu } from "./UserMenu"
-import { authButtons, navItems } from "./nav-config"
-import { useAuth } from "@/hooks/use-auth"
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Smile } from "lucide-react";
+import { MobileNav } from "./MobileNav";
+import { UserMenu } from "./UserMenu";
+import { authButtons, navItems } from "./nav-config";
+import { useSession } from "next-auth/react";
+import { handleLogin } from "../_actions/login";
 
 export function HomeHeader() {
-  const { isAuthenticated, isLoading } = useAuth()
+  const { data: session, status } = useSession();
+  const isLoading = status === "loading";
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -19,8 +21,7 @@ export function HomeHeader() {
             <Smile className="size-4 sm:size-5" />
           </div>
           <span className="font-bold text-lg sm:text-xl md:text-2xl">
-            Smile{" "}
-            <span className="text-primary">PRO</span>
+            Smile <span className="text-primary">PRO</span>
           </span>
         </Link>
 
@@ -37,29 +38,18 @@ export function HomeHeader() {
           ))}
           {!isLoading && (
             <>
-              {isAuthenticated ? (
+              {session?.user ? (
                 <UserMenu />
               ) : (
                 <>
-                  <Link href={authButtons.signIn.href}>
-                    <Button
-                      variant={authButtons.signIn.variant}
-                      size="default"
-                      className="hidden lg:flex"
-                    >
-                      {authButtons.signIn.label}
-                    </Button>
-                  </Link>
-                  <Link href={authButtons.getStarted.href}>
-                    <Button size="default" className="hidden lg:flex">
-                      {authButtons.getStarted.label}
-                    </Button>
-                  </Link>
-                  <Link href={authButtons.signIn.href} className="lg:hidden">
-                    <Button variant={authButtons.signIn.variant} size="default">
-                      {authButtons.signIn.label}
-                    </Button>
-                  </Link>
+                  <Button
+                    variant={authButtons.signIn.variant}
+                    size="default"
+                    className="hidden lg:flex"
+                    onClick={() => handleLogin("github")}
+                  >
+                    {authButtons.signIn.label}
+                  </Button>
                 </>
               )}
             </>
@@ -70,5 +60,5 @@ export function HomeHeader() {
         <MobileNav />
       </div>
     </header>
-  )
+  );
 }
