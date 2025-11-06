@@ -3,15 +3,12 @@
  * Based on Prisma schema
  */
 
-import { User } from "@/app/types/next-auth";
 import type { Service } from "./service";
+import type { User } from "./user";
+import { AppointmentStatus } from "@/lib/generated/prisma/enums";
 
-export enum AppointmentStatus {
-  PENDING = "PENDING",
-  CONFIRMED = "CONFIRMED",
-  CANCELLED = "CANCELLED",
-  COMPLETED = "COMPLETED",
-}
+// Re-export the Prisma-generated enum
+export { AppointmentStatus };
 
 export interface Appointment {
   id: string;
@@ -33,7 +30,7 @@ export interface AppointmentWithService extends Appointment {
 }
 
 export interface AppointmentWithRelations extends AppointmentWithService {
-  user?: User;
+  user?: Pick<User, "id" | "name" | "email" | "phone">;
 }
 
 export interface AppointmentFormData {

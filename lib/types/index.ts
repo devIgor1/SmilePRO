@@ -2,6 +2,9 @@
  * Central export file for all application types
  */
 
+// User types
+export * from "./user";
+
 // Service types
 export * from "./service";
 
@@ -9,6 +12,8 @@ export * from "./service";
 export * from "./appointment";
 
 // Re-export commonly used types
+export type { User, UserWithRelations, SessionUser } from "./user";
+
 export type {
   Service,
   ServiceWithRelations,

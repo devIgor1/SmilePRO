@@ -3,7 +3,7 @@
  * Based on Prisma schema
  */
 
-import { Appointment, User } from "../generated/prisma/client";
+import type { User } from "./user";
 
 export interface Service {
   id: string;
@@ -18,8 +18,16 @@ export interface Service {
 }
 
 export interface ServiceWithRelations extends Service {
-  appointments?: Appointment[];
-  user?: User;
+  appointments?: Array<{
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    appointmentDate: Date;
+    appointmentTime: string;
+    status: string;
+  }>;
+  user?: Pick<User, "id" | "name" | "email">;
 }
 
 export interface ServiceFormData {
