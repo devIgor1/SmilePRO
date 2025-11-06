@@ -42,6 +42,7 @@ import {
   type ProfileFormData,
 } from "../_schemas/profile-form-schema";
 import { TimeSlotsDialog } from "./TimeSlotsDialog";
+import { getTimezoneOptions } from "@/lib/config/timezones";
 
 interface ProfileFormProps {
   initialData: {
@@ -55,18 +56,7 @@ interface ProfileFormProps {
   };
 }
 
-const COMMON_TIMEZONES = [
-  "America/Sao_Paulo",
-  "America/New_York",
-  "America/Chicago",
-  "America/Denver",
-  "America/Los_Angeles",
-  "Europe/London",
-  "Europe/Paris",
-  "Asia/Tokyo",
-  "Asia/Shanghai",
-  "Australia/Sydney",
-];
+const TIMEZONE_OPTIONS = getTimezoneOptions();
 
 export function ProfileForm({ initialData }: ProfileFormProps) {
   const router = useRouter();
@@ -230,9 +220,9 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                   <SelectValue placeholder="Select timezone" />
                 </SelectTrigger>
                 <SelectContent>
-                  {COMMON_TIMEZONES.map((tz) => (
-                    <SelectItem key={tz} value={tz}>
-                      {tz}
+                  {TIMEZONE_OPTIONS.map((tz) => (
+                    <SelectItem key={tz.value} value={tz.value}>
+                      {tz.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
