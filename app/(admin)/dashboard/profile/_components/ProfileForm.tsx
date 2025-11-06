@@ -289,20 +289,20 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                   {formData.timeslots.slice(0, 5).map((time) => (
                     <span
                       key={time}
-                      className="text-xs bg-primary/10 text-primary px-2 py-1 rounded"
+                      className="text-sm bg-primary/10 text-primary px-2 py-1 rounded"
                     >
                       {time}
                     </span>
                   ))}
                   {formData.timeslots.length > 5 && (
-                    <span className="text-xs text-muted-foreground px-2 py-1">
+                    <span className="text-sm text-muted-foreground px-2 py-1">
                       +{formData.timeslots.length - 5} more
                     </span>
                   )}
                 </div>
               )}
               {errors.timeslots && (
-                <p className="text-xs text-destructive">{errors.timeslots}</p>
+                <p className="text-sm text-destructive">{errors.timeslots}</p>
               )}
             </div>
           </div>
