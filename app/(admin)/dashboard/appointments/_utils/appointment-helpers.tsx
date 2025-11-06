@@ -1,30 +1,56 @@
-import { Check, AlertCircle, X } from "lucide-react";
+import { Check, AlertCircle, X, CheckCircle } from "lucide-react";
+import { AppointmentStatus } from "@/lib/types/appointment";
 
 export function getStatusVariant(
   status: string
 ): "default" | "secondary" | "destructive" {
-  switch (status.toLowerCase()) {
-    case "confirmed":
+  const statusStr = status.toUpperCase();
+
+  switch (statusStr) {
+    case AppointmentStatus.CONFIRMED:
       return "default";
-    case "pending":
+    case AppointmentStatus.PENDING:
       return "secondary";
-    case "cancelled":
+    case AppointmentStatus.CANCELLED:
       return "destructive";
+    case AppointmentStatus.COMPLETED:
+      return "default";
     default:
       return "secondary";
   }
 }
 
 export function getStatusIcon(status: string) {
-  switch (status.toLowerCase()) {
-    case "confirmed":
+  const statusStr = status.toUpperCase();
+
+  switch (statusStr) {
+    case AppointmentStatus.CONFIRMED:
       return <Check className="mr-1 h-3 w-3" />;
-    case "pending":
+    case AppointmentStatus.PENDING:
       return <AlertCircle className="mr-1 h-3 w-3" />;
-    case "cancelled":
+    case AppointmentStatus.CANCELLED:
       return <X className="mr-1 h-3 w-3" />;
+    case AppointmentStatus.COMPLETED:
+      return <CheckCircle className="mr-1 h-3 w-3" />;
     default:
       return null;
+  }
+}
+
+export function getStatusLabel(status: string): string {
+  const statusStr = status.toUpperCase();
+
+  switch (statusStr) {
+    case AppointmentStatus.CONFIRMED:
+      return "Confirmed";
+    case AppointmentStatus.PENDING:
+      return "Pending";
+    case AppointmentStatus.CANCELLED:
+      return "Cancelled";
+    case AppointmentStatus.COMPLETED:
+      return "Completed";
+    default:
+      return statusStr;
   }
 }
 
