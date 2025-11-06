@@ -78,9 +78,8 @@ export default function AppointmentContent({
 }: AppointmentContentProps) {
   const [date, setDate] = useState<Date>(initialDate);
   const [searchQuery, setSearchQuery] = useState("");
-  const [appointments, setAppointments] = useState<AppointmentWithService[]>(
-    initialAppointments
-  );
+  const [appointments, setAppointments] =
+    useState<AppointmentWithService[]>(initialAppointments);
   const [services, setServices] = useState<Service[]>(initialServices);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
