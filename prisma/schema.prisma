@@ -19,6 +19,13 @@ enum Plan {
   PROFESSIONAL
 }
 
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
 model Appointment {
   id            String    @id @default(uuid())
   name         String
@@ -26,6 +33,7 @@ model Appointment {
   phone         String
   appointmentDate DateTime
   appointmentTime String
+  status        AppointmentStatus @default(PENDING)
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

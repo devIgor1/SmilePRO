@@ -1,5 +1,8 @@
 import { config } from "dotenv";
-import { PrismaClient } from "../lib/generated/prisma/client";
+import {
+  PrismaClient,
+  AppointmentStatus,
+} from "../lib/generated/prisma/client";
 
 // Load environment variables
 config();
@@ -154,6 +157,7 @@ async function main() {
         phone: data.phone,
         appointmentDate: today,
         appointmentTime: timeString,
+        status: AppointmentStatus.CONFIRMED,
         serviceId: service.id,
         userId: user.id,
       },
@@ -198,7 +202,8 @@ async function main() {
   let tomorrowTime = 9 * 60; // Start at 9:00 AM
   const tomorrowAppointments = [];
 
-  for (const data of tomorrowAppointmentData) {
+  for (let i = 0; i < tomorrowAppointmentData.length; i++) {
+    const data = tomorrowAppointmentData[i];
     const service = services[data.serviceIndex];
 
     const hour = Math.floor(tomorrowTime / 60);
@@ -212,6 +217,8 @@ async function main() {
         phone: data.phone,
         appointmentDate: tomorrow,
         appointmentTime: timeString,
+        status:
+          i === 0 ? AppointmentStatus.CONFIRMED : AppointmentStatus.PENDING,
         serviceId: service.id,
         userId: user.id,
       },
