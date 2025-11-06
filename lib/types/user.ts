@@ -18,20 +18,3 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
 }
-
-export interface UserWithRelations extends User {
-  accounts?: unknown[];
-  sessions?: unknown[];
-  subscription?: unknown;
-  services?: unknown[];
-  reminders?: unknown[];
-  appointments?: unknown[];
-}
-
-// Utility type for user in session
-export interface SessionUser {
-  id: string;
-  name: string | null;
-  email: string | null;
-  image: string | null;
-}

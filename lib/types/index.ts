@@ -12,7 +12,7 @@ export * from "./service";
 export * from "./appointment";
 
 // Re-export commonly used types
-export type { User, UserWithRelations, SessionUser } from "./user";
+export type { User } from "./user";
 
 export type {
   Service,

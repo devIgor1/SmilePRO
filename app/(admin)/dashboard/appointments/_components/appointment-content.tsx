@@ -55,12 +55,16 @@ import {
   getStatusIcon,
   getStatusLabel,
 } from "../_utils/appointment-helpers";
-import { Appointment, AppointmentStatus } from "@/lib/types/appointment";
+import type {
+  AppointmentStatus,
+  AppointmentWithService,
+} from "@/lib/types/appointment";
+import type { Service } from "@/lib/types";
 
 interface AppointmentContentProps {
   userId: string;
-  initialAppointments?: any[];
-  initialServices?: any[];
+  initialAppointments?: AppointmentWithService[];
+  initialServices?: Service[];
   initialDate?: Date;
   userTimeslots?: string[];
 }
@@ -74,9 +78,10 @@ export default function AppointmentContent({
 }: AppointmentContentProps) {
   const [date, setDate] = useState<Date>(initialDate);
   const [searchQuery, setSearchQuery] = useState("");
-  const [appointments, setAppointments] =
-    useState<Appointment[]>(initialAppointments);
-  const [services, setServices] = useState<any[]>(initialServices);
+  const [appointments, setAppointments] = useState<AppointmentWithService[]>(
+    initialAppointments
+  );
+  const [services, setServices] = useState<Service[]>(initialServices);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -91,8 +96,8 @@ export default function AppointmentContent({
           getAppointmentsByDate({ userId, date }),
           getAllServices(userId),
         ]);
-        setAppointments(appts as Appointment[]);
-        setServices(svcs);
+        setAppointments(appts as AppointmentWithService[]);
+        setServices(svcs as Service[]);
       } catch (error) {
         console.error("Failed to load data:", error);
       } finally {
