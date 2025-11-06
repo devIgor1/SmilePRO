@@ -46,11 +46,16 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Clock, Search, Filter, MoreHorizontal } from "lucide-react";
-import { format } from "date-fns";
+import dayjs from "dayjs";
 import { Calendar } from "@/components/ui/calendar";
 import { getAppointmentsByDate } from "../_data-access/get-appointments-by-date";
 import { getAllServices } from "../../services/_data-access/get-all-services";
-import { getStatusVariant, getStatusIcon } from "../_utils/appointment-helpers";
+import {
+  getStatusVariant,
+  getStatusIcon,
+  getStatusLabel,
+} from "../_utils/appointment-helpers";
+import { Appointment, AppointmentStatus } from "@/lib/types/appointment";
 
 interface AppointmentContentProps {
   userId: string;
@@ -69,7 +74,8 @@ export default function AppointmentContent({
 }: AppointmentContentProps) {
   const [date, setDate] = useState<Date>(initialDate);
   const [searchQuery, setSearchQuery] = useState("");
-  const [appointments, setAppointments] = useState<any[]>(initialAppointments);
+  const [appointments, setAppointments] =
+    useState<Appointment[]>(initialAppointments);
   const [services, setServices] = useState<any[]>(initialServices);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -85,7 +91,7 @@ export default function AppointmentContent({
           getAppointmentsByDate({ userId, date }),
           getAllServices(userId),
         ]);
-        setAppointments(appts);
+        setAppointments(appts as Appointment[]);
         setServices(svcs);
       } catch (error) {
         console.error("Failed to load data:", error);
@@ -229,7 +235,7 @@ export default function AppointmentContent({
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <CardTitle className="text-primary">
-                  {format(date, "MMMM d, yyyy")}
+                  {dayjs(date).format("MMMM D, YYYY")}
                 </CardTitle>
                 <CardDescription>
                   {appointments.length} appointment
@@ -298,9 +304,9 @@ export default function AppointmentContent({
                           {appointment.service?.name || "N/A"}
                         </TableCell>
                         <TableCell>
-                          <Badge variant={getStatusVariant("confirmed")}>
-                            {getStatusIcon("confirmed")}
-                            confirmed
+                          <Badge variant={getStatusVariant(appointment.status)}>
+                            {getStatusIcon(appointment.status)}
+                            {getStatusLabel(appointment.status)}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
@@ -343,7 +349,7 @@ export default function AppointmentContent({
           <CardTitle className="text-primary">Available Time Slots</CardTitle>
           <CardDescription>
             {hasTimeslots
-              ? `Quick view of available and booked time slots for ${format(date, "MMMM d")}`
+              ? `Quick view of available and booked time slots for ${dayjs(date).format("MMMM D")}`
               : "Configure your available times in your profile to start accepting appointments"}
           </CardDescription>
         </CardHeader>

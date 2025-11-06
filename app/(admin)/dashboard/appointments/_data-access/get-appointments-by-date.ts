@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import dayjs from "dayjs";
 
 interface GetAppointmentsByDateParams {
   userId: string;
@@ -16,12 +17,9 @@ export async function getAppointmentsByDate({
       throw new Error("User ID is required");
     }
 
-    // Get start and end of the selected date
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
+    // Get start and end of the selected date using dayjs
+    const startOfDay = dayjs(date).startOf("day").toDate();
+    const endOfDay = dayjs(date).endOf("day").toDate();
 
     const appointments = await prisma.appointment.findMany({
       where: {
