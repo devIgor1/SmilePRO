@@ -5,6 +5,9 @@
 // User types
 export * from "./user";
 
+// Patient types
+export * from "./patient";
+
 // Service types
 export * from "./service";
 
@@ -13,6 +16,13 @@ export * from "./appointment";
 
 // Re-export commonly used types
 export type { User } from "./user";
+
+export type {
+  Patient,
+  PatientWithRelations,
+  PatientFormData,
+  PatientListItem,
+} from "./patient";
 
 export type {
   Service,

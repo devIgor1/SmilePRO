@@ -5,6 +5,7 @@
 
 import type { Service } from "./service";
 import type { User } from "./user";
+import type { Patient } from "./patient";
 import { AppointmentStatus } from "@/lib/generated/prisma/enums";
 
 // Re-export the Prisma-generated enum
@@ -12,31 +13,35 @@ export { AppointmentStatus };
 
 export interface Appointment {
   id: string;
-  name: string;
-  email: string;
-  phone: string;
   appointmentDate: Date;
   appointmentTime: string; // HH:MM format
   status: AppointmentStatus;
+  notes: string | null;
   createdAt: Date;
   updatedAt: Date;
+  patientId: string;
   serviceId: string;
   userId: string;
+  patient?: Patient;
   service?: Service;
+}
+
+export interface AppointmentWithPatient extends Appointment {
+  patient: Patient;
 }
 
 export interface AppointmentWithService extends Appointment {
   service: Service;
 }
 
-export interface AppointmentWithRelations extends AppointmentWithService {
+export interface AppointmentWithRelations extends Appointment {
+  patient: Patient;
+  service: Service;
   user?: Pick<User, "id" | "name" | "email" | "phone">;
 }
 
 export interface AppointmentFormData {
-  name: string;
-  email: string;
-  phone: string;
+  patientId: string;
   appointmentDate: Date;
   appointmentTime: string;
   serviceId: string;
@@ -50,17 +55,16 @@ export interface AppointmentCreateInput extends AppointmentFormData {
 
 export interface AppointmentUpdateInput {
   id: string;
-  name?: string;
-  email?: string;
-  phone?: string;
+  patientId?: string;
   appointmentDate?: Date;
   appointmentTime?: string;
   status?: AppointmentStatus;
   serviceId?: string;
+  notes?: string;
 }
 
 // Utility types
-export type AppointmentListItem = AppointmentWithService;
+export type AppointmentListItem = AppointmentWithRelations;
 
 export interface AppointmentFilters {
   date?: Date;
