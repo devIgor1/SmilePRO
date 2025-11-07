@@ -143,81 +143,85 @@ export default function AppointmentContent({
                 New Appointment
               </Button>
             </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>Schedule New Appointment</DialogTitle>
-              <DialogDescription>
-                Fill in the details to schedule a new appointment for a patient.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="patient-name">Patient Name</Label>
-                <Input id="patient-name" placeholder="Enter patient name" />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="patient@example.com"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input id="phone" type="tel" placeholder="21 99999-9999" />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="service">Service</Label>
-                <Select>
-                  <SelectTrigger id="service">
-                    <SelectValue placeholder="Select service" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {services.map((service) => (
-                      <SelectItem key={service.id} value={service.id}>
-                        {service.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="time-slot">Time Slot</Label>
-                <Select>
-                  <SelectTrigger id="time-slot">
-                    <SelectValue placeholder="Select time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {timeSlots
-                      .filter((slot: string) => !bookedTimes.includes(slot))
-                      .map((slot: string) => (
-                        <SelectItem key={slot} value={slot}>
-                          {slot}
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>Schedule New Appointment</DialogTitle>
+                <DialogDescription>
+                  Fill in the details to schedule a new appointment for a
+                  patient.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="patient-name">Patient Name</Label>
+                  <Input id="patient-name" placeholder="Enter patient name" />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="patient@example.com"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input id="phone" type="tel" placeholder="21 99999-9999" />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="service">Service</Label>
+                  <Select>
+                    <SelectTrigger id="service">
+                      <SelectValue placeholder="Select service" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {services.map((service) => (
+                        <SelectItem key={service.id} value={service.id}>
+                          {service.name}
                         </SelectItem>
                       ))}
-                  </SelectContent>
-                </Select>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="time-slot">Time Slot</Label>
+                  <Select>
+                    <SelectTrigger id="time-slot">
+                      <SelectValue placeholder="Select time" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {timeSlots
+                        .filter((slot: string) => !bookedTimes.includes(slot))
+                        .map((slot: string) => (
+                          <SelectItem key={slot} value={slot}>
+                            {slot}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="notes">Notes (Optional)</Label>
+                  <Textarea
+                    id="notes"
+                    placeholder="Add any special notes or requirements"
+                    rows={3}
+                  />
+                </div>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="notes">Notes (Optional)</Label>
-                <Textarea
-                  id="notes"
-                  placeholder="Add any special notes or requirements"
-                  rows={3}
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={() => setIsDialogOpen(false)}>
-                Schedule Appointment
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={() => setIsDialogOpen(false)}>
+                  Schedule Appointment
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         )}
         {!isMounted && (
           <Button className="bg-primary hover:bg-primary/90">
@@ -334,11 +338,15 @@ export default function AppointmentContent({
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuItem>View Details</DropdownMenuItem>
+                                <DropdownMenuItem>
+                                  View Details
+                                </DropdownMenuItem>
                                 <DropdownMenuItem>
                                   Edit Appointment
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>Send Reminder</DropdownMenuItem>
+                                <DropdownMenuItem>
+                                  Send Reminder
+                                </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem>
                                   Mark as Completed
