@@ -30,6 +30,7 @@ export async function getAppointmentsByDate({
       },
       include: {
         service: true,
+        patient: true,
       },
       orderBy: {
         appointmentTime: "asc",

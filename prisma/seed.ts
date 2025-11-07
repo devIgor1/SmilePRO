@@ -212,7 +212,9 @@ async function main() {
     });
 
     appointments.push(appointment);
-    console.log(`Created appointment: ${patient.name} at ${timeString} (${service.name}, ${service.duration} min)`);
+    console.log(
+      `Created appointment: ${patient.name} at ${timeString} (${service.name}, ${service.duration} min)`
+    );
     currentTime += service.duration + 30;
   }
 
@@ -246,18 +248,23 @@ async function main() {
         patientId: patient.id,
         appointmentDate: tomorrow,
         appointmentTime: timeString,
-        status: i === 0 ? AppointmentStatus.CONFIRMED : AppointmentStatus.PENDING,
+        status:
+          i === 0 ? AppointmentStatus.CONFIRMED : AppointmentStatus.PENDING,
         serviceId: service.id,
         userId: user.id,
       },
     });
 
     tomorrowAppointments.push(appointment);
-    console.log(`Created appointment: ${patient.name} at ${timeString} (${service.name}, ${service.duration} min)`);
+    console.log(
+      `Created appointment: ${patient.name} at ${timeString} (${service.name}, ${service.duration} min)`
+    );
     tomorrowTime += service.duration + 30;
   }
 
-  console.log(`Created ${tomorrowAppointments.length} appointments for tomorrow`);
+  console.log(
+    `Created ${tomorrowAppointments.length} appointments for tomorrow`
+  );
   console.log("Seed completed successfully!");
 }
 
