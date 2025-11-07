@@ -26,6 +26,10 @@ export interface PatientWithRelations extends Patient {
     appointmentTime: string;
     status: string;
     serviceId: string;
+    service?: {
+      id: string;
+      name: string;
+    };
   }>;
   user?: Pick<User, "id" | "name" | "email">;
 }

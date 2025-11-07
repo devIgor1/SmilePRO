@@ -49,6 +49,7 @@ import {
   getLastVisit,
 } from "../_utils/patient-helpers";
 import { PatientPhotoUpload } from "./patient-photo-upload";
+import { PatientDetailsDialog } from "./patient-details-dialog";
 
 interface PatientStats {
   totalPatients: number;
@@ -75,6 +76,9 @@ export default function PatientsContent({
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
   const [isMounted, setIsMounted] = useState(false);
+  const [selectedPatient, setSelectedPatient] =
+    useState<PatientWithRelations | null>(null);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -316,7 +320,12 @@ export default function PatientsContent({
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setSelectedPatient(patient);
+                                    setDetailsDialogOpen(true);
+                                  }}
+                                >
                                   View Details
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
@@ -349,6 +358,15 @@ export default function PatientsContent({
           )}
         </CardContent>
       </Card>
+
+      {/* Patient Details Dialog */}
+      {selectedPatient && (
+        <PatientDetailsDialog
+          patient={selectedPatient}
+          open={detailsDialogOpen}
+          onOpenChange={setDetailsDialogOpen}
+        />
+      )}
     </div>
   );
 }
