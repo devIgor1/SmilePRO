@@ -13,6 +13,7 @@ export interface Patient {
   dateOfBirth: Date | null;
   address: string | null;
   notes: string | null;
+  photoUrl: string | null; // Added S3 photo URL
   createdAt: Date;
   updatedAt: Date;
   userId: string;
@@ -36,6 +37,7 @@ export interface PatientFormData {
   dateOfBirth?: Date | null;
   address?: string;
   notes?: string;
+  photoUrl?: string | null;
 }
 
 export interface PatientCreateInput extends PatientFormData {
@@ -50,6 +52,7 @@ export interface PatientUpdateInput {
   dateOfBirth?: Date | null;
   address?: string;
   notes?: string;
+  photoUrl?: string | null;
 }
 
 // Utility types
