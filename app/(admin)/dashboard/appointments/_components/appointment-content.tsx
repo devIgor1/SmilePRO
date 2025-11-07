@@ -83,6 +83,12 @@ export default function AppointmentContent({
   const [services, setServices] = useState<Service[]>(initialServices);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Ensure client-side only rendering for dialogs
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Sort timeslots to display them in order
   const timeSlots = [...userTimeslots].sort();
@@ -129,13 +135,14 @@ export default function AppointmentContent({
             Manage and schedule patient appointments
           </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-primary hover:bg-primary/90">
-              <Plus className="mr-2 h-4 w-4" />
-              New Appointment
-            </Button>
-          </DialogTrigger>
+        {isMounted && (
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-primary hover:bg-primary/90">
+                <Plus className="mr-2 h-4 w-4" />
+                New Appointment
+              </Button>
+            </DialogTrigger>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
               <DialogTitle>Schedule New Appointment</DialogTitle>
@@ -211,6 +218,13 @@ export default function AppointmentContent({
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        )}
+        {!isMounted && (
+          <Button className="bg-primary hover:bg-primary/90">
+            <Plus className="mr-2 h-4 w-4" />
+            New Appointment
+          </Button>
+        )}
       </div>
 
       {/* Main Content Grid */}
@@ -311,28 +325,34 @@ export default function AppointmentContent({
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem>View Details</DropdownMenuItem>
-                              <DropdownMenuItem>
-                                Edit Appointment
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>Send Reminder</DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem>
-                                Mark as Completed
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="text-destructive">
-                                Cancel Appointment
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                          {isMounted ? (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuItem>View Details</DropdownMenuItem>
+                                <DropdownMenuItem>
+                                  Edit Appointment
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>Send Reminder</DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>
+                                  Mark as Completed
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="text-destructive">
+                                  Cancel Appointment
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          ) : (
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
