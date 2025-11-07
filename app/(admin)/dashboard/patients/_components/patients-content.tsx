@@ -42,6 +42,13 @@ import {
 } from "lucide-react";
 import dayjs from "dayjs";
 import type { PatientWithRelations } from "@/lib/types";
+import {
+  calculateAge,
+  getInitials,
+  isPatientActive,
+  getNextAppointment,
+  getLastVisit,
+} from "../_utils/patient-helpers";
 
 interface PatientStats {
   totalPatients: number;
@@ -72,66 +79,6 @@ export default function PatientsContent({
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  // Calculate patient age
-  const calculateAge = (dateOfBirth: Date | null): string => {
-    if (!dateOfBirth) return "N/A";
-    const years = dayjs().diff(dayjs(dateOfBirth), "year");
-    return `${years} years`;
-  };
-
-  // Get initials for avatar
-  const getInitials = (name: string): string => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
-  // Determine if patient is active (has appointment in last 6 months)
-  const isPatientActive = (patient: PatientWithRelations): boolean => {
-    if (!patient.appointments || patient.appointments.length === 0)
-      return false;
-    const lastAppointment = patient.appointments[0];
-    const sixMonthsAgo = dayjs().subtract(6, "months");
-    return dayjs(lastAppointment.appointmentDate).isAfter(sixMonthsAgo);
-  };
-
-  // Get next appointment
-  const getNextAppointment = (patient: PatientWithRelations) => {
-    if (!patient.appointments || patient.appointments.length === 0)
-      return null;
-
-    const futureAppointments = patient.appointments.filter((apt) =>
-      dayjs(apt.appointmentDate).isAfter(dayjs())
-    );
-
-    if (futureAppointments.length === 0) return null;
-
-    return futureAppointments.sort((a, b) =>
-      dayjs(a.appointmentDate).diff(dayjs(b.appointmentDate))
-    )[0];
-  };
-
-  // Get last visit
-  const getLastVisit = (patient: PatientWithRelations) => {
-    if (!patient.appointments || patient.appointments.length === 0)
-      return null;
-
-    const pastAppointments = patient.appointments.filter(
-      (apt) =>
-        dayjs(apt.appointmentDate).isBefore(dayjs()) &&
-        apt.status === "COMPLETED"
-    );
-
-    if (pastAppointments.length === 0) return null;
-
-    return pastAppointments.sort((a, b) =>
-      dayjs(b.appointmentDate).diff(dayjs(a.appointmentDate))
-    )[0];
-  };
 
   // Filter patients
   const filteredPatients = initialPatients.filter((patient) => {
@@ -208,9 +155,7 @@ export default function PatientsContent({
             <div className="text-2xl font-bold">{stats.newThisMonth}</div>
             <p
               className={`text-xs mt-1 ${
-                stats.percentageChange >= 0
-                  ? "text-green-600"
-                  : "text-red-600"
+                stats.percentageChange >= 0 ? "text-green-600" : "text-red-600"
               }`}
             >
               {stats.percentageChange > 0 ? "+" : ""}
@@ -264,9 +209,6 @@ export default function PatientsContent({
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <Button variant="outline" size="icon">
-            <Filter className="h-4 w-4" />
-          </Button>
         </div>
       </div>
 
@@ -316,9 +258,6 @@ export default function PatientsContent({
                             </Avatar>
                             <div>
                               <div className="font-medium">{patient.name}</div>
-                              <div className="text-xs text-muted-foreground">
-                                Patient ID: {patient.id.slice(0, 8)}
-                              </div>
                             </div>
                           </div>
                         </TableCell>
@@ -412,4 +351,3 @@ export default function PatientsContent({
     </div>
   );
 }
-

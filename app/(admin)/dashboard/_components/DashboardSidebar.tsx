@@ -20,6 +20,7 @@ import {
   CreditCard,
   Settings,
   User,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -34,6 +35,11 @@ const navigationItems = [
     title: "Appointments",
     href: "/dashboard/appointments",
     icon: Calendar,
+  },
+  {
+    title: "Patients",
+    href: "/dashboard/patients",
+    icon: Users,
   },
   {
     title: "Plans",
