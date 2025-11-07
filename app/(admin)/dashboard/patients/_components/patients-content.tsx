@@ -27,7 +27,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Users,
   UserCheck,
@@ -49,6 +48,7 @@ import {
   getNextAppointment,
   getLastVisit,
 } from "../_utils/patient-helpers";
+import { PatientPhotoUpload } from "./patient-photo-upload";
 
 interface PatientStats {
   totalPatients: number;
@@ -251,11 +251,12 @@ export default function PatientsContent({
                       <TableRow key={patient.id}>
                         <TableCell>
                           <div className="flex items-center gap-3">
-                            <Avatar>
-                              <AvatarFallback className="bg-primary/10 text-primary">
-                                {getInitials(patient.name)}
-                              </AvatarFallback>
-                            </Avatar>
+                            <PatientPhotoUpload
+                              patientId={patient.id}
+                              patientName={patient.name}
+                              currentPhotoUrl={patient.photoUrl}
+                              initials={getInitials(patient.name)}
+                            />
                             <div>
                               <div className="font-medium">{patient.name}</div>
                             </div>
