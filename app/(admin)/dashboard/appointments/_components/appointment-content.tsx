@@ -108,8 +108,8 @@ export default function AppointmentContent({
 
   const filteredAppointments = appointments.filter(
     (apt) =>
-      apt.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      apt.email.toLowerCase().includes(searchQuery.toLowerCase())
+      apt.patient?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      apt.patient?.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const bookedTimes = appointments.map((apt) => apt.appointmentTime);
@@ -294,10 +294,10 @@ export default function AppointmentContent({
                         <TableCell>
                           <div>
                             <div className="font-medium">
-                              {appointment.name}
+                              {appointment.patient?.name}
                             </div>
                             <div className="text-muted-foreground text-xs">
-                              {appointment.email}
+                              {appointment.patient?.email}
                             </div>
                           </div>
                         </TableCell>
