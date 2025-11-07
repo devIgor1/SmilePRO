@@ -17,7 +17,6 @@ export async function getAppointmentsByDate({
       throw new Error("User ID is required");
     }
 
-    // Get start and end of the selected date using dayjs
     const startOfDay = dayjs(date).startOf("day").toDate();
     const endOfDay = dayjs(date).endOf("day").toDate();
 
