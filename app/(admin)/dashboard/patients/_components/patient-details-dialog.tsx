@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -40,6 +41,11 @@ export function PatientDetailsDialog({
   open,
   onOpenChange,
 }: PatientDetailsDialogProps) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const calculateAge = (dateOfBirth: Date | null) => {
     if (!dateOfBirth) return null;
     return dayjs().diff(dayjs(dateOfBirth), "year");
@@ -53,6 +59,8 @@ export function PatientDetailsDialog({
   const pastAppointments = patient.appointments?.filter((apt) =>
     dayjs(apt.appointmentDate).isBefore(dayjs(), "day")
   );
+
+  if (!isMounted) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
