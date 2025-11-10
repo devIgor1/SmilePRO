@@ -34,12 +34,14 @@ interface PatientDetailsDialogProps {
   patient: PatientWithRelations;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onEdit?: () => void;
 }
 
 export function PatientDetailsDialog({
   patient,
   open,
   onOpenChange,
+  onEdit,
 }: PatientDetailsDialogProps) {
   const [isMounted, setIsMounted] = useState(false);
 
@@ -76,9 +78,6 @@ export function PatientDetailsDialog({
               </Avatar>
               <div>
                 <DialogTitle className="text-2xl">{patient.name}</DialogTitle>
-                <DialogDescription>
-                  Patient ID: {patient.id.substring(0, 8)}...
-                </DialogDescription>
               </div>
             </div>
           </div>
@@ -262,7 +261,7 @@ export function PatientDetailsDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Close
           </Button>
-          <Button>Edit Patient</Button>
+          {onEdit && <Button onClick={onEdit}>Edit Patient</Button>}
         </div>
       </DialogContent>
     </Dialog>

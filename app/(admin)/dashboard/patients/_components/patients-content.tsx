@@ -50,6 +50,7 @@ import {
 } from "../_utils/patient-helpers";
 import { PatientPhotoUpload } from "./patient-photo-upload";
 import { PatientDetailsDialog } from "./patient-details-dialog";
+import { PatientFormDialog } from "./patient-form-dialog";
 
 interface PatientStats {
   totalPatients: number;
@@ -79,6 +80,7 @@ export default function PatientsContent({
   const [selectedPatient, setSelectedPatient] =
     useState<PatientWithRelations | null>(null);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -328,7 +330,12 @@ export default function PatientsContent({
                                 >
                                   View Details
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setSelectedPatient(patient);
+                                    setEditDialogOpen(true);
+                                  }}
+                                >
                                   Edit Patient
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
@@ -361,11 +368,22 @@ export default function PatientsContent({
 
       {/* Patient Details Dialog */}
       {selectedPatient && (
-        <PatientDetailsDialog
-          patient={selectedPatient}
-          open={detailsDialogOpen}
-          onOpenChange={setDetailsDialogOpen}
-        />
+        <>
+          <PatientDetailsDialog
+            patient={selectedPatient}
+            open={detailsDialogOpen}
+            onOpenChange={setDetailsDialogOpen}
+            onEdit={() => {
+              setDetailsDialogOpen(false);
+              setEditDialogOpen(true);
+            }}
+          />
+          <PatientFormDialog
+            patient={selectedPatient}
+            open={editDialogOpen}
+            onOpenChange={setEditDialogOpen}
+          />
+        </>
       )}
     </div>
   );
