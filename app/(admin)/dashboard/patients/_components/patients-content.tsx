@@ -51,6 +51,10 @@ import {
 import { PatientPhotoUpload } from "./patient-photo-upload";
 import { PatientDetailsDialog } from "./patient-details-dialog";
 import { PatientFormDialog } from "./patient-form-dialog";
+import { PatientHistoryDialog } from "./patient-history-dialog";
+import { getPatientHistory } from "../_data-access/get-patient-history";
+import type { Appointment, Service } from "@/lib/types";
+import { toast } from "sonner";
 
 interface PatientStats {
   totalPatients: number;
@@ -81,10 +85,29 @@ export default function PatientsContent({
     useState<PatientWithRelations | null>(null);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+  const [patientAppointments, setPatientAppointments] = useState<
+    Array<Appointment & { service: Service | null }>
+  >([]);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const handleViewHistory = async (patient: PatientWithRelations) => {
+    try {
+      setSelectedPatient(patient);
+      const appointments = await getPatientHistory(patient.id);
+      setPatientAppointments(appointments);
+      setHistoryDialogOpen(true);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to load patient history"
+      );
+    }
+  };
 
   // Filter patients
   const filteredPatients = initialPatients.filter((patient) => {
@@ -338,7 +361,9 @@ export default function PatientsContent({
                                 >
                                   Edit Patient
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => handleViewHistory(patient)}
+                                >
                                   View History
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
@@ -382,6 +407,15 @@ export default function PatientsContent({
             patient={selectedPatient}
             open={editDialogOpen}
             onOpenChange={setEditDialogOpen}
+            onSuccess={() => {
+              window.location.reload();
+            }}
+          />
+          <PatientHistoryDialog
+            patient={selectedPatient}
+            appointments={patientAppointments}
+            open={historyDialogOpen}
+            onOpenChange={setHistoryDialogOpen}
           />
         </>
       )}
