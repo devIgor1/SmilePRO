@@ -13,6 +13,9 @@ export async function getAllServices(userId: string) {
         userId,
         isActive: true,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
     return services;
   } catch (error) {
