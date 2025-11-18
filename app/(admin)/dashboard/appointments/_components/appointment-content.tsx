@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -43,21 +46,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Clock, Search, Filter, MoreHorizontal } from "lucide-react";
+import { Plus, Clock, Search, MoreHorizontal, CalendarIcon, Loader2, Check } from "lucide-react";
 import dayjs from "dayjs";
 import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 import { getAppointmentsByDate } from "../_data-access/get-appointments-by-date";
 import { getAllServices } from "../../services/_data-access/get-all-services";
+import { findOrCreatePatient } from "../_data-access/find-or-create-patient";
+import { createAppointment } from "../_data-access/create-appointment";
+import { updateAppointmentStatus } from "../_data-access/update-appointment-status";
 import {
   getStatusVariant,
   getStatusIcon,
   getStatusLabel,
 } from "../_utils/appointment-helpers";
-import type {
+import {
+  appointmentFormSchema,
+  type AppointmentFormValues,
+} from "../_schemas/appointment-form-schema";
+import { toast } from "sonner";
+import {
   AppointmentStatus,
-  AppointmentWithRelations,
+  type AppointmentWithRelations,
 } from "@/lib/types/appointment";
 import type { Service } from "@/lib/types";
 
@@ -76,6 +93,7 @@ export default function AppointmentContent({
   initialDate = new Date(),
   userTimeslots = [],
 }: AppointmentContentProps) {
+  const router = useRouter();
   const [date, setDate] = useState<Date>(initialDate);
   const [searchQuery, setSearchQuery] = useState("");
   const [appointments, setAppointments] =
@@ -84,6 +102,32 @@ export default function AppointmentContent({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [appointmentsForSelectedDate, setAppointmentsForSelectedDate] =
+    useState<AppointmentWithRelations[]>([]);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    setValue,
+    watch,
+  } = useForm<AppointmentFormValues>({
+    resolver: zodResolver(appointmentFormSchema),
+    defaultValues: {
+      patientName: "",
+      email: "",
+      phone: "",
+      serviceId: "",
+      appointmentDate: date,
+      appointmentTime: "",
+      notes: "",
+    },
+  });
+
+  const appointmentDate = watch("appointmentDate");
+  const appointmentTime = watch("appointmentTime");
 
   // Ensure client-side only rendering for dialogs
   useEffect(() => {
@@ -123,6 +167,127 @@ export default function AppointmentContent({
   // Show message if no timeslots are configured
   const hasTimeslots = timeSlots.length > 0;
 
+  // Reset form when dialog opens/closes
+  useEffect(() => {
+    if (isDialogOpen) {
+      reset({
+        patientName: "",
+        email: "",
+        phone: "",
+        serviceId: "",
+        appointmentDate: date,
+        appointmentTime: "",
+        notes: "",
+      });
+    }
+  }, [isDialogOpen, date, reset]);
+
+  // Update available timeslots when appointment date changes
+  useEffect(() => {
+    if (appointmentDate) {
+      // Reload appointments for the selected date
+      async function loadAppointmentsForDate() {
+        try {
+          const appts = await getAppointmentsByDate({
+            userId,
+            date: appointmentDate,
+          });
+          setAppointmentsForSelectedDate(appts as AppointmentWithRelations[]);
+        } catch (error) {
+          console.error("Failed to load appointments:", error);
+        }
+      }
+      loadAppointmentsForDate();
+    } else {
+      setAppointmentsForSelectedDate([]);
+    }
+  }, [appointmentDate, userId]);
+
+  const onSubmit = async (data: AppointmentFormValues) => {
+    startTransition(async () => {
+      try {
+        // Find or create patient
+        const patientResult = await findOrCreatePatient({
+          name: data.patientName,
+          email: data.email,
+          phone: data.phone,
+          userId,
+        });
+
+        if (!patientResult.success || !patientResult.patient) {
+          throw new Error("Failed to create or find patient");
+        }
+
+        // Create appointment
+        const appointmentResult = await createAppointment({
+          patientId: patientResult.patient.id,
+          serviceId: data.serviceId,
+          appointmentDate: data.appointmentDate,
+          appointmentTime: data.appointmentTime,
+          notes: data.notes || undefined,
+          userId,
+          status: AppointmentStatus.CONFIRMED,
+        });
+
+        if (!appointmentResult.success) {
+          throw new Error("Failed to create appointment");
+        }
+
+        toast.success("Appointment scheduled and confirmed successfully!");
+        setIsDialogOpen(false);
+        router.refresh();
+
+        // Reload appointments for the current date
+        const appts = await getAppointmentsByDate({ userId, date });
+        setAppointments(appts as AppointmentWithRelations[]);
+      } catch (error) {
+        console.error("Failed to schedule appointment:", error);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Failed to schedule appointment. Please try again."
+        );
+      }
+    });
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open && !isPending) {
+      reset();
+    }
+    setIsDialogOpen(open);
+  };
+
+  const handleConfirmAppointment = async (appointmentId: string) => {
+    startTransition(async () => {
+      try {
+        const result = await updateAppointmentStatus({
+          id: appointmentId,
+          status: AppointmentStatus.CONFIRMED,
+          userId,
+        });
+
+        if (!result.success) {
+          throw new Error("Failed to confirm appointment");
+        }
+
+        toast.success("Appointment confirmed successfully!");
+        router.refresh();
+
+        // Reload appointments for the current date
+        const appts = await getAppointmentsByDate({ userId, date });
+        setAppointments(appts as AppointmentWithRelations[]);
+      } catch (error) {
+        console.error("Failed to confirm appointment:", error);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Failed to confirm appointment. Please try again."
+        );
+      }
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -136,7 +301,7 @@ export default function AppointmentContent({
           </p>
         </div>
         {isMounted && (
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
               <Button className="bg-primary hover:bg-primary/90">
                 <Plus className="mr-2 h-4 w-4" />
@@ -144,82 +309,201 @@ export default function AppointmentContent({
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
-              <DialogHeader>
-                <DialogTitle>Schedule New Appointment</DialogTitle>
-                <DialogDescription>
-                  Fill in the details to schedule a new appointment for a
-                  patient.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="patient-name">Patient Name</Label>
-                  <Input id="patient-name" placeholder="Enter patient name" />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="patient@example.com"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input id="phone" type="tel" placeholder="21 99999-9999" />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="service">Service</Label>
-                  <Select>
-                    <SelectTrigger id="service">
-                      <SelectValue placeholder="Select service" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {services.map((service) => (
-                        <SelectItem key={service.id} value={service.id}>
-                          {service.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="time-slot">Time Slot</Label>
-                  <Select>
-                    <SelectTrigger id="time-slot">
-                      <SelectValue placeholder="Select time" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {timeSlots
-                        .filter((slot: string) => !bookedTimes.includes(slot))
-                        .map((slot: string) => (
-                          <SelectItem key={slot} value={slot}>
-                            {slot}
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <DialogHeader>
+                  <DialogTitle>Schedule New Appointment</DialogTitle>
+                  <DialogDescription>
+                    Fill in the details to schedule a new appointment for a
+                    patient.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="patient-name">
+                      Patient Name <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="patient-name"
+                      placeholder="Enter patient name"
+                      {...register("patientName")}
+                    />
+                    {errors.patientName && (
+                      <p className="text-sm text-destructive">
+                        {errors.patientName.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="email">
+                      Email <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="patient@example.com"
+                      {...register("email")}
+                    />
+                    {errors.email && (
+                      <p className="text-sm text-destructive">
+                        {errors.email.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="phone">
+                      Phone Number <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="21 99999-9999"
+                      {...register("phone")}
+                    />
+                    {errors.phone && (
+                      <p className="text-sm text-destructive">
+                        {errors.phone.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="service">
+                      Service <span className="text-destructive">*</span>
+                    </Label>
+                    <Select
+                      value={watch("serviceId")}
+                      onValueChange={(value) => setValue("serviceId", value)}
+                    >
+                      <SelectTrigger id="service">
+                        <SelectValue placeholder="Select service" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {services.map((service) => (
+                          <SelectItem key={service.id} value={service.id}>
+                            {service.name}
                           </SelectItem>
                         ))}
-                    </SelectContent>
-                  </Select>
+                      </SelectContent>
+                    </Select>
+                    {errors.serviceId && (
+                      <p className="text-sm text-destructive">
+                        {errors.serviceId.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="appointment-date">
+                      Appointment Date <span className="text-destructive">*</span>
+                    </Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          id="appointment-date"
+                          variant={"outline"}
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !appointmentDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {appointmentDate ? (
+                            dayjs(appointmentDate).format("MMMM D, YYYY")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={appointmentDate}
+                          onSelect={(date) => {
+                            if (date) {
+                              setValue("appointmentDate", date);
+                            }
+                          }}
+                          disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    {errors.appointmentDate && (
+                      <p className="text-sm text-destructive">
+                        {errors.appointmentDate.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="time-slot">
+                      Time Slot <span className="text-destructive">*</span>
+                    </Label>
+                    <Select
+                      value={watch("appointmentTime")}
+                      onValueChange={(value) => setValue("appointmentTime", value)}
+                    >
+                      <SelectTrigger id="time-slot">
+                        <SelectValue placeholder="Select time" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {timeSlots
+                          .filter((slot: string) => {
+                            // Filter out booked times for the selected appointment date
+                            if (!appointmentDate) return true;
+                            const bookedTimesForDate = appointmentsForSelectedDate.map(
+                              (apt) => apt.appointmentTime
+                            );
+                            return !bookedTimesForDate.includes(slot);
+                          })
+                          .map((slot: string) => (
+                            <SelectItem key={slot} value={slot}>
+                              {slot}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.appointmentTime && (
+                      <p className="text-sm text-destructive">
+                        {errors.appointmentTime.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="notes">Notes (Optional)</Label>
+                    <Textarea
+                      id="notes"
+                      placeholder="Add any special notes or requirements"
+                      rows={3}
+                      {...register("notes")}
+                    />
+                    {errors.notes && (
+                      <p className="text-sm text-destructive">
+                        {errors.notes.message}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="notes">Notes (Optional)</Label>
-                  <Textarea
-                    id="notes"
-                    placeholder="Add any special notes or requirements"
-                    rows={3}
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setIsDialogOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={() => setIsDialogOpen(false)}>
-                  Schedule Appointment
-                </Button>
-              </DialogFooter>
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleOpenChange(false)}
+                    disabled={isPending}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={isPending}>
+                    {isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Confirming...
+                      </>
+                    ) : (
+                      <>
+                        Confirm & Schedule
+                      </>
+                    )}
+                  </Button>
+                </DialogFooter>
+              </form>
             </DialogContent>
           </Dialog>
         )}
@@ -338,6 +622,15 @@ export default function AppointmentContent({
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                {appointment.status === AppointmentStatus.PENDING && (
+                                  <DropdownMenuItem
+                                    onClick={() => handleConfirmAppointment(appointment.id)}
+                                    disabled={isPending}
+                                  >
+                                    <Check className="mr-2 h-4 w-4" />
+                                    Confirm Appointment
+                                  </DropdownMenuItem>
+                                )}
                                 <DropdownMenuItem>
                                   View Details
                                 </DropdownMenuItem>
@@ -348,12 +641,16 @@ export default function AppointmentContent({
                                   Send Reminder
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                  Mark as Completed
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="text-destructive">
-                                  Cancel Appointment
-                                </DropdownMenuItem>
+                                {appointment.status !== AppointmentStatus.COMPLETED && (
+                                  <DropdownMenuItem>
+                                    Mark as Completed
+                                  </DropdownMenuItem>
+                                )}
+                                {appointment.status !== AppointmentStatus.CANCELLED && (
+                                  <DropdownMenuItem className="text-destructive">
+                                    Cancel Appointment
+                                  </DropdownMenuItem>
+                                )}
                               </DropdownMenuContent>
                             </DropdownMenu>
                           ) : (
@@ -416,4 +713,3 @@ export default function AppointmentContent({
     </div>
   );
 }
-``;
