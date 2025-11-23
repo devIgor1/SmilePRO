@@ -9,7 +9,6 @@ export interface ActiveClinic {
   phone: string;
   address: string;
   image: string | null;
-  createdAt: Date;
   _count: {
     services: number;
     appointments: number;
@@ -38,7 +37,6 @@ export async function getActiveClinics(): Promise<ActiveClinic[]> {
         phone: true,
         address: true,
         image: true,
-        createdAt: true,
         _count: {
           select: {
             services: {
@@ -51,7 +49,7 @@ export async function getActiveClinics(): Promise<ActiveClinic[]> {
         },
       },
       orderBy: {
-        createdAt: "desc",
+        name: "asc",
       },
       take: 6, // Limit to 6 clinics for the home page
     });
@@ -63,7 +61,6 @@ export async function getActiveClinics(): Promise<ActiveClinic[]> {
       phone: clinic.phone || "",
       address: clinic.address || "",
       image: clinic.image,
-      createdAt: clinic.createdAt,
       _count: clinic._count,
     }));
   } catch (error) {

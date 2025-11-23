@@ -21,10 +21,6 @@ export function Professionals({ clinics }: ProfessionalsProps) {
       .slice(0, 2);
   };
 
-  const getYearsSince = (date: Date) => {
-    const years = dayjs().diff(dayjs(date), "year");
-    return years > 0 ? `${years}+ years` : "New";
-  };
 
   if (clinics.length === 0) {
     return (
@@ -87,7 +83,7 @@ export function Professionals({ clinics }: ProfessionalsProps) {
                     {clinic._count.services} service{clinic._count.services !== 1 ? "s" : ""}
                   </Badge>
                   <Badge variant="outline" className="text-xs">
-                    {getYearsSince(clinic.createdAt)} on platform
+                    Active clinic
                   </Badge>
                 </div>
                 <div className="pt-2 text-xs text-muted-foreground">
