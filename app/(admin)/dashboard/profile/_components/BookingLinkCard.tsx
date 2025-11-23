@@ -10,7 +10,15 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link2, Copy, CheckCircle2, ExternalLink } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Link2, Copy, CheckCircle2, ExternalLink, QrCode, Download } from "lucide-react";
 import { toast } from "sonner";
 
 interface BookingLinkCardProps {
@@ -19,10 +27,15 @@ interface BookingLinkCardProps {
 
 export function BookingLinkCard({ userId }: BookingLinkCardProps) {
   const [copied, setCopied] = useState(false);
+  const [qrDialogOpen, setQrDialogOpen] = useState(false);
   
   // Get the base URL from the browser
   const bookingUrl = typeof window !== "undefined" 
     ? `${window.location.origin}/clinic/${userId}`
+    : "";
+
+  const qrCodeUrl = bookingUrl 
+    ? `/api/qr-code/generate?url=${encodeURIComponent(bookingUrl)}`
     : "";
 
   const copyToClipboard = async () => {
@@ -42,6 +55,18 @@ export function BookingLinkCard({ userId }: BookingLinkCardProps) {
 
   const openInNewTab = () => {
     window.open(bookingUrl, "_blank");
+  };
+
+  const downloadQRCode = () => {
+    if (!qrCodeUrl) return;
+    
+    const link = document.createElement("a");
+    link.href = qrCodeUrl;
+    link.download = `qr-code-clinic-${userId}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("QR Code downloaded successfully!");
   };
 
   return (
@@ -107,19 +132,60 @@ export function BookingLinkCard({ userId }: BookingLinkCardProps) {
           </p>
         </div>
 
-        {/* QR Code Suggestion (Optional Enhancement) */}
-        <div className="p-3 rounded-lg bg-muted/50 border border-muted">
-          <p className="text-xs text-muted-foreground text-center">
-            💡 Want to generate a QR code for this link?{" "}
-            <a
-              href={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(bookingUrl)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline font-medium"
-            >
-              Click here
-            </a>
-          </p>
+        {/* QR Code Section */}
+        <div className="space-y-2">
+          <Dialog open={qrDialogOpen} onOpenChange={setQrDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="w-full">
+                <QrCode className="mr-2 h-4 w-4" />
+                View QR Code
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>QR Code for Booking</DialogTitle>
+                <DialogDescription>
+                  Share this QR code for patients to book appointments
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-col items-center space-y-4 py-4">
+                {/* QR Code Image */}
+                <div className="p-4 bg-white rounded-lg border-2 border-primary/20">
+                  {qrCodeUrl && (
+                    <img
+                      src={qrCodeUrl}
+                      alt="Booking QR Code"
+                      className="w-64 h-64"
+                    />
+                  )}
+                </div>
+
+                {/* Download Button */}
+                <Button
+                  onClick={downloadQRCode}
+                  className="w-full"
+                  variant="default"
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Download QR Code
+                </Button>
+
+                {/* Usage Tips */}
+                <div className="w-full p-3 rounded-lg bg-primary/5 border border-primary/10">
+                  <p className="text-xs text-muted-foreground">
+                    <strong className="text-foreground">💡 Usage Tips:</strong>
+                    <br />
+                    • Print and display at reception
+                    <br />
+                    • Add to business cards
+                    <br />
+                    • Share on social media
+                    <br />• Include in email signatures
+                  </p>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </CardContent>
     </Card>
