@@ -29,11 +29,11 @@ export const bookingFormSchema = z.object({
     .max(255, "Email must be less than 255 characters"),
   phone: phoneValidator,
   dateOfBirth: z.date().optional().nullable(),
-  
+
   // Appointment information
   serviceId: z.string().min(1, "Please select a service"),
   appointmentDate: z.date({
-    required_error: "Please select a date",
+    message: "Please select a date",
   }),
   appointmentTime: z.string().min(1, "Please select a time"),
   notes: z
@@ -44,4 +44,3 @@ export const bookingFormSchema = z.object({
 });
 
 export type BookingFormValues = z.infer<typeof bookingFormSchema>;
-
