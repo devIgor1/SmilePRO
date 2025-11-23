@@ -2,6 +2,7 @@ import getSession from "@/lib/getSession";
 import { redirect } from "next/navigation";
 import { getUserData } from "./_data-access/get-user-data";
 import { ProfileForm } from "./_components/ProfileForm";
+import { BookingLinkCard } from "./_components/BookingLinkCard";
 import {
   Card,
   CardContent,
@@ -59,8 +60,12 @@ export default async function Profile() {
           />
         </div>
 
-        {/* Sidebar with Subscription */}
+        {/* Sidebar with Booking Link & Subscription */}
         <div className="space-y-6">
+          {/* Public Booking Link */}
+          <BookingLinkCard userId={session.user.id} />
+
+          {/* Subscription Info */}
           <Card className="border-primary/20 bg-gradient-to-br from-background via-background to-primary/5 overflow-hidden p-0 flex flex-col">
             <CardHeader className="border-b border-primary/10 bg-primary/10 rounded-t-xl px-6 pt-6 pb-6">
               <CardTitle className="flex items-center gap-2 text-primary">
