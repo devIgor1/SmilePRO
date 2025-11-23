@@ -18,7 +18,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Link2, Copy, CheckCircle2, ExternalLink, QrCode, Download } from "lucide-react";
+import {
+  Link2,
+  Copy,
+  CheckCircle2,
+  ExternalLink,
+  QrCode,
+  Download,
+} from "lucide-react";
 import { toast } from "sonner";
 
 interface BookingLinkCardProps {
@@ -28,13 +35,14 @@ interface BookingLinkCardProps {
 export function BookingLinkCard({ userId }: BookingLinkCardProps) {
   const [copied, setCopied] = useState(false);
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
-  
-  // Get the base URL from the browser
-  const bookingUrl = typeof window !== "undefined" 
-    ? `${window.location.origin}/clinic/${userId}`
-    : "";
 
-  const qrCodeUrl = bookingUrl 
+  // Get the base URL from the browser
+  const bookingUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/clinic/${userId}`
+      : "";
+
+  const qrCodeUrl = bookingUrl
     ? `/api/qr-code/generate?url=${encodeURIComponent(bookingUrl)}`
     : "";
 
@@ -43,7 +51,7 @@ export function BookingLinkCard({ userId }: BookingLinkCardProps) {
       await navigator.clipboard.writeText(bookingUrl);
       setCopied(true);
       toast.success("Booking link copied to clipboard!");
-      
+
       // Reset the icon after 2 seconds
       setTimeout(() => {
         setCopied(false);
@@ -59,7 +67,7 @@ export function BookingLinkCard({ userId }: BookingLinkCardProps) {
 
   const downloadQRCode = () => {
     if (!qrCodeUrl) return;
-    
+
     const link = document.createElement("a");
     link.href = qrCodeUrl;
     link.download = `qr-code-clinic-${userId}.png`;
@@ -127,8 +135,8 @@ export function BookingLinkCard({ userId }: BookingLinkCardProps) {
         <div className="p-4 rounded-lg bg-primary/5 border border-primary/10">
           <p className="text-xs text-muted-foreground leading-relaxed">
             <strong className="text-foreground">💡 Tip:</strong> Share this link
-            on your website, social media, or via email to allow patients to book
-            appointments directly with your clinic.
+            on your website, social media, or via email to allow patients to
+            book appointments directly with your clinic.
           </p>
         </div>
 
@@ -191,4 +199,3 @@ export function BookingLinkCard({ userId }: BookingLinkCardProps) {
     </Card>
   );
 }
-
