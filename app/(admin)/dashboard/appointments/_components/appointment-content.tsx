@@ -55,7 +55,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Clock, Search, MoreHorizontal, CalendarIcon, Loader2, Check } from "lucide-react";
 import dayjs from "dayjs";
-import { Calendar } from "@/components/ui/calendar";
+import { EnhancedCalendar } from "@/components/ui/enhanced-calendar";
 import { cn } from "@/lib/utils";
 import { getAppointmentsByDate } from "../_data-access/get-appointments-by-date";
 import { getAllServices } from "../../services/_data-access/get-all-services";
@@ -413,7 +413,7 @@ export default function AppointmentContent({
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
+                        <EnhancedCalendar
                           mode="single"
                           selected={appointmentDate}
                           onSelect={(date) => {
@@ -526,7 +526,7 @@ export default function AppointmentContent({
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6 px-6 pb-6 flex justify-center">
-            <Calendar
+            <EnhancedCalendar
               mode="single"
               selected={date}
               onSelect={(newDate) => newDate && setDate(newDate)}
