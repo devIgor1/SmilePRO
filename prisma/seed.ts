@@ -12,15 +12,67 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Starting seed...");
 
-  // Get the first user (you'll need to be logged in first)
-  const user = await prisma.user.findFirst();
+  // Get or create a demo user
+  let user = await prisma.user.findFirst();
 
   if (!user) {
-    console.error("No user found. Please sign up first, then run the seed.");
-    return;
+    console.log("No user found. Creating demo clinic...");
+    user = await prisma.user.create({
+      data: {
+        id: "demo-clinic-1",
+        name: "Smile Dental Clinic",
+        email: "clinic@smilepro.demo",
+        phone: "(11) 98765-4321",
+        address: "Av. Paulista, 1000 - São Paulo, SP",
+        status: true,
+        timezone: "America/Sao_Paulo",
+        timeslots: [
+          "09:00",
+          "09:30",
+          "10:00",
+          "10:30",
+          "11:00",
+          "11:30",
+          "14:00",
+          "14:30",
+          "15:00",
+          "15:30",
+          "16:00",
+          "16:30",
+          "17:00",
+        ],
+      },
+    });
+    console.log(`Created demo clinic: ${user.email}`);
+  } else {
+    // Update existing user to ensure it's active and has timeslots
+    user = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        status: true,
+        timeslots: user.timeslots?.length
+          ? user.timeslots
+          : [
+              "09:00",
+              "09:30",
+              "10:00",
+              "10:30",
+              "11:00",
+              "11:30",
+              "14:00",
+              "14:30",
+              "15:00",
+              "15:30",
+              "16:00",
+              "16:30",
+              "17:00",
+            ],
+      },
+    });
+    console.log(`Updated user: ${user.email}`);
   }
 
-  console.log(`Found user: ${user.email}`);
+  console.log(`Using user: ${user.email}`);
 
   // Create services
   const services = await Promise.all([
