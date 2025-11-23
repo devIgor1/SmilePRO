@@ -29,10 +29,11 @@ import {
   type PatientFormValues,
 } from "../_schemas/patient-form-schema";
 import { updatePatient } from "../_data-access/update-patient";
+import { createPatient } from "../_data-access/create-patient";
 import { toast } from "sonner";
 
 interface PatientFormDialogProps {
-  patient: Patient;
+  patient?: Patient | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
@@ -61,12 +62,12 @@ export function PatientFormDialog({
   } = useForm<PatientFormValues>({
     resolver: zodResolver(patientFormSchema),
     defaultValues: {
-      name: patient.name,
-      email: patient.email,
-      phone: patient.phone,
-      dateOfBirth: patient.dateOfBirth || null,
-      address: patient.address || "",
-      notes: patient.notes || "",
+      name: patient?.name || "",
+      email: patient?.email || "",
+      phone: patient?.phone || "",
+      dateOfBirth: patient?.dateOfBirth || null,
+      address: patient?.address || "",
+      notes: patient?.notes || "",
     },
   });
 
@@ -74,12 +75,12 @@ export function PatientFormDialog({
   useEffect(() => {
     if (open) {
       reset({
-        name: patient.name,
-        email: patient.email,
-        phone: patient.phone,
-        dateOfBirth: patient.dateOfBirth || null,
-        address: patient.address || "",
-        notes: patient.notes || "",
+        name: patient?.name || "",
+        email: patient?.email || "",
+        phone: patient?.phone || "",
+        dateOfBirth: patient?.dateOfBirth || null,
+        address: patient?.address || "",
+        notes: patient?.notes || "",
       });
     }
   }, [open, patient, reset]);
@@ -89,21 +90,40 @@ export function PatientFormDialog({
   const onSubmit = async (data: PatientFormValues) => {
     startTransition(async () => {
       try {
-        await updatePatient({
-          id: patient.id,
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          dateOfBirth: data.dateOfBirth || null,
-          address: data.address || null,
-          notes: data.notes || null,
-        });
+        if (patient?.id) {
+          // Update existing patient
+          await updatePatient({
+            id: patient.id,
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            dateOfBirth: data.dateOfBirth || null,
+            address: data.address || null,
+            notes: data.notes || null,
+          });
+          toast.success("Patient updated successfully");
+        } else {
+          // Create new patient
+          await createPatient({
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            dateOfBirth: data.dateOfBirth || null,
+            address: data.address || null,
+            notes: data.notes || null,
+          });
+          toast.success("Patient created successfully");
+        }
 
-        toast.success("Patient updated successfully");
         onOpenChange(false);
+        onSuccess?.();
       } catch (error) {
         toast.error(
-          error instanceof Error ? error.message : "Failed to update patient"
+          error instanceof Error
+            ? error.message
+            : patient?.id
+              ? "Failed to update patient"
+              : "Failed to create patient"
         );
       }
     });
@@ -115,9 +135,13 @@ export function PatientFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Patient</DialogTitle>
+          <DialogTitle>
+            {patient?.id ? "Edit Patient" : "New Patient"}
+          </DialogTitle>
           <DialogDescription>
-            Update patient information. All fields marked with * are required.
+            {patient?.id
+              ? "Update patient information. All fields marked with * are required."
+              : "Create a new patient record. All fields marked with * are required."}
           </DialogDescription>
         </DialogHeader>
 
@@ -168,7 +192,7 @@ export function PatientFormDialog({
               <Input
                 id="phone"
                 type="tel"
-                placeholder="(555) 123-4567"
+                placeholder="(11) 98765-4321 or +55 11 98765-4321"
                 {...register("phone")}
                 disabled={isPending}
               />
@@ -261,7 +285,7 @@ export function PatientFormDialog({
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save Changes
+              {patient?.id ? "Save Changes" : "Create Patient"}
             </Button>
           </div>
         </form>

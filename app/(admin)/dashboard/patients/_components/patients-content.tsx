@@ -52,6 +52,7 @@ import { PatientPhotoUpload } from "./patient-photo-upload";
 import { PatientDetailsDialog } from "./patient-details-dialog";
 import { PatientFormDialog } from "./patient-form-dialog";
 import { PatientHistoryDialog } from "./patient-history-dialog";
+import { DeletePatientDialog } from "./delete-patient-dialog";
 import { getPatientHistory } from "../_data-access/get-patient-history";
 import type { Appointment, Service } from "@/lib/types";
 import { toast } from "sonner";
@@ -85,7 +86,9 @@ export default function PatientsContent({
     useState<PatientWithRelations | null>(null);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [patientAppointments, setPatientAppointments] = useState<
     Array<Appointment & { service: Service | null }>
   >([]);
@@ -128,13 +131,22 @@ export default function PatientsContent({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-          Patients
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          Manage your patient records and information
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            Patients
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Manage your patient records and information
+          </p>
+        </div>
+        <Button
+          onClick={() => setCreateDialogOpen(true)}
+          className="sm:self-start"
+        >
+          <UserPlus className="mr-2 h-4 w-4" />
+          New Patient
+        </Button>
       </div>
 
       {/* Stats Cards */}
@@ -370,7 +382,13 @@ export default function PatientsContent({
                                 <DropdownMenuItem>
                                   Schedule Appointment
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="text-destructive">
+                                <DropdownMenuItem
+                                  className="text-destructive"
+                                  onClick={() => {
+                                    setSelectedPatient(patient);
+                                    setDeleteDialogOpen(true);
+                                  }}
+                                >
                                   Delete Patient
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
@@ -391,7 +409,7 @@ export default function PatientsContent({
         </CardContent>
       </Card>
 
-      {/* Patient Details Dialog */}
+      {/* Dialogs */}
       {selectedPatient && (
         <>
           <PatientDetailsDialog
@@ -417,8 +435,26 @@ export default function PatientsContent({
             open={historyDialogOpen}
             onOpenChange={setHistoryDialogOpen}
           />
+          <DeletePatientDialog
+            patient={selectedPatient}
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+            onSuccess={() => {
+              window.location.reload();
+            }}
+          />
         </>
       )}
+
+      {/* Create Patient Dialog */}
+      <PatientFormDialog
+        patient={null}
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        onSuccess={() => {
+          window.location.reload();
+        }}
+      />
     </div>
   );
 }
