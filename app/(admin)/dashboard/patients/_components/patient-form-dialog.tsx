@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { EnhancedCalendar } from "@/components/ui/enhanced-calendar";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
@@ -200,13 +200,16 @@ export function PatientFormDialog({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <EnhancedCalendar
+                  <Calendar
                     mode="single"
                     selected={dateOfBirth || undefined}
                     onSelect={(date) => setValue("dateOfBirth", date || null)}
                     disabled={(date) =>
                       date > new Date() || date < new Date("1900-01-01")
                     }
+                    captionLayout="dropdown"
+                    fromYear={1900}
+                    toYear={new Date().getFullYear()}
                     initialFocus
                   />
                 </PopoverContent>

@@ -53,9 +53,17 @@ import {
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Clock, Search, MoreHorizontal, CalendarIcon, Loader2, Check } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Plus,
+  Clock,
+  Search,
+  MoreHorizontal,
+  CalendarIcon,
+  Loader2,
+  Check,
+} from "lucide-react";
 import dayjs from "dayjs";
-import { EnhancedCalendar } from "@/components/ui/enhanced-calendar";
 import { cn } from "@/lib/utils";
 import { getAppointmentsByDate } from "../_data-access/get-appointments-by-date";
 import { getAllServices } from "../../services/_data-access/get-all-services";
@@ -392,7 +400,8 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="appointment-date">
-                      Appointment Date <span className="text-destructive">*</span>
+                      Appointment Date{" "}
+                      <span className="text-destructive">*</span>
                     </Label>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -413,7 +422,7 @@ export default function AppointmentContent({
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
-                        <EnhancedCalendar
+                        <Calendar
                           mode="single"
                           selected={appointmentDate}
                           onSelect={(date) => {
@@ -421,7 +430,12 @@ export default function AppointmentContent({
                               setValue("appointmentDate", date);
                             }
                           }}
-                          disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                          disabled={(date) =>
+                            date < new Date(new Date().setHours(0, 0, 0, 0))
+                          }
+                          captionLayout="dropdown"
+                          fromYear={new Date().getFullYear()}
+                          toYear={new Date().getFullYear() + 1}
                           initialFocus
                         />
                       </PopoverContent>
@@ -438,7 +452,9 @@ export default function AppointmentContent({
                     </Label>
                     <Select
                       value={watch("appointmentTime")}
-                      onValueChange={(value) => setValue("appointmentTime", value)}
+                      onValueChange={(value) =>
+                        setValue("appointmentTime", value)
+                      }
                     >
                       <SelectTrigger id="time-slot">
                         <SelectValue placeholder="Select time" />
@@ -448,9 +464,10 @@ export default function AppointmentContent({
                           .filter((slot: string) => {
                             // Filter out booked times for the selected appointment date
                             if (!appointmentDate) return true;
-                            const bookedTimesForDate = appointmentsForSelectedDate.map(
-                              (apt) => apt.appointmentTime
-                            );
+                            const bookedTimesForDate =
+                              appointmentsForSelectedDate.map(
+                                (apt) => apt.appointmentTime
+                              );
                             return !bookedTimesForDate.includes(slot);
                           })
                           .map((slot: string) => (
@@ -497,9 +514,7 @@ export default function AppointmentContent({
                         Confirming...
                       </>
                     ) : (
-                      <>
-                        Confirm & Schedule
-                      </>
+                      <>Confirm & Schedule</>
                     )}
                   </Button>
                 </DialogFooter>
@@ -526,10 +541,13 @@ export default function AppointmentContent({
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6 px-6 pb-6 flex justify-center">
-            <EnhancedCalendar
+            <Calendar
               mode="single"
               selected={date}
               onSelect={(newDate) => newDate && setDate(newDate)}
+              captionLayout="dropdown"
+              fromYear={new Date().getFullYear()}
+              toYear={new Date().getFullYear() + 1}
               className="rounded-md"
             />
           </CardContent>
@@ -622,9 +640,12 @@ export default function AppointmentContent({
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                {appointment.status === AppointmentStatus.PENDING && (
+                                {appointment.status ===
+                                  AppointmentStatus.PENDING && (
                                   <DropdownMenuItem
-                                    onClick={() => handleConfirmAppointment(appointment.id)}
+                                    onClick={() =>
+                                      handleConfirmAppointment(appointment.id)
+                                    }
                                     disabled={isPending}
                                   >
                                     <Check className="mr-2 h-4 w-4" />
@@ -641,12 +662,14 @@ export default function AppointmentContent({
                                   Send Reminder
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                {appointment.status !== AppointmentStatus.COMPLETED && (
+                                {appointment.status !==
+                                  AppointmentStatus.COMPLETED && (
                                   <DropdownMenuItem>
                                     Mark as Completed
                                   </DropdownMenuItem>
                                 )}
-                                {appointment.status !== AppointmentStatus.CANCELLED && (
+                                {appointment.status !==
+                                  AppointmentStatus.CANCELLED && (
                                   <DropdownMenuItem className="text-destructive">
                                     Cancel Appointment
                                   </DropdownMenuItem>
