@@ -40,6 +40,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -113,6 +123,9 @@ export default function AppointmentContent({
   const [isPending, startTransition] = useTransition();
   const [appointmentsForSelectedDate, setAppointmentsForSelectedDate] =
     useState<AppointmentWithRelations[]>([]);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [appointmentToCancel, setAppointmentToCancel] =
+    useState<AppointmentWithRelations | null>(null);
 
   const {
     register,
@@ -291,6 +304,70 @@ export default function AppointmentContent({
           error instanceof Error
             ? error.message
             : "Failed to confirm appointment. Please try again."
+        );
+      }
+    });
+  };
+
+  const handleCancelAppointment = async () => {
+    if (!appointmentToCancel) return;
+
+    startTransition(async () => {
+      try {
+        const result = await updateAppointmentStatus({
+          id: appointmentToCancel.id,
+          status: AppointmentStatus.CANCELLED,
+          userId,
+        });
+
+        if (!result.success) {
+          throw new Error("Failed to cancel appointment");
+        }
+
+        toast.success("Appointment cancelled successfully");
+        setCancelDialogOpen(false);
+        setAppointmentToCancel(null);
+        router.refresh();
+
+        // Reload appointments for the current date
+        const appts = await getAppointmentsByDate({ userId, date });
+        setAppointments(appts as AppointmentWithRelations[]);
+      } catch (error) {
+        console.error("Failed to cancel appointment:", error);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Failed to cancel appointment. Please try again."
+        );
+      }
+    });
+  };
+
+  const handleCompleteAppointment = async (appointmentId: string) => {
+    startTransition(async () => {
+      try {
+        const result = await updateAppointmentStatus({
+          id: appointmentId,
+          status: AppointmentStatus.COMPLETED,
+          userId,
+        });
+
+        if (!result.success) {
+          throw new Error("Failed to complete appointment");
+        }
+
+        toast.success("Appointment marked as completed!");
+        router.refresh();
+
+        // Reload appointments for the current date
+        const appts = await getAppointmentsByDate({ userId, date });
+        setAppointments(appts as AppointmentWithRelations[]);
+      } catch (error) {
+        console.error("Failed to complete appointment:", error);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Failed to complete appointment. Please try again."
         );
       }
     });
@@ -664,13 +741,23 @@ export default function AppointmentContent({
                                 <DropdownMenuSeparator />
                                 {appointment.status !==
                                   AppointmentStatus.COMPLETED && (
-                                  <DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() =>
+                                      handleCompleteAppointment(appointment.id)
+                                    }
+                                  >
                                     Mark as Completed
                                   </DropdownMenuItem>
                                 )}
                                 {appointment.status !==
                                   AppointmentStatus.CANCELLED && (
-                                  <DropdownMenuItem className="text-destructive">
+                                  <DropdownMenuItem
+                                    className="text-destructive"
+                                    onClick={() => {
+                                      setAppointmentToCancel(appointment);
+                                      setCancelDialogOpen(true);
+                                    }}
+                                  >
                                     Cancel Appointment
                                   </DropdownMenuItem>
                                 )}
@@ -733,6 +820,54 @@ export default function AppointmentContent({
           )}
         </CardContent>
       </Card>
+
+      {/* Cancel Appointment Confirmation Dialog */}
+      <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Appointment</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel this appointment?
+              {appointmentToCancel && (
+                <div className="mt-4 space-y-2 text-sm">
+                  <div>
+                    <strong>Patient:</strong> {appointmentToCancel.patient.name}
+                  </div>
+                  <div>
+                    <strong>Service:</strong> {appointmentToCancel.service.name}
+                  </div>
+                  <div>
+                    <strong>Date:</strong>{" "}
+                    {dayjs(appointmentToCancel.appointmentDate).format(
+                      "MMMM D, YYYY"
+                    )}
+                  </div>
+                  <div>
+                    <strong>Time:</strong> {appointmentToCancel.appointmentTime}
+                  </div>
+                </div>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCancelAppointment}
+              disabled={isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Cancelling...
+                </>
+              ) : (
+                "Yes, cancel appointment"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
