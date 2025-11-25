@@ -237,8 +237,8 @@ export function BookingForm({ clinic }: BookingFormProps) {
                         date > new Date() || date < new Date("1900-01-01")
                       }
                       captionLayout="dropdown"
-                      fromYear={1900}
-                      toYear={new Date().getFullYear()}
+                      fromDate={new Date(1900, 0, 1)}
+                      toDate={new Date()}
                       initialFocus
                     />
                   </PopoverContent>
@@ -321,8 +321,8 @@ export function BookingForm({ clinic }: BookingFormProps) {
                     }}
                     disabled={(date) => date < new Date()}
                     captionLayout="dropdown"
-                    fromYear={new Date().getFullYear()}
-                    toYear={new Date().getFullYear() + 1}
+                    fromDate={new Date()}
+                    toDate={new Date(new Date().getFullYear() + 1, 11, 31)}
                     initialFocus
                   />
                 </PopoverContent>

@@ -434,8 +434,8 @@ export default function AppointmentContent({
                             date < new Date(new Date().setHours(0, 0, 0, 0))
                           }
                           captionLayout="dropdown"
-                          fromYear={new Date().getFullYear()}
-                          toYear={new Date().getFullYear() + 1}
+                          fromDate={new Date()}
+                          toDate={new Date(new Date().getFullYear() + 1, 11, 31)}
                           initialFocus
                         />
                       </PopoverContent>
@@ -546,8 +546,8 @@ export default function AppointmentContent({
               selected={date}
               onSelect={(newDate) => newDate && setDate(newDate)}
               captionLayout="dropdown"
-              fromYear={new Date().getFullYear()}
-              toYear={new Date().getFullYear() + 1}
+              fromDate={new Date()}
+              toDate={new Date(new Date().getFullYear() + 1, 11, 31)}
               className="rounded-md"
             />
           </CardContent>
