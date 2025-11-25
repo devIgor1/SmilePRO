@@ -129,10 +129,7 @@ export function BookingForm({ clinic }: BookingFormProps) {
               Your appointment has been successfully scheduled. You will receive
               a confirmation email shortly.
             </p>
-            <Button
-              onClick={() => setIsSuccess(false)}
-              className="mt-4"
-            >
+            <Button onClick={() => setIsSuccess(false)} className="mt-4">
               Book Another Appointment
             </Button>
           </div>
@@ -141,7 +138,9 @@ export function BookingForm({ clinic }: BookingFormProps) {
     );
   }
 
-  const selectedService = clinic.services.find((s) => s.id === selectedServiceId);
+  const selectedService = clinic.services.find(
+    (s) => s.id === selectedServiceId
+  );
 
   return (
     <Card className="max-w-2xl mx-auto">
@@ -237,9 +236,6 @@ export function BookingForm({ clinic }: BookingFormProps) {
                         date > new Date() || date < new Date("1900-01-01")
                       }
                       captionLayout="dropdown"
-                      fromDate={new Date(1900, 0, 1)}
-                      toDate={new Date()}
-                      initialFocus
                     />
                   </PopoverContent>
                 </Popover>
@@ -351,7 +347,9 @@ export function BookingForm({ clinic }: BookingFormProps) {
                       key={time}
                       type="button"
                       variant={
-                        watch("appointmentTime") === time ? "default" : "outline"
+                        watch("appointmentTime") === time
+                          ? "default"
+                          : "outline"
                       }
                       className="w-full"
                       onClick={() => setValue("appointmentTime", time)}
@@ -389,7 +387,9 @@ export function BookingForm({ clinic }: BookingFormProps) {
                 disabled={isSubmitting}
               />
               {errors.notes && (
-                <p className="text-sm text-destructive">{errors.notes.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.notes.message}
+                </p>
               )}
             </div>
           </div>
@@ -404,4 +404,3 @@ export function BookingForm({ clinic }: BookingFormProps) {
     </Card>
   );
 }
-
