@@ -27,3 +27,12 @@ export function formatPhoneNumber(value: string): string {
     return `${digits.slice(0, 2)} ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
   }
 }
+
+/**
+ * Formats a price number to Brazilian format with comma as decimal separator
+ * @param price - The price number to format
+ * @returns Formatted price string (e.g., "99,90" for 99.9)
+ */
+export function formatPrice(price: number): string {
+  return price.toFixed(2).replace(".", ",");
+}
