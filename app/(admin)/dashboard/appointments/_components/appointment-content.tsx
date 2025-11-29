@@ -103,6 +103,16 @@ export default function AppointmentContent({
 }: AppointmentContentProps) {
   const router = useRouter();
   const [date, setDate] = useState<Date>(initialDate);
+
+  // Format date
+  const formatDate = (date: Date) => {
+    return dayjs(date).format("MMMM D, YYYY");
+  };
+
+  // Format date without year (for quick view)
+  const formatDateShort = (date: Date) => {
+    return dayjs(date).format("MMMM D");
+  };
   const [searchQuery, setSearchQuery] = useState("");
   const [appointments, setAppointments] =
     useState<AppointmentWithRelations[]>(initialAppointments);
@@ -321,8 +331,7 @@ export default function AppointmentContent({
                 <DialogHeader>
                   <DialogTitle>Schedule New Appointment</DialogTitle>
                   <DialogDescription>
-                    Fill in the details to schedule a new appointment for a
-                    patient.
+                    Fill in the details to schedule a new appointment for a patient.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -400,8 +409,7 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="appointment-date">
-                      Appointment Date{" "}
-                      <span className="text-destructive">*</span>
+                      Appointment Date <span className="text-destructive">*</span>
                     </Label>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -415,7 +423,7 @@ export default function AppointmentContent({
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {appointmentDate ? (
-                            dayjs(appointmentDate).format("MMMM D, YYYY")
+                            formatDate(appointmentDate)
                           ) : (
                             <span>Pick a date</span>
                           )}
@@ -559,11 +567,10 @@ export default function AppointmentContent({
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <CardTitle className="text-primary">
-                  {dayjs(date).format("MMMM D, YYYY")}
+                  {formatDate(date)}
                 </CardTitle>
                 <CardDescription>
-                  {appointments.length} appointment
-                  {appointments.length !== 1 ? "s" : ""} scheduled
+                  {appointments.length} {appointments.length !== 1 ? "appointments" : "appointment"} scheduled
                 </CardDescription>
               </div>
               <div className="flex gap-2">
@@ -627,7 +634,15 @@ export default function AppointmentContent({
                         <TableCell>
                           <Badge variant={getStatusVariant(appointment.status)}>
                             {getStatusIcon(appointment.status)}
-                            {getStatusLabel(appointment.status)}
+                            {appointment.status === AppointmentStatus.PENDING
+                              ? "Pending"
+                              : appointment.status === AppointmentStatus.CONFIRMED
+                              ? "Confirmed"
+                              : appointment.status === AppointmentStatus.CANCELLED
+                              ? "Cancelled"
+                              : appointment.status === AppointmentStatus.COMPLETED
+                              ? "Completed"
+                              : appointment.status}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
@@ -657,9 +672,6 @@ export default function AppointmentContent({
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
                                   Edit Appointment
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  Send Reminder
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 {appointment.status !==
@@ -698,7 +710,7 @@ export default function AppointmentContent({
           <CardTitle className="text-primary">Available Time Slots</CardTitle>
           <CardDescription>
             {hasTimeslots
-              ? `Quick view of available and booked time slots for ${dayjs(date).format("MMMM D")}`
+              ? `Quick view of available and booked time slots for ${formatDateShort(date)}`
               : "Configure your available times in your profile to start accepting appointments"}
           </CardDescription>
         </CardHeader>

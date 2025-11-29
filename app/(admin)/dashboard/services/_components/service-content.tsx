@@ -143,8 +143,7 @@ export default function ServiceContent({
               </div>
               <h3 className="text-lg font-semibold mb-2">No services yet</h3>
               <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-                Create your first service to start accepting appointments. Add
-                services like consultations, cleanings, and treatments.
+                Create your first service to start accepting appointments. Add services like consultations, cleanings, and treatments.
               </p>
               <Button
                 className="bg-primary hover:bg-primary/90"
@@ -250,10 +249,9 @@ export default function ServiceContent({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>Delete Service</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the service &quot;
-              {serviceToDelete?.name}&quot;. This action cannot be undone.
+              Are you sure? This will permanently delete the service "{serviceToDelete?.name}". This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

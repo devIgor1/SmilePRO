@@ -25,6 +25,7 @@ import { updateService } from "../_data-access/update-service";
 import { serviceFormSchema } from "../_schemas/service-form-schema";
 import { useRouter } from "next/navigation";
 import type { Service } from "@/lib/types";
+import { toast } from "sonner";
 
 interface ServiceFormDialogProps {
   open: boolean;
@@ -93,8 +94,10 @@ export function ServiceFormDialog({
       try {
         if (service) {
           await updateService({ id: service.id, ...validationResult.data });
+          toast.success("Service updated successfully");
         } else {
           await createService(validationResult.data);
+          toast.success("Service created successfully");
         }
         setErrors({});
         onOpenChange(false);
@@ -108,6 +111,7 @@ export function ServiceFormDialog({
         });
       } catch (error) {
         console.error("Failed to save service:", error);
+        toast.error("Failed to save service. Please try again.");
         setErrors({ submit: "Failed to save service. Please try again." });
       }
     });
@@ -127,7 +131,7 @@ export function ServiceFormDialog({
           <form onSubmit={handleSubmit}>
             <DialogHeader>
               <DialogTitle>
-                {service ? "Edit Service" : "Create New Service"}
+                {service ? "Update Service" : "Create Service"}
               </DialogTitle>
               <DialogDescription>
                 {service
@@ -215,8 +219,7 @@ export function ServiceFormDialog({
                       </TooltipTrigger>
                       <TooltipContent>
                         <p className="max-w-xs">
-                          Enter the appointment duration in minutes. Common
-                          values: 30, 45, 60, 90, 120
+                          Enter the appointment duration in minutes. Common values: 30, 45, 60, 90, 120
                         </p>
                       </TooltipContent>
                     </Tooltip>

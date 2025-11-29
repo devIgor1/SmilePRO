@@ -26,6 +26,18 @@ function DashboardBreadcrumb() {
   // Get all segments after dashboard
   const subSegments = pathSegments.slice(1);
 
+  // Map segment to display name
+  const getSegmentName = (segment: string): string => {
+    const keyMap: Record<string, string> = {
+      appointments: "Appointments",
+      patients: "Patients",
+      services: "Services",
+      profile: "Profile",
+      plans: "Plans",
+    };
+    return keyMap[segment] || segment;
+  };
+
   return (
     <Breadcrumb>
       <BreadcrumbList>
@@ -42,22 +54,17 @@ function DashboardBreadcrumb() {
           const href =
             "/dashboard/" + subSegments.slice(0, index + 1).join("/");
           const isLast = index === subSegments.length - 1;
-
-          // Format segment name
-          const formattedName = segment
-            .split("-")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ");
+          const segmentName = getSegmentName(segment);
 
           return (
             <div key={href} className="flex items-center gap-1.5">
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 {isLast ? (
-                  <BreadcrumbPage>{formattedName}</BreadcrumbPage>
+                  <BreadcrumbPage>{segmentName}</BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink asChild>
-                    <Link href={href}>{formattedName}</Link>
+                    <Link href={href}>{segmentName}</Link>
                   </BreadcrumbLink>
                 )}
               </BreadcrumbItem>
