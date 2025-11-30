@@ -10,6 +10,7 @@ import { CheckCircle2 } from "lucide-react";
 import { PLANS } from "@/utils/plans";
 import { formatPrice } from "@/lib/utils";
 import type { Plan } from "@/lib/generated/prisma/enums";
+import { ManageSubscriptionButton } from "./manage-subscription-button";
 
 interface ActiveSubscriptionProps {
   plan: Plan;
@@ -73,7 +74,7 @@ export function ActiveSubscription({
                 </li>
               ))}
             </ul>
-            <div className="pt-4 border-t">
+            <div className="pt-4 border-t space-y-4">
               <p className="text-sm text-muted-foreground">
                 Subscribed since{" "}
                 {new Date(createdAt).toLocaleDateString("en-US", {
@@ -82,6 +83,7 @@ export function ActiveSubscription({
                   day: "numeric",
                 })}
               </p>
+              <ManageSubscriptionButton />
             </div>
           </CardContent>
         </Card>
