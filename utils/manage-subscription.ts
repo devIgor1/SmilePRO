@@ -4,14 +4,7 @@ import { NextResponse } from "next/server";
 import { stripe } from "./stripe";
 
 /**
- * Manage subscription
- * @async
- * @param {string} subscritionId - The subscription ID
- * @param {string} customerId - The customer ID
- * @param {boolean} createAction - Whether to create a new subscription
- * @param {boolean} deleteAction - Whether to delete the subscription
- * @param {PrismaPlanType} type - The type of subscription
- * @returns {Promise<void>}
+ * Delete, create, or update a subscription
  */
 export async function manageSubscription(
   subscriptionId: string,
@@ -46,6 +39,8 @@ export async function manageSubscription(
         id: subscriptionId,
       },
     });
+
+    return;
   }
 
   if (createAction) {
@@ -82,7 +77,6 @@ export async function manageSubscription(
         data: {
           status: subscription.status,
           priceId: subscription.items.data[0].price.id,
-          plan: type ?? "BASIC",
         },
       });
     } catch (error) {
