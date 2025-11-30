@@ -1,4 +1,5 @@
 import { Plan as PrismaPlanType } from "@/lib/generated/prisma/enums";
+import { PLANS_LIMITS } from "../permissions/plan-limits";
 
 export interface Plan {
   id: string;
@@ -21,7 +22,7 @@ export const PLANS: Plan[] = [
     price: 27.9,
     originalPrice: 97.9,
     features: [
-      "Up to 3 services",
+      `Up to ${PLANS_LIMITS.BASIC.maxServices} services`,
       "Unlimited appointments",
       "Support",
       "Reports",
@@ -37,7 +38,7 @@ export const PLANS: Plan[] = [
     price: 97.9,
     originalPrice: 97.9,
     features: [
-      "Up to 40 services",
+      `Up to ${PLANS_LIMITS.PROFESSIONAL.maxServices} services`,
       "Unlimited appointments",
       "Priority support",
       "Reports",
