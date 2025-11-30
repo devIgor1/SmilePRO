@@ -17,6 +17,7 @@ import {
   MoreVertical,
   Sparkles,
   Loader2,
+  AlertTriangle,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -41,11 +42,13 @@ import { useRouter } from "next/navigation";
 import type { Service } from "@/lib/types";
 import { ResultPermissionProp } from "@/utils/permissions/canPermission";
 import { PLANS_LIMITS } from "@/utils/permissions/plan-limits";
+import dayjs from "dayjs";
 
 interface ServiceContentProps {
   userId: string;
   initialServices: Service[];
   permissions: ResultPermissionProp;
+  userCreatedAt: string;
 }
 
 function formatPrice(price: number): string {
@@ -71,6 +74,7 @@ export default function ServiceContent({
   userId,
   initialServices,
   permissions,
+  userCreatedAt,
 }: ServiceContentProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -139,9 +143,56 @@ export default function ServiceContent({
     });
   };
 
+  // Check if user is on trial
+  const isTrial = permissions.planId === "TRIAL";
+  const TRIAL_DAYS = 3;
+  const trialEndDate = dayjs(userCreatedAt)
+    .add(TRIAL_DAYS, "day")
+    .startOf("day");
+  const today = dayjs().startOf("day");
+  const daysRemaining = Math.max(0, trialEndDate.diff(today, "day"));
+
   return (
     <>
       <div className="space-y-6">
+        {/* Trial Warning Banner */}
+        {isTrial && (
+          <Card className="border-yellow-500/50 bg-yellow-500/10">
+            <CardContent className="pt-6 pb-6 px-6">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500 mt-0.5" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-1">
+                    You are on a trial plan
+                  </h3>
+                  <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-4">
+                    {daysRemaining > 0
+                      ? `Your trial period ends in ${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}. Upgrade to a paid plan to continue using all features after the trial expires.`
+                      : "Your trial period has ended. Upgrade to a paid plan to continue using all features."}
+                  </p>
+                  <Button
+                    onClick={handleRedirectToPlans}
+                    className="bg-yellow-600 hover:bg-yellow-700 text-white cursor-pointer"
+                    disabled={isRedirecting}
+                    size="sm"
+                  >
+                    {isRedirecting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Redirecting...
+                      </>
+                    ) : (
+                      "Upgrade Now"
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -195,7 +246,7 @@ export default function ServiceContent({
                 services like consultations, cleanings, and treatments.
               </p>
               <Button
-                className="bg-primary hover:bg-primary/90"
+                className="bg-primary hover:bg-primary/90 cursor-pointer"
                 onClick={handleNewService}
               >
                 <Plus className="mr-2 h-4 w-4" />

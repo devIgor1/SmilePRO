@@ -19,6 +19,7 @@ export default async function Services() {
       userId={session.user.id}
       initialServices={services}
       permissions={permissions}
+      userCreatedAt={session.user.createdAt}
     />
   );
 }
