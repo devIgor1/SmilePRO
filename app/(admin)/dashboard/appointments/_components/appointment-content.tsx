@@ -321,7 +321,7 @@ export default function AppointmentContent({
         {isMounted && (
           <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-              <Button className="bg-primary hover:bg-primary/90">
+              <Button className="bg-primary hover:bg-primary/90 cursor-pointer">
                 <Plus className="mr-2 h-4 w-4" />
                 New Appointment
               </Button>
@@ -331,7 +331,8 @@ export default function AppointmentContent({
                 <DialogHeader>
                   <DialogTitle>Schedule New Appointment</DialogTitle>
                   <DialogDescription>
-                    Fill in the details to schedule a new appointment for a patient.
+                    Fill in the details to schedule a new appointment for a
+                    patient.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -409,7 +410,8 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="appointment-date">
-                      Appointment Date <span className="text-destructive">*</span>
+                      Appointment Date{" "}
+                      <span className="text-destructive">*</span>
                     </Label>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -570,7 +572,9 @@ export default function AppointmentContent({
                   {formatDate(date)}
                 </CardTitle>
                 <CardDescription>
-                  {appointments.length} {appointments.length !== 1 ? "appointments" : "appointment"} scheduled
+                  {appointments.length}{" "}
+                  {appointments.length !== 1 ? "appointments" : "appointment"}{" "}
+                  scheduled
                 </CardDescription>
               </div>
               <div className="flex gap-2">
@@ -636,13 +640,16 @@ export default function AppointmentContent({
                             {getStatusIcon(appointment.status)}
                             {appointment.status === AppointmentStatus.PENDING
                               ? "Pending"
-                              : appointment.status === AppointmentStatus.CONFIRMED
-                              ? "Confirmed"
-                              : appointment.status === AppointmentStatus.CANCELLED
-                              ? "Cancelled"
-                              : appointment.status === AppointmentStatus.COMPLETED
-                              ? "Completed"
-                              : appointment.status}
+                              : appointment.status ===
+                                  AppointmentStatus.CONFIRMED
+                                ? "Confirmed"
+                                : appointment.status ===
+                                    AppointmentStatus.CANCELLED
+                                  ? "Cancelled"
+                                  : appointment.status ===
+                                      AppointmentStatus.COMPLETED
+                                    ? "Completed"
+                                    : appointment.status}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
