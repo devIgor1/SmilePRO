@@ -102,11 +102,11 @@ export default function PatientsContent({
       setPatientAppointments(appointments);
       setHistoryDialogOpen(true);
     } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to load patient history"
-      );
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Failed to load patient history"
+        );
     }
   };
 
@@ -209,7 +209,7 @@ export default function PatientsContent({
       {/* Filters and Search */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex gap-2">
-          <Button
+            <Button
             variant={filter === "all" ? "default" : "outline"}
             onClick={() => setFilter("all")}
           >
@@ -333,7 +333,7 @@ export default function PatientsContent({
                             variant={active ? "default" : "secondary"}
                             className="capitalize"
                           >
-                            {active ? "active" : "inactive"}
+                            {active ? "Active" : "Inactive"}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">

@@ -3,6 +3,8 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { canCreateService } from "@/utils/permissions/canCreateService";
+import { getSubscription } from "@/utils/get-subscription";
 
 interface CreateServiceParams {
   name: string;
@@ -16,6 +18,16 @@ export async function createService(data: CreateServiceParams) {
 
   if (!session?.user?.id) {
     throw new Error("Unauthorized");
+  }
+
+  // Check permissions before creating
+  const subscription = await getSubscription(session.user.id);
+  const permission = await canCreateService(subscription, session);
+
+  if (!permission.hasPermission) {
+    throw new Error(
+      `You've reached the service limit for your plan. Upgrade to create more services.`
+    );
   }
 
   try {

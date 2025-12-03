@@ -3,8 +3,11 @@ import { CheckCircle2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { PLANS } from "@/utils/plans"
 
 export function Pricing() {
+  const formatPrice = (price: number) => price.toFixed(2).replace(".", ",");
+
   return (
     <section id="pricing" className="border-t py-20">
         <div className="container mx-auto px-4">
@@ -15,121 +18,58 @@ export function Pricing() {
             </p>
           </div>
 
-          <div className="mx-auto mt-16 grid max-w-5xl gap-8 md:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>Starter</CardTitle>
-                <CardDescription>Perfect for small practices</CardDescription>
-                <div className="mt-4">
-                  <span className="font-bold text-4xl">$49</span>
-                  <span className="text-muted-foreground">/month</span>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="size-5 text-primary" />
-                    <span className="text-sm">Up to 100 patients</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="size-5 text-primary" />
-                    <span className="text-sm">Online scheduling</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="size-5 text-primary" />
-                    <span className="text-sm">Email reminders</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="size-5 text-primary" />
-                    <span className="text-sm">Basic analytics</span>
-                  </li>
-                </ul>
-                <Link href="/dashboard" className="block">
-                  <Button className="w-full bg-transparent" variant="outline">
-                    Start Free Trial
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-
-            <Card className="border-primary shadow-lg">
-              <CardHeader>
-                <Badge className="mb-2 w-fit">Most Popular</Badge>
-                <CardTitle>Professional</CardTitle>
-                <CardDescription>For growing practices</CardDescription>
-                <div className="mt-4">
-                  <span className="font-bold text-4xl">$99</span>
-                  <span className="text-muted-foreground">/month</span>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="size-5 text-primary" />
-                    <span className="text-sm">Up to 500 patients</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="size-5 text-primary" />
-                    <span className="text-sm">SMS & email reminders</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="size-5 text-primary" />
-                    <span className="text-sm">Advanced analytics</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="size-5 text-primary" />
-                    <span className="text-sm">Priority support</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="size-5 text-primary" />
-                    <span className="text-sm">Custom branding</span>
-                  </li>
-                </ul>
-                <Link href="/dashboard" className="block">
-                  <Button className="w-full">Start Free Trial</Button>
-                </Link>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Enterprise</CardTitle>
-                <CardDescription>For large clinics</CardDescription>
-                <div className="mt-4">
-                  <span className="font-bold text-4xl">$199</span>
-                  <span className="text-muted-foreground">/month</span>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="size-5 text-primary" />
-                    <span className="text-sm">Unlimited patients</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="size-5 text-primary" />
-                    <span className="text-sm">Multi-location support</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="size-5 text-primary" />
-                    <span className="text-sm">API access</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="size-5 text-primary" />
-                    <span className="text-sm">Dedicated account manager</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="size-5 text-primary" />
-                    <span className="text-sm">Custom integrations</span>
-                  </li>
-                </ul>
-                <Link href="/dashboard" className="block">
-                  <Button className="w-full bg-transparent" variant="outline">
-                    Contact Sales
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
+          <div className="mx-auto mt-16 grid max-w-4xl gap-8 md:grid-cols-2">
+            {PLANS.map((plan) => {
+              return (
+                <Card
+                  key={plan.id}
+                  className={plan.isPopular ? "border-primary shadow-lg" : ""}
+                >
+                  <CardHeader>
+                    {plan.isPopular && (
+                      <Badge className="mb-2 w-fit">Most Popular</Badge>
+                    )}
+                    <CardTitle>{plan.name}</CardTitle>
+                    <CardDescription>{plan.description}</CardDescription>
+                    <div className="mt-4">
+                      {plan.originalPrice && plan.originalPrice !== plan.price && (
+                        <div className="mb-2">
+                          <span className="text-sm line-through text-muted-foreground">
+                            R$ {formatPrice(plan.originalPrice)}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex items-baseline gap-1">
+                        <span className="font-bold text-4xl">
+                          R$ {formatPrice(plan.price)}
+                        </span>
+                        <span className="text-muted-foreground">
+                          /month
+                        </span>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <ul className="space-y-3">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-center gap-2">
+                          <CheckCircle2 className="size-5 text-primary" />
+                          <span className="text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Link href="/dashboard" className="block">
+                      <Button
+                        className="w-full"
+                        variant={plan.buttonVariant}
+                      >
+                        {plan.buttonText}
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
