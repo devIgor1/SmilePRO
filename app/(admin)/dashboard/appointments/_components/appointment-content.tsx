@@ -473,8 +473,9 @@ export default function AppointmentContent({
                       {t.services.title} <span className="text-destructive">{t.appointments.required}</span>
                     </Label>
                     <Select
-                      value={watch("serviceId")}
+                      value={watch("serviceId") || ""}
                       onValueChange={(value) => setValue("serviceId", value)}
+                      defaultValue=""
                     >
                       <SelectTrigger id="service">
                         <SelectValue placeholder={t.appointments.selectService} />

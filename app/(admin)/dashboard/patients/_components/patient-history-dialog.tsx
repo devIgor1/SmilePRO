@@ -375,7 +375,7 @@ export function PatientHistoryDialog({
               </div>
 
               {/* Status Filter */}
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <Select value={statusFilter} onValueChange={setStatusFilter} defaultValue="all">
                 <SelectTrigger>
                   <SelectValue placeholder={t.appointments.filterByStatus} />
                 </SelectTrigger>
@@ -389,7 +389,7 @@ export function PatientHistoryDialog({
               </Select>
 
               {/* Year Filter */}
-              <Select value={yearFilter} onValueChange={setYearFilter}>
+              <Select value={yearFilter} onValueChange={setYearFilter} defaultValue="all">
                 <SelectTrigger>
                   <SelectValue placeholder={t.appointments.filterByYear} />
                 </SelectTrigger>

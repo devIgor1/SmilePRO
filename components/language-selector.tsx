@@ -26,8 +26,15 @@ export function LanguageSelector() {
   const { data: session, update } = useSession();
   const router = useRouter();
   const [currentLanguage, setCurrentLanguage] = useState<Language>("en");
+  const [isMounted, setIsMounted] = useState(false);
   
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+    
     // Get language from session (if logged in) or localStorage (if not logged in)
     if (session?.user) {
       const userLanguage = (session.user.systemLanguage || "en") as Language;
@@ -35,20 +42,16 @@ export function LanguageSelector() {
       setCurrentLanguage(validLanguage);
     } else {
       // For non-logged users, use localStorage
-      if (typeof window !== "undefined") {
-        const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY) as Language;
-        if (storedLanguage && (storedLanguage === "en" || storedLanguage === "pt-BR")) {
-          setCurrentLanguage(storedLanguage);
-        }
+      const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY) as Language;
+      if (storedLanguage && (storedLanguage === "en" || storedLanguage === "pt-BR")) {
+        setCurrentLanguage(storedLanguage);
       }
     }
-  }, [session?.user?.systemLanguage, session?.user]);
+  }, [session?.user?.systemLanguage, session?.user, isMounted]);
 
   const handleLanguageChange = async (newLanguage: Language) => {
     // Save to localStorage for non-logged users
-    if (typeof window !== "undefined") {
-      localStorage.setItem(LANGUAGE_STORAGE_KEY, newLanguage);
-    }
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, newLanguage);
     
     // If user is logged in, update in database
     if (session?.user) {
@@ -66,6 +69,16 @@ export function LanguageSelector() {
     // Refresh the page to apply translations
     router.refresh();
   };
+
+  // Prevent hydration mismatch by not rendering Select until mounted
+  if (!isMounted) {
+    return (
+      <div className="w-[160px] h-9 flex items-center gap-2 rounded-md border bg-transparent px-3 py-2">
+        <Globe className="size-4 text-muted-foreground" />
+        <span className="text-sm text-muted-foreground">...</span>
+      </div>
+    );
+  }
 
   return (
     <Select

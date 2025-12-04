@@ -253,9 +253,10 @@ export function BookingForm({ clinic }: BookingFormProps) {
                 Service <span className="text-destructive">*</span>
               </Label>
               <Select
-                value={selectedServiceId}
+                value={selectedServiceId || ""}
                 onValueChange={(value) => setValue("serviceId", value)}
                 disabled={isSubmitting}
+                defaultValue=""
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a service" />
