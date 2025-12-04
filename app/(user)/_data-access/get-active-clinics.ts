@@ -9,6 +9,7 @@ export interface ActiveClinic {
   phone: string;
   address: string;
   image: string | null;
+  plan: "BASIC" | "PROFESSIONAL" | null;
   _count: {
     services: number;
     appointments: number;
@@ -37,6 +38,12 @@ export async function getActiveClinics(): Promise<ActiveClinic[]> {
         phone: true,
         address: true,
         image: true,
+        subscription: {
+          select: {
+            plan: true,
+            status: true,
+          },
+        },
         _count: {
           select: {
             services: {
@@ -61,6 +68,10 @@ export async function getActiveClinics(): Promise<ActiveClinic[]> {
       phone: clinic.phone || "",
       address: clinic.address || "",
       image: clinic.image,
+      plan:
+        clinic.subscription?.status === "active"
+          ? clinic.subscription.plan
+          : null,
       _count: clinic._count,
     }));
   } catch (error) {
@@ -68,4 +79,3 @@ export async function getActiveClinics(): Promise<ActiveClinic[]> {
     return [];
   }
 }
-
