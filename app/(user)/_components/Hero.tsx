@@ -1,9 +1,12 @@
-import Link from "next/link"
-import { Sparkles, ArrowRight } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import Image from "next/image"
-import heroImage from "@/public/heroImage.png"
+"use client";
+
+import Link from "next/link";
+import { Sparkles, ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import heroImage from "@/public/heroImage.png";
+import { handleLogin } from "../_actions/login";
 
 export function Hero() {
   return (
@@ -16,26 +19,36 @@ export function Hero() {
               Trusted by 500+ dental clinics
             </Badge>
             <h1 className="font-bold text-4xl text-balance leading-tight md:text-5xl lg:text-6xl mt-4">
-              Modern Practice Management for <span className="text-primary">Dental Clinics</span>
+              Modern Practice Management for{" "}
+              <span className="text-primary">Dental Clinics</span>
             </h1>
             <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-balance text-lg md:text-xl lg:mx-0">
-              Streamline appointments, manage patients, and grow your practice with our all-in-one platform designed
-              specifically for dental professionals.
+              Streamline appointments, manage patients, and grow your practice
+              with our all-in-one platform designed specifically for dental
+              professionals.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row lg:justify-start">
-              <Link href="/dashboard/appointments">
-                <Button size="lg" className="w-full sm:w-auto">
-                  Start Free Trial
-                  <ArrowRight className="ml-2 size-4" />
-                </Button>
-              </Link>
+              <Button
+                size="lg"
+                className="w-full sm:w-auto"
+                onClick={() => handleLogin("github")}
+              >
+                Start Free Trial
+                <ArrowRight className="ml-2 size-4" />
+              </Button>
               <Link href="#features">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto bg-transparent">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full sm:w-auto bg-transparent"
+                >
                   See How It Works
                 </Button>
               </Link>
             </div>
-            <p className="text-muted-foreground mt-4 text-sm">No credit card required • 14-day free trial</p>
+            <p className="text-muted-foreground mt-4 text-sm">
+              No credit card required • 14-day free trial
+            </p>
           </div>
 
           <div className="relative w-full">
@@ -55,5 +68,5 @@ export function Hero() {
         </div>
       </div>
     </section>
-  )
+  );
 }
