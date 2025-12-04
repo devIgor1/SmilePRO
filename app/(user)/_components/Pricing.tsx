@@ -58,7 +58,7 @@ export function Pricing() {
                         </li>
                       ))}
                     </ul>
-                    <Link href="/dashboard" className="block">
+                    <Link href="/dashboard/appointments" className="block">
                       <Button
                         className="w-full"
                         variant={plan.buttonVariant}

@@ -7,12 +7,12 @@ export const navItems = [
 export const authButtons = {
   signIn: {
     label: "Sign In",
-    href: "/dashboard",
+    href: "/dashboard/appointments",
     variant: "ghost" as const,
   },
   getStarted: {
     label: "Get Started",
-    href: "/dashboard",
+    href: "/dashboard/appointments",
     variant: "default" as const,
   },
   professionals: {

@@ -68,9 +68,9 @@ export function UserMenu() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/dashboard" className="flex items-center">
+          <Link href="/dashboard/appointments" className="flex items-center">
             <Settings className="mr-2 h-4 w-4" />
-            <span>Dashboard</span>
+            <span>Appointments</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />

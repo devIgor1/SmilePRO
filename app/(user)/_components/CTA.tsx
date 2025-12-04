@@ -11,7 +11,7 @@ import { ArrowRight } from "lucide-react";
         Join hundreds of dental clinics already using Smiley to streamline their operations
       </p>
       <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-        <Link href="/dashboard">
+        <Link href="/dashboard/appointments">
           <Button size="lg" variant="secondary" className="w-full sm:w-auto">
             Start Free Trial
             <ArrowRight className="ml-2 size-4" />

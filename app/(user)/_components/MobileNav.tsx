@@ -92,11 +92,11 @@ export function MobileNav() {
                 </div>
                 <SheetClose asChild>
                   <Link
-                    href="/dashboard"
+                    href="/dashboard/appointments"
                     className="flex items-center px-4 py-3 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
                   >
                     <Settings className="mr-3 h-5 w-5" />
-                    Dashboard
+                    Appointments
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>

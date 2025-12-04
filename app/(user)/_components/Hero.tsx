@@ -23,7 +23,7 @@ export function Hero() {
               specifically for dental professionals.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row lg:justify-start">
-              <Link href="/dashboard">
+              <Link href="/dashboard/appointments">
                 <Button size="lg" className="w-full sm:w-auto">
                   Start Free Trial
                   <ArrowRight className="ml-2 size-4" />

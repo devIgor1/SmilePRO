@@ -21,7 +21,6 @@ function DashboardBreadcrumb() {
   const pathname = usePathname();
 
   const pathSegments = pathname.split("/").filter(Boolean);
-  const isDashboardRoot = pathname === "/dashboard";
 
   // Get all segments after dashboard
   const subSegments = pathSegments.slice(1);
@@ -42,18 +41,14 @@ function DashboardBreadcrumb() {
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          {isDashboardRoot ? (
-            <BreadcrumbPage>Dashboard</BreadcrumbPage>
-          ) : (
-            <BreadcrumbLink asChild>
-              <Link href="/dashboard">Dashboard</Link>
-            </BreadcrumbLink>
-          )}
+          <BreadcrumbLink asChild>
+            <Link href="/dashboard/appointments">Appointments</Link>
+          </BreadcrumbLink>
         </BreadcrumbItem>
-        {subSegments.map((segment, index) => {
+        {subSegments.length > 1 && subSegments.map((segment, index) => {
           const href =
             "/dashboard/" + subSegments.slice(0, index + 1).join("/");
-          const isLast = index === subSegments.length - 1;
+          const isLast = index === subSegments.length - 2;
           const segmentName = getSegmentName(segment);
 
           return (

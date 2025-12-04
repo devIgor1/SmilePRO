@@ -27,11 +27,6 @@ import { usePathname } from "next/navigation";
 
 const navigationItems = [
   {
-    title: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
     title: "Appointments",
     href: "/dashboard/appointments",
     icon: Calendar,
