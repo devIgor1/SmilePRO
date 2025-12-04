@@ -46,7 +46,7 @@ export function HomeHeader() {
                     variant={authButtons.signIn.variant}
                     size="default"
                     className="hidden lg:flex"
-                    onClick={() => handleLogin("github")}
+                    onClick={() => handleLogin("google")}
                   >
                     {authButtons.signIn.label}
                   </Button>

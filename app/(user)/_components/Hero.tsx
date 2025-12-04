@@ -47,7 +47,7 @@ export function Hero() {
               </Link>
             </div>
             <p className="text-muted-foreground mt-4 text-sm">
-              No credit card required • 14-day free trial
+              No credit card required • 3-day free trial
             </p>
           </div>
 
