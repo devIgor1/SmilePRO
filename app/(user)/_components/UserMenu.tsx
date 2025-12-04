@@ -35,6 +35,7 @@ export function UserMenu() {
         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
           <Avatar className="h-10 w-10">
             <AvatarImage
+              className="cursor-pointer"
               src={user.image || undefined}
               alt={user.name || "User"}
             />
@@ -55,19 +56,22 @@ export function UserMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/dashboard/services" className="flex items-center">
             <List className="mr-2 h-4 w-4" />
             <span>Services</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard/profile" className="flex items-center">
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link
+            href="/dashboard/profile"
+            className="flex items-center cursor-pointer"
+          >
             <User className="mr-2 h-4 w-4" />
             <span>Profile</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/dashboard/appointments" className="flex items-center">
             <Settings className="mr-2 h-4 w-4" />
             <span>Appointments</span>
@@ -75,7 +79,7 @@ export function UserMenu() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="text-destructive focus:text-destructive"
+          className="text-destructive focus:text-destructive cursor-pointer"
           onClick={() => signOut({ callbackUrl: "/" })}
         >
           <LogOut className="mr-2 h-4 w-4" />

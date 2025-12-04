@@ -144,7 +144,7 @@ export function BookingLinkCard({ userId }: BookingLinkCardProps) {
         <div className="space-y-2">
           <Dialog open={qrDialogOpen} onOpenChange={setQrDialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full cursor-pointer">
                 <QrCode className="mr-2 h-4 w-4" />
                 View QR Code
               </Button>

@@ -20,21 +20,12 @@ export function CTA() {
           <Button
             size="lg"
             variant="secondary"
-            className="w-full sm:w-auto"
-            onClick={() => handleLogin("github")}
+            className="w-full sm:w-auto cursor-pointer"
+            onClick={() => handleLogin("google")}
           >
             Start Free Trial
             <ArrowRight className="ml-2 size-4" />
           </Button>
-          <Link href="#features">
-            <Button
-              size="lg"
-              variant="outline"
-              className="w-full border-primary-foreground/20 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 sm:w-auto"
-            >
-              Schedule a Demo
-            </Button>
-          </Link>
         </div>
       </div>
     </section>

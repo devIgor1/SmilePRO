@@ -323,7 +323,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
         <Button
           type="submit"
           disabled={!isDirty || isPending}
-          className="min-w-[120px]"
+          className="min-w-[120px] cursor-pointer"
         >
           {isPending ? (
             <>

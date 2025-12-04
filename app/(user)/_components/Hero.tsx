@@ -30,21 +30,12 @@ export function Hero() {
             <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row lg:justify-start">
               <Button
                 size="lg"
-                className="w-full sm:w-auto"
-                onClick={() => handleLogin("github")}
+                className="w-full sm:w-auto cursor-pointer"
+                onClick={() => handleLogin("google")}
               >
                 Start Free Trial
                 <ArrowRight className="ml-2 size-4" />
               </Button>
-              <Link href="#features">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="w-full sm:w-auto bg-transparent"
-                >
-                  See How It Works
-                </Button>
-              </Link>
             </div>
             <p className="text-muted-foreground mt-4 text-sm">
               No credit card required • 3-day free trial
