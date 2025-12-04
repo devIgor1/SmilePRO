@@ -7,8 +7,10 @@ import { Plan } from "@/utils/plans";
 import { toast } from "sonner";
 import { getStripeJs } from "@/utils/stripe-js";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "@/hooks/use-translations";
 
 export const SubscriptionButton = ({ plan }: { plan: Plan }) => {
+  const t = useTranslations();
   const [isPending, startTransition] = useTransition();
 
   const handleCheckout = () => {
@@ -48,10 +50,10 @@ export const SubscriptionButton = ({ plan }: { plan: Plan }) => {
       {isPending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Redirecting to checkout...
+          {t.home.pricing.redirectingToCheckout}
         </>
       ) : (
-        plan.buttonText
+        t.home.pricing.activateSubscription
       )}
     </Button>
   );

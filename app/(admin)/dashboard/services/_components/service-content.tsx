@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/hooks/use-translations";
 import {
   Card,
   CardContent,
@@ -72,6 +73,7 @@ export default function ServiceContent({
   initialServices,
   permissions,
 }: ServiceContentProps) {
+  const t = useTranslations();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isRedirecting, startRedirectTransition] = useTransition();
@@ -146,10 +148,10 @@ export default function ServiceContent({
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-              Services
+              {t.services.title}
             </h1>
             <p className="text-muted-foreground mt-2">
-              Manage your clinic services and pricing
+              {t.services.subtitle}
             </p>
           </div>
           {permissions.hasPermission && (
@@ -158,7 +160,7 @@ export default function ServiceContent({
               onClick={handleNewService}
             >
               <Plus className="mr-2 h-4 w-4" />
-              New Service
+              {t.services.newService}
             </Button>
           )}
           {!permissions.hasPermission && (
@@ -170,12 +172,12 @@ export default function ServiceContent({
               {isRedirecting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Redirecting to plans...
+                  {t.services.redirectingToPlans}
                 </>
               ) : (
                 <>
                   <Plus className="mr-2 h-4 w-4" />
-                  Upgrade to create more services
+                  {t.services.upgradeToCreate}
                 </>
               )}
             </Button>
@@ -189,17 +191,16 @@ export default function ServiceContent({
               <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                 <Sparkles className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">No services yet</h3>
+              <h3 className="text-lg font-semibold mb-2">{t.services.noServicesYet}</h3>
               <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-                Create your first service to start accepting appointments. Add
-                services like consultations, cleanings, and treatments.
+                {t.services.createFirstServiceDescription}
               </p>
               <Button
                 className="bg-primary hover:bg-primary/90 cursor-pointer"
                 onClick={handleNewService}
               >
                 <Plus className="mr-2 h-4 w-4" />
-                Create Service
+                {t.services.createFirstService}
               </Button>
             </CardContent>
           </Card>
@@ -235,14 +236,14 @@ export default function ServiceContent({
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => handleEdit(service)}>
-                            Edit
+                            {t.services.edit}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             className="text-destructive focus:text-destructive"
                             onClick={() => handleDelete(service)}
                           >
-                            Delete
+                            {t.services.delete}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -252,7 +253,7 @@ export default function ServiceContent({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <DollarSign className="h-4 w-4" />
-                        <span className="text-sm font-medium">Price</span>
+                        <span className="text-sm font-medium">{t.services.price}</span>
                       </div>
                       <span className="text-lg font-bold text-primary">
                         {formatPrice(service.price)}
@@ -261,7 +262,7 @@ export default function ServiceContent({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Clock className="h-4 w-4" />
-                        <span className="text-sm font-medium">Duration</span>
+                        <span className="text-sm font-medium">{t.services.duration}</span>
                       </div>
                       <Badge variant="secondary" className="font-medium">
                         {formatDuration(service.duration)}
@@ -269,12 +270,12 @@ export default function ServiceContent({
                     </div>
                     <div className="pt-2 border-t border-primary/10">
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Status</span>
+                        <span>{t.services.status}</span>
                         <Badge
                           variant={service.isActive ? "default" : "secondary"}
                           className="capitalize"
                         >
-                          {service.isActive ? "Active" : "Inactive"}
+                          {service.isActive ? t.services.active : t.services.inactive}
                         </Badge>
                       </div>
                     </div>
@@ -286,8 +287,7 @@ export default function ServiceContent({
               <Card className="border-primary/20 bg-gradient-to-br from-background via-background to-primary/5 mt-6">
                 <CardContent className="pt-6 pb-6 px-6 flex flex-col items-center justify-center text-center">
                   <p className="text-sm text-muted-foreground mb-4">
-                    You have {initialServices.length} services, but your plan
-                    only allows viewing {maxServices} services.
+                    {t.services.planLimitMessage.replace("{count}", initialServices.length.toString()).replace("{max}", maxServices.toString())}
                   </p>
                   <Button
                     onClick={handleRedirectToPlans}
@@ -297,10 +297,10 @@ export default function ServiceContent({
                     {isRedirecting ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Redirecting...
+                        {t.services.redirecting}
                       </>
                     ) : (
-                      "Upgrade to view all services"
+                      t.services.upgradeToViewAll
                     )}
                   </Button>
                 </CardContent>
@@ -324,14 +324,13 @@ export default function ServiceContent({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Service</AlertDialogTitle>
+            <AlertDialogTitle>{t.services.deleteService}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure? This will permanently delete the service "
-              {serviceToDelete?.name}". This action cannot be undone.
+              {t.services.deleteConfirm} "{serviceToDelete?.name}". {t.services.deleteConfirmDescription}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isPending}>{t.common.cancel}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               disabled={isPending}
@@ -340,10 +339,10 @@ export default function ServiceContent({
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Deleting...
+                  {t.services.deleting}
                 </>
               ) : (
-                "Delete"
+                t.common.delete
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

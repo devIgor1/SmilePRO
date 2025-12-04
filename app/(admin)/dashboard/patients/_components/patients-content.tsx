@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useTranslations } from "@/hooks/use-translations";
 import {
   Card,
   CardContent,
@@ -39,6 +40,8 @@ import {
   Phone,
 } from "lucide-react";
 import dayjs from "dayjs";
+import { formatDateByLanguage } from "@/lib/utils/date-formatter";
+import { useSession } from "next-auth/react";
 import type { PatientWithRelations } from "@/lib/types";
 import {
   calculateAge,
@@ -78,6 +81,9 @@ export default function PatientsContent({
   initialPatients,
   stats,
 }: PatientsContentProps) {
+  const t = useTranslations();
+  const { data: session } = useSession();
+  const language = (session?.user?.systemLanguage as "en" | "pt-BR") || "en";
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
   const [isMounted, setIsMounted] = useState(false);
@@ -131,10 +137,10 @@ export default function PatientsContent({
       {/* Header */}
       <div>
         <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-          Patients
+          {t.patients.title}
         </h1>
         <p className="text-muted-foreground mt-2">
-          Manage your patient records and information
+          {t.patients.subtitle}
         </p>
       </div>
 
@@ -143,7 +149,7 @@ export default function PatientsContent({
         <Card className="border-primary/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Patients
+              {t.patients.totalPatients}
             </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -152,7 +158,7 @@ export default function PatientsContent({
               {stats.totalPatients.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              +{stats.newThisMonth} this month
+              +{stats.newThisMonth} {t.patients.thisMonth}
             </p>
           </CardContent>
         </Card>
@@ -160,7 +166,7 @@ export default function PatientsContent({
         <Card className="border-primary/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Active Patients
+              {t.patients.activePatients}
             </CardTitle>
             <UserCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -169,7 +175,7 @@ export default function PatientsContent({
               {stats.activePatients.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {stats.activePercentage}% of total
+              {stats.activePercentage}% {t.patients.ofTotal}
             </p>
           </CardContent>
         </Card>
@@ -177,7 +183,7 @@ export default function PatientsContent({
         <Card className="border-primary/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              New This Month
+              {t.patients.newThisMonth}
             </CardTitle>
             <UserPlus className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -189,19 +195,19 @@ export default function PatientsContent({
               }`}
             >
               {stats.percentageChange > 0 ? "+" : ""}
-              {stats.percentageChange}% from last month
+              {stats.percentageChange}% {t.patients.fromLastMonth}
             </p>
           </CardContent>
         </Card>
 
         <Card className="border-primary/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg. Visits</CardTitle>
+            <CardTitle className="text-sm font-medium">{t.patients.avgVisits}</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.avgVisits}</div>
-            <p className="text-xs text-muted-foreground mt-1">per patient</p>
+            <p className="text-xs text-muted-foreground mt-1">{t.patients.perPatient}</p>
           </CardContent>
         </Card>
       </div>
@@ -213,19 +219,19 @@ export default function PatientsContent({
             variant={filter === "all" ? "default" : "outline"}
             onClick={() => setFilter("all")}
           >
-            All Patients
+            {t.patients.allPatients}
           </Button>
           <Button
             variant={filter === "active" ? "default" : "outline"}
             onClick={() => setFilter("active")}
           >
-            Active
+            {t.patients.active}
           </Button>
           <Button
             variant={filter === "inactive" ? "default" : "outline"}
             onClick={() => setFilter("inactive")}
           >
-            Inactive
+            {t.patients.inactive}
           </Button>
         </div>
 
@@ -233,7 +239,7 @@ export default function PatientsContent({
           <div className="relative flex-1 sm:flex-initial">
             <Search className="text-muted-foreground absolute left-2.5 top-2.5 h-4 w-4" />
             <Input
-              placeholder="Search patients..."
+              placeholder={t.patients.searchPlaceholder}
               className="pl-8 sm:w-[300px]"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -245,30 +251,30 @@ export default function PatientsContent({
       {/* Patient Records Table */}
       <Card className="border-primary/20 !bg-gradient-to-br from-background via-background to-primary/5 overflow-hidden p-0">
         <CardHeader className="border-b border-primary/10 bg-primary/10 rounded-t-xl px-6 pt-6 pb-6">
-          <CardTitle className="text-primary">Patient Records</CardTitle>
+          <CardTitle className="text-primary">{t.patients.patientRecords}</CardTitle>
           <CardDescription>
-            Complete list of all registered patients
+            {t.patients.recordsDescription}
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6 px-6 pb-6">
           {filteredPatients.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               {searchQuery
-                ? "No patients found matching your search"
-                : "No patients registered yet"}
+                ? t.patients.noPatientsFound
+                : t.patients.noPatientsRegistered}
             </div>
           ) : (
             <div className="rounded-md border bg-background">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Patient</TableHead>
-                    <TableHead>Contact</TableHead>
-                    <TableHead>Age</TableHead>
-                    <TableHead>Last Visit</TableHead>
-                    <TableHead>Next Appointment</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>{t.patients.table.patient}</TableHead>
+                    <TableHead>{t.patients.table.contact}</TableHead>
+                    <TableHead>{t.patients.table.age}</TableHead>
+                    <TableHead>{t.patients.table.lastVisit}</TableHead>
+                    <TableHead>{t.patients.table.nextAppointment}</TableHead>
+                    <TableHead>{t.patients.table.status}</TableHead>
+                    <TableHead className="text-right">{t.patients.table.actions}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -312,19 +318,17 @@ export default function PatientsContent({
                             ? dayjs(lastVisit.appointmentDate).format(
                                 "YYYY-MM-DD"
                               )
-                            : "No visits"}
+                            : t.patients.noVisits}
                         </TableCell>
                         <TableCell>
                           {nextAppointment ? (
                             <div className="flex items-center gap-2">
                               <Calendar className="h-3 w-3 text-muted-foreground" />
-                              {dayjs(nextAppointment.appointmentDate).format(
-                                "YYYY-MM-DD"
-                              )}
+                              {formatDateByLanguage(nextAppointment.appointmentDate, language, "numeric")}
                             </div>
                           ) : (
                             <span className="text-muted-foreground text-sm">
-                              Not scheduled
+                              {t.patients.notScheduled}
                             </span>
                           )}
                         </TableCell>
@@ -333,7 +337,7 @@ export default function PatientsContent({
                             variant={active ? "default" : "secondary"}
                             className="capitalize"
                           >
-                            {active ? "Active" : "Inactive"}
+                            {active ? t.patients.active : t.patients.inactive}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
@@ -345,14 +349,14 @@ export default function PatientsContent({
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuLabel>{t.common.actions}</DropdownMenuLabel>
                                 <DropdownMenuItem
                                   onClick={() => {
                                     setSelectedPatient(patient);
                                     setDetailsDialogOpen(true);
                                   }}
                                 >
-                                  View Details
+                                  {t.patients.actions.viewDetails}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onClick={() => {
@@ -360,16 +364,16 @@ export default function PatientsContent({
                                     setEditDialogOpen(true);
                                   }}
                                 >
-                                  Edit Patient
+                                  {t.patients.actions.editPatient}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onClick={() => handleViewHistory(patient)}
                                 >
-                                  View History
+                                  {t.patients.actions.viewHistory}
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem>
-                                  Schedule Appointment
+                                  {t.patients.actions.scheduleAppointment}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   className="text-destructive"
@@ -378,7 +382,7 @@ export default function PatientsContent({
                                     setDeleteDialogOpen(true);
                                   }}
                                 >
-                                  Delete Patient
+                                  {t.patients.actions.deletePatient}
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>

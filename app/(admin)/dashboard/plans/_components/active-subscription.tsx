@@ -7,30 +7,77 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2 } from "lucide-react";
-import { PLANS } from "@/utils/plans";
+import { PLANS, getPlanFeatures, getPlanDescription } from "@/utils/plans";
 import { formatPrice } from "@/lib/utils";
 import type { Plan } from "@/lib/generated/prisma/enums";
 import { ManageSubscriptionButton } from "./manage-subscription-button";
+import { getTranslations } from "@/lib/i18n/server";
+import { PLANS_LIMITS } from "@/utils/permissions/plan-limits";
 
 interface ActiveSubscriptionProps {
   plan: Plan;
   createdAt: Date;
 }
 
-export function ActiveSubscription({
+export async function ActiveSubscription({
   plan,
   createdAt,
 }: ActiveSubscriptionProps) {
+  const t = await getTranslations();
   const planDetails = PLANS.find((p) => p.id === plan.toLowerCase());
+  
+  // Get language from translations
+  const language = t.__language || "en";
+  const planFeatures = getPlanFeatures(language);
+  
+  // Format date based on language
+  const formatDate = (date: Date, lang: "en" | "pt-BR") => {
+    const months = {
+      en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+      "pt-BR": ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"]
+    };
+    
+    const month = months[lang][date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();
+    
+    if (lang === "pt-BR") {
+      return `${day} de ${month} de ${year}`;
+    }
+    return `${month} ${day}, ${year}`;
+  };
+  
+  // Translate features based on plan
+  const translatedFeatures = planDetails?.features.map((feature) => {
+    if (feature.includes("Up to") || feature.includes("Até")) {
+      const count = planDetails.id === "basic" 
+        ? PLANS_LIMITS.BASIC.maxServices 
+        : PLANS_LIMITS.PROFESSIONAL.maxServices;
+      return planFeatures.upToServices(count);
+    }
+    if (feature.includes("Unlimited appointments") || feature.includes("Agendamentos ilimitados")) {
+      return planFeatures.unlimitedAppointments;
+    }
+    if (feature.includes("Priority support") || feature.includes("Suporte prioritário")) {
+      return planFeatures.prioritySupport;
+    }
+    if (feature.includes("Support") && !feature.includes("Priority")) {
+      return planFeatures.support;
+    }
+    if (feature.includes("Reports") || feature.includes("Relatórios")) {
+      return planFeatures.reports;
+    }
+    return feature;
+  }) || [];
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mx-auto max-w-2xl text-center mb-8">
         <h1 className="font-bold text-3xl text-balance md:text-4xl">
-          Your Subscription is Active
+          {t.profile.subscriptionActive}
         </h1>
         <p className="text-muted-foreground mt-4 text-balance text-lg">
-          You're all set! Enjoy all the features of your plan.
+          {t.profile.subscriptionActiveDescription}
         </p>
       </div>
 
@@ -40,14 +87,20 @@ export function ActiveSubscription({
             <div className="flex items-center justify-between mb-2">
               <Badge className="bg-primary hover:bg-primary/80">
                 <CheckCircle2 className="size-3 mr-1" />
-                Active
+                {t.profile.active}
               </Badge>
               {planDetails?.isPopular && (
-                <Badge variant="outline">Most Popular</Badge>
+                <Badge variant="outline">{t.profile.mostPopular}</Badge>
               )}
             </div>
-            <CardTitle>{planDetails?.name || plan}</CardTitle>
-            <CardDescription>{planDetails?.description}</CardDescription>
+                  <CardTitle>
+                    {planDetails?.id === "basic"
+                      ? t.home.pricing.planNames.basic
+                      : t.home.pricing.planNames.professional}
+                  </CardTitle>
+            <CardDescription>
+              {planDetails ? getPlanDescription(planDetails.id, language) : planDetails?.description}
+            </CardDescription>
             <div className="mt-4">
               {planDetails?.originalPrice &&
                 planDetails.originalPrice !== planDetails.price && (
@@ -61,13 +114,15 @@ export function ActiveSubscription({
                 <span className="font-bold text-4xl">
                   R$ {planDetails ? formatPrice(planDetails.price) : "—"}
                 </span>
-                <span className="text-muted-foreground">/month</span>
+                <span className="text-muted-foreground">
+                  {language === "pt-BR" ? "/mês" : "/month"}
+                </span>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <ul className="space-y-3">
-              {planDetails?.features.map((feature, index) => (
+              {translatedFeatures.map((feature, index) => (
                 <li key={index} className="flex items-center gap-2">
                   <CheckCircle2 className="size-5 text-primary" />
                   <span className="text-sm">{feature}</span>
@@ -76,12 +131,8 @@ export function ActiveSubscription({
             </ul>
             <div className="pt-4 border-t space-y-4">
               <p className="text-sm text-muted-foreground">
-                Subscribed since{" "}
-                {new Date(createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+                {t.profile.subscribedSince}{" "}
+                {formatDate(new Date(createdAt), language)}
               </p>
               <ManageSubscriptionButton />
             </div>

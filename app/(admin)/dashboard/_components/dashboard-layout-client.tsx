@@ -16,9 +16,12 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { DashboardSidebar } from "./DashboardSidebar";
+import { LanguageSelector } from "@/components/language-selector";
+import { useTranslations } from "@/hooks/use-translations";
 
 function DashboardBreadcrumb() {
   const pathname = usePathname();
+  const t = useTranslations();
 
   const pathSegments = pathname.split("/").filter(Boolean);
 
@@ -28,11 +31,11 @@ function DashboardBreadcrumb() {
   // Map segment to display name
   const getSegmentName = (segment: string): string => {
     const keyMap: Record<string, string> = {
-      appointments: "Appointments",
-      patients: "Patients",
-      services: "Services",
-      profile: "Profile",
-      plans: "Plans",
+      appointments: t.nav.appointments,
+      patients: t.nav.patients,
+      services: t.nav.services,
+      profile: t.nav.profile,
+      plans: t.nav.plans,
     };
     return keyMap[segment] || segment;
   };
@@ -42,7 +45,7 @@ function DashboardBreadcrumb() {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href="/dashboard/appointments">Appointments</Link>
+            <Link href="/dashboard/appointments">{t.nav.appointments}</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         {subSegments.length > 1 && subSegments.map((segment, index) => {
@@ -84,6 +87,7 @@ export function DashboardLayoutClient({
           <SidebarTrigger className="-ml-1 hover:bg-accent/50" />
           <DashboardBreadcrumb />
           <div className="flex-1" />
+          <LanguageSelector />
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 md:p-6 bg-muted/20">
           {children}

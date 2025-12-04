@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { deletePatient } from "../_data-access/delete-patient";
 import type { PatientWithRelations } from "@/lib/types";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "@/hooks/use-translations";
 
 interface DeletePatientDialogProps {
   patient: PatientWithRelations | null;
@@ -29,6 +30,7 @@ export function DeletePatientDialog({
   onOpenChange,
   onSuccess,
 }: DeletePatientDialogProps) {
+  const t = useTranslations();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -57,29 +59,25 @@ export function DeletePatientDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>{t.patients.deleteConfirm}</AlertDialogTitle>
           <AlertDialogDescription className="space-y-2">
             <p>
-              This will permanently delete{" "}
-              <span className="font-semibold text-foreground">
-                {patient.name}
-              </span>{" "}
-              and all associated data.
+              {t.patients.deleteConfirmDescription.replace("{name}", patient.name)}
             </p>
             {appointmentCount > 0 && (
               <p className="text-destructive font-medium">
-                Warning: This will also delete {appointmentCount} appointment
-                {appointmentCount !== 1 ? "s" : ""} associated with this
-                patient.
+                {t.patients.deleteConfirmWarning
+                  .replace("{count}", appointmentCount.toString())
+                  .replace(/\{plural\}/g, appointmentCount !== 1 ? "s" : "")}
               </p>
             )}
             <p className="text-xs text-muted-foreground mt-2">
-              This action cannot be undone.
+              {t.services.deleteConfirmDescription}
             </p>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>{t.common.cancel}</AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault();
@@ -91,10 +89,10 @@ export function DeletePatientDialog({
             {isDeleting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Deleting...
+                {t.patients.deleting}
               </>
             ) : (
-              "Delete Patient"
+              t.patients.deletePatient
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { createPortalSession } from "../_actions/create-portal-session";
 import { toast } from "sonner";
 import { Loader2, Settings } from "lucide-react";
+import { useTranslations } from "@/hooks/use-translations";
 
 export function ManageSubscriptionButton() {
+  const t = useTranslations();
   const [isPending, startTransition] = useTransition();
 
   const handleManageSubscription = () => {
@@ -44,12 +46,12 @@ export function ManageSubscriptionButton() {
       {isPending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Loading...
+          {t.common.loading}
         </>
       ) : (
         <>
           <Settings className="mr-2 h-4 w-4" />
-          Manage Subscription
+          {t.profile.manageSubscription}
         </>
       )}
     </Button>

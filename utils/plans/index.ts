@@ -14,6 +14,44 @@ export interface Plan {
   type: PrismaPlanType;
 }
 
+// Helper function to get translated features
+export function getPlanFeatures(language: "en" | "pt-BR" = "en") {
+  const features = {
+    en: {
+      upToServices: (count: number) => `Up to ${count} services`,
+      unlimitedAppointments: "Unlimited appointments",
+      support: "Support",
+      prioritySupport: "Priority support",
+      reports: "Reports",
+    },
+    "pt-BR": {
+      upToServices: (count: number) => `Até ${count} serviços`,
+      unlimitedAppointments: "Agendamentos ilimitados",
+      support: "Suporte",
+      prioritySupport: "Suporte prioritário",
+      reports: "Relatórios",
+    },
+  };
+
+  return features[language];
+}
+
+// Helper function to get translated plan descriptions
+export function getPlanDescription(planId: string, language: "en" | "pt-BR" = "en"): string {
+  const descriptions = {
+    en: {
+      basic: "Perfect for smaller clinics",
+      professional: "Ideal for large clinics",
+    },
+    "pt-BR": {
+      basic: "Perfeito para clínicas menores",
+      professional: "Ideal para grandes clínicas",
+    },
+  };
+
+  return descriptions[language][planId as keyof typeof descriptions.en] || "";
+}
+
 export const PLANS: Plan[] = [
   {
     id: "basic",

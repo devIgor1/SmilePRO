@@ -5,14 +5,17 @@ import Link from "next/link";
 import { Smile } from "lucide-react";
 import { MobileNav } from "./MobileNav";
 import { UserMenu } from "./UserMenu";
-import { authButtons, navItems } from "./nav-config";
+import { authButtons } from "./nav-config";
 import { useSession } from "next-auth/react";
 import { handleLogin } from "../_actions/login";
 import { handleNavClick } from "./utils";
+import { LanguageSelector } from "@/components/language-selector";
+import { useTranslations } from "@/hooks/use-translations";
 
 export function HomeHeader() {
   const { data: session, status } = useSession();
   const isLoading = status === "loading";
+  const t = useTranslations();
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -28,16 +31,28 @@ export function HomeHeader() {
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-4 lg:gap-6 md:flex">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={(e) => handleNavClick(e, item.href)}
-              className="text-muted-foreground hover:text-foreground text-sm lg:text-base transition-colors"
-            >
-              {item.label}
-            </Link>
-          ))}
+          <Link
+            href="#features"
+            onClick={(e) => handleNavClick(e, "#features")}
+            className="text-muted-foreground hover:text-foreground text-sm lg:text-base transition-colors"
+          >
+            {t.nav.features}
+          </Link>
+          <Link
+            href="#pricing"
+            onClick={(e) => handleNavClick(e, "#pricing")}
+            className="text-muted-foreground hover:text-foreground text-sm lg:text-base transition-colors"
+          >
+            {t.nav.pricing}
+          </Link>
+          <Link
+            href="#professionals"
+            onClick={(e) => handleNavClick(e, "#professionals")}
+            className="text-muted-foreground hover:text-foreground text-sm lg:text-base transition-colors"
+          >
+            {t.nav.professionals}
+          </Link>
+          <LanguageSelector />
           {!isLoading && (
             <>
               {session?.user ? (
@@ -50,7 +65,7 @@ export function HomeHeader() {
                     className="hidden lg:flex cursor-pointer bg-primary/40"
                     onClick={() => handleLogin("google")}
                   >
-                    {authButtons.signIn.label}
+                    {t.nav.signIn}
                   </Button>
                 </>
               )}

@@ -1,3 +1,5 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,12 +8,15 @@ import { MapPin, Calendar, Award, Briefcase, Star } from "lucide-react";
 import Link from "next/link";
 import dayjs from "dayjs";
 import type { ActiveClinic } from "../_data-access/get-active-clinics";
+import { useTranslations } from "@/hooks/use-translations";
 
 interface ProfessionalsProps {
   clinics: ActiveClinic[];
 }
 
 export function Professionals({ clinics }: ProfessionalsProps) {
+  const t = useTranslations();
+  
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -27,10 +32,10 @@ export function Professionals({ clinics }: ProfessionalsProps) {
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-bold text-3xl text-balance md:text-4xl">
-              Featured Dental Clinics
+              {t.home.professionals.title}
             </h2>
             <p className="text-muted-foreground mt-4 text-balance text-lg">
-              No clinics available for booking at this time. Check back soon!
+              {t.home.professionals.noClinics}
             </p>
           </div>
         </div>
@@ -43,10 +48,10 @@ export function Professionals({ clinics }: ProfessionalsProps) {
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-bold text-3xl text-balance md:text-4xl">
-            Featured Dental Clinics
+            {t.home.professionals.title}
           </h2>
           <p className="text-muted-foreground mt-4 text-balance text-lg">
-            Book appointments with verified dental professionals near you
+            {t.home.professionals.subtitle}
           </p>
         </div>
 
@@ -78,7 +83,7 @@ export function Professionals({ clinics }: ProfessionalsProps) {
                         className="bg-primary text-primary-foreground shadow-lg"
                       >
                         <Star className="size-3 mr-1 fill-current" />
-                        PROFESSIONAL
+                        {t.home.professionals.title.includes("Destaque") ? "PROFISSIONAL" : "PROFESSIONAL"}
                       </Badge>
                     </div>
                   )}
@@ -132,21 +137,21 @@ export function Professionals({ clinics }: ProfessionalsProps) {
                     <div className="flex items-center gap-2 flex-wrap text-sm">
                       <Badge variant="secondary" className="text-xs">
                         <Briefcase className="size-3 mr-1" />
-                        {clinic._count.services} service
-                        {clinic._count.services !== 1 ? "s" : ""}
+                        {clinic._count.services} {t.home.professionals.services}
+                        {clinic._count.services !== 1 && t.home.professionals.services === "service" ? "s" : ""}
                       </Badge>
                       <Badge variant="outline" className="text-xs">
-                        Active clinic
+                        {t.home.professionals.activeClinic}
                       </Badge>
                     </div>
                     <div className="pt-2 text-xs text-muted-foreground">
-                      {clinic._count.appointments}+ appointments completed
+                      {clinic._count.appointments}+ {t.home.professionals.appointmentsCompleted}
                     </div>
                     <div className="pt-2">
                       <Link href={`/clinic/${clinic.id}`}>
                         <Button className="w-full" size="sm">
                           <Calendar className="size-4 mr-2" />
-                          Book Appointment
+                          {t.home.professionals.bookAppointment}
                         </Button>
                       </Link>
                     </div>
@@ -158,13 +163,13 @@ export function Professionals({ clinics }: ProfessionalsProps) {
 
         <div className="mx-auto mt-12 max-w-2xl text-center">
           <p className="text-muted-foreground text-sm">
-            Showing{" "}
+            {t.home.professionals.showing}{" "}
             <span className="font-semibold text-foreground">
               {clinics.length}
             </span>{" "}
-            featured
-            {clinics.length === 1 ? " clinic" : " clinics"} accepting online
-            bookings
+            {t.home.professionals.featured}{" "}
+            {clinics.length === 1 ? t.home.professionals.clinic : t.home.professionals.clinics}{" "}
+            {t.home.professionals.acceptingBookings}
           </p>
         </div>
       </div>

@@ -1,3 +1,5 @@
+"use client";
+
 import { Calendar, Users, BarChart3, Clock, Shield, Zap } from "lucide-react";
 import {
   Card,
@@ -5,17 +7,20 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import { useTranslations } from "@/hooks/use-translations";
 
 export function Features() {
+  const t = useTranslations();
+  
   return (
     <section id="features" className="border-t bg-muted/50 py-20">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-bold text-3xl text-balance md:text-4xl">
-            Everything you need to run your clinic
+            {t.home.features.title}
           </h2>
           <p className="text-muted-foreground mt-4 text-balance text-lg">
-            Powerful features designed to save time and improve patient care
+            {t.home.features.subtitle}
           </p>
         </div>
 
@@ -25,10 +30,9 @@ export function Features() {
               <div className="bg-primary/10 text-primary mb-4 flex size-12 items-center justify-center rounded-lg">
                 <Calendar className="size-6" />
               </div>
-              <CardTitle>Smart Scheduling</CardTitle>
+              <CardTitle>{t.home.features.smartScheduling.title}</CardTitle>
               <CardDescription>
-                Intuitive calendar view with easy appointment management and
-                public online booking for your patients
+                {t.home.features.smartScheduling.description}
               </CardDescription>
             </CardHeader>
           </Card>
@@ -38,10 +42,9 @@ export function Features() {
               <div className="bg-primary/10 text-primary mb-4 flex size-12 items-center justify-center rounded-lg">
                 <Users className="size-6" />
               </div>
-              <CardTitle>Patient Management</CardTitle>
+              <CardTitle>{t.home.features.patientManagement.title}</CardTitle>
               <CardDescription>
-                Complete patient profiles with contact information, notes,
-                photos, and full appointment history
+                {t.home.features.patientManagement.description}
               </CardDescription>
             </CardHeader>
           </Card>
@@ -51,10 +54,9 @@ export function Features() {
               <div className="bg-primary/10 text-primary mb-4 flex size-12 items-center justify-center rounded-lg">
                 <BarChart3 className="size-6" />
               </div>
-              <CardTitle>Analytics & Insights</CardTitle>
+              <CardTitle>{t.home.features.analytics.title}</CardTitle>
               <CardDescription>
-                Track revenue trends, monitor appointment statistics, and view
-                key performance metrics
+                {t.home.features.analytics.description}
               </CardDescription>
             </CardHeader>
           </Card>
@@ -64,10 +66,9 @@ export function Features() {
               <div className="bg-primary/10 text-primary mb-4 flex size-12 items-center justify-center rounded-lg">
                 <Clock className="size-6" />
               </div>
-              <CardTitle>Service Management</CardTitle>
+              <CardTitle>{t.home.features.serviceManagement.title}</CardTitle>
               <CardDescription>
-                Create and manage your clinic services with pricing, duration,
-                and availability settings
+                {t.home.features.serviceManagement.description}
               </CardDescription>
             </CardHeader>
           </Card>
@@ -77,10 +78,9 @@ export function Features() {
               <div className="bg-primary/10 text-primary mb-4 flex size-12 items-center justify-center rounded-lg">
                 <Shield className="size-6" />
               </div>
-              <CardTitle>Secure & Reliable</CardTitle>
+              <CardTitle>{t.home.features.secure.title}</CardTitle>
               <CardDescription>
-                Secure authentication, data protection, and reliable
-                infrastructure to keep your clinic data safe
+                {t.home.features.secure.description}
               </CardDescription>
             </CardHeader>
           </Card>
@@ -90,10 +90,9 @@ export function Features() {
               <div className="bg-primary/10 text-primary mb-4 flex size-12 items-center justify-center rounded-lg">
                 <Zap className="size-6" />
               </div>
-              <CardTitle>Easy to Use</CardTitle>
+              <CardTitle>{t.home.features.easyToUse.title}</CardTitle>
               <CardDescription>
-                Simple, intuitive interface designed for dental professionals.
-                Get started in minutes with no training needed
+                {t.home.features.easyToUse.description}
               </CardDescription>
             </CardHeader>
           </Card>

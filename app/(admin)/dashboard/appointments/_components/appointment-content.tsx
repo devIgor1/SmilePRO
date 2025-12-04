@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/hooks/use-translations";
+import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import {
   Card,
@@ -74,7 +76,9 @@ import {
   Check,
 } from "lucide-react";
 import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
 import { cn } from "@/lib/utils";
+import { formatDateByLanguage } from "@/lib/utils/date-formatter";
 import { getAppointmentsByDate } from "../_data-access/get-appointments-by-date";
 import { getAllServices } from "../../services/_data-access/get-all-services";
 import { findOrCreatePatient } from "../_data-access/find-or-create-patient";
@@ -111,17 +115,22 @@ export default function AppointmentContent({
   initialDate = new Date(),
   userTimeslots = [],
 }: AppointmentContentProps) {
+  const t = useTranslations();
   const router = useRouter();
   const [date, setDate] = useState<Date>(initialDate);
+  const { data: session } = useSession();
+  
+  // Get language from session
+  const language = (session?.user?.systemLanguage as "en" | "pt-BR") || "en";
 
-  // Format date
+  // Format date based on language
   const formatDate = (date: Date) => {
-    return dayjs(date).format("MMMM D, YYYY");
+    return formatDateByLanguage(date, language, "full");
   };
 
   // Format date without year (for quick view)
   const formatDateShort = (date: Date) => {
-    return dayjs(date).format("MMMM D");
+    return formatDateByLanguage(date, language, "short");
   };
   const [searchQuery, setSearchQuery] = useState("");
   const [appointments, setAppointments] =
@@ -264,7 +273,7 @@ export default function AppointmentContent({
           throw new Error("Failed to create appointment");
         }
 
-        toast.success("Appointment scheduled and confirmed successfully!");
+        toast.success(t.appointments.scheduledSuccess);
         setIsDialogOpen(false);
         router.refresh();
 
@@ -276,7 +285,7 @@ export default function AppointmentContent({
         toast.error(
           error instanceof Error
             ? error.message
-            : "Failed to schedule appointment. Please try again."
+            : t.appointments.scheduledSuccess
         );
       }
     });
@@ -302,7 +311,7 @@ export default function AppointmentContent({
           throw new Error("Failed to confirm appointment");
         }
 
-        toast.success("Appointment confirmed successfully!");
+        toast.success(t.appointments.confirmedSuccess);
         router.refresh();
 
         // Reload appointments for the current date
@@ -313,7 +322,7 @@ export default function AppointmentContent({
         toast.error(
           error instanceof Error
             ? error.message
-            : "Failed to confirm appointment. Please try again."
+            : t.appointments.confirmedSuccess
         );
       }
     });
@@ -334,7 +343,7 @@ export default function AppointmentContent({
           throw new Error("Failed to cancel appointment");
         }
 
-        toast.success("Appointment cancelled successfully");
+        toast.success(t.appointments.cancelledSuccess);
         setCancelDialogOpen(false);
         setAppointmentToCancel(null);
         router.refresh();
@@ -347,7 +356,7 @@ export default function AppointmentContent({
         toast.error(
           error instanceof Error
             ? error.message
-            : "Failed to cancel appointment. Please try again."
+            : t.appointments.cancelledSuccess
         );
       }
     });
@@ -366,7 +375,7 @@ export default function AppointmentContent({
           throw new Error("Failed to complete appointment");
         }
 
-        toast.success("Appointment marked as completed!");
+        toast.success(t.appointments.completedSuccess);
         router.refresh();
 
         // Reload appointments for the current date
@@ -377,7 +386,7 @@ export default function AppointmentContent({
         toast.error(
           error instanceof Error
             ? error.message
-            : "Failed to complete appointment. Please try again."
+            : t.appointments.completedSuccess
         );
       }
     });
@@ -389,10 +398,10 @@ export default function AppointmentContent({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            Appointment Schedule
+            {t.appointments.scheduleTitle}
           </h1>
           <p className="text-muted-foreground mt-2">
-            Manage and schedule patient appointments
+            {t.appointments.scheduleSubtitle}
           </p>
         </div>
         {isMounted && (
@@ -400,26 +409,25 @@ export default function AppointmentContent({
             <DialogTrigger asChild>
               <Button className="bg-primary hover:bg-primary/90 cursor-pointer">
                 <Plus className="mr-2 h-4 w-4" />
-                New Appointment
+                {t.appointments.newAppointment}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
               <form onSubmit={handleSubmit(onSubmit)}>
                 <DialogHeader>
-                  <DialogTitle>Schedule New Appointment</DialogTitle>
+                  <DialogTitle>{t.appointments.scheduleNew}</DialogTitle>
                   <DialogDescription>
-                    Fill in the details to schedule a new appointment for a
-                    patient.
+                    {t.appointments.scheduleDescription}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
                     <Label htmlFor="patient-name">
-                      Patient Name <span className="text-destructive">*</span>
+                      {t.appointments.patientName} <span className="text-destructive">{t.appointments.required}</span>
                     </Label>
                     <Input
                       id="patient-name"
-                      placeholder="Enter patient name"
+                      placeholder={t.appointments.patientNamePlaceholder}
                       {...register("patientName")}
                     />
                     {errors.patientName && (
@@ -430,12 +438,12 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="email">
-                      Email <span className="text-destructive">*</span>
+                      {t.patients.email} <span className="text-destructive">{t.appointments.required}</span>
                     </Label>
                     <Input
                       id="email"
                       type="email"
-                      placeholder="patient@example.com"
+                      placeholder={t.appointments.emailPlaceholder}
                       {...register("email")}
                     />
                     {errors.email && (
@@ -446,12 +454,12 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="phone">
-                      Phone Number <span className="text-destructive">*</span>
+                      {t.appointments.phoneNumber} <span className="text-destructive">{t.appointments.required}</span>
                     </Label>
                     <Input
                       id="phone"
                       type="tel"
-                      placeholder="21 99999-9999"
+                      placeholder={t.appointments.phonePlaceholder}
                       {...register("phone")}
                     />
                     {errors.phone && (
@@ -462,14 +470,14 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="service">
-                      Service <span className="text-destructive">*</span>
+                      {t.services.title} <span className="text-destructive">{t.appointments.required}</span>
                     </Label>
                     <Select
                       value={watch("serviceId")}
                       onValueChange={(value) => setValue("serviceId", value)}
                     >
                       <SelectTrigger id="service">
-                        <SelectValue placeholder="Select service" />
+                        <SelectValue placeholder={t.appointments.selectService} />
                       </SelectTrigger>
                       <SelectContent>
                         {services.map((service) => (
@@ -487,8 +495,8 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="appointment-date">
-                      Appointment Date{" "}
-                      <span className="text-destructive">*</span>
+                      {t.appointments.appointmentDate}{" "}
+                      <span className="text-destructive">{t.appointments.required}</span>
                     </Label>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -504,7 +512,7 @@ export default function AppointmentContent({
                           {appointmentDate ? (
                             formatDate(appointmentDate)
                           ) : (
-                            <span>Pick a date</span>
+                            <span>{t.appointments.pickDate}</span>
                           )}
                         </Button>
                       </PopoverTrigger>
@@ -537,7 +545,7 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="time-slot">
-                      Time Slot <span className="text-destructive">*</span>
+                      {t.appointments.appointmentTime} <span className="text-destructive">{t.appointments.required}</span>
                     </Label>
                     <Select
                       value={watch("appointmentTime")}
@@ -546,7 +554,7 @@ export default function AppointmentContent({
                       }
                     >
                       <SelectTrigger id="time-slot">
-                        <SelectValue placeholder="Select time" />
+                        <SelectValue placeholder={t.booking.selectTime} />
                       </SelectTrigger>
                       <SelectContent>
                         {timeSlots
@@ -573,10 +581,10 @@ export default function AppointmentContent({
                     )}
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="notes">Notes (Optional)</Label>
+                    <Label htmlFor="notes">{t.appointments.notes}</Label>
                     <Textarea
                       id="notes"
-                      placeholder="Add any special notes or requirements"
+                      placeholder={t.appointments.notesPlaceholder}
                       rows={3}
                       {...register("notes")}
                     />
@@ -595,7 +603,7 @@ export default function AppointmentContent({
                     disabled={isPending}
                     className="cursor-pointer"
                   >
-                    Cancel
+                    {t.common.cancel}
                   </Button>
                   <Button
                     type="submit"
@@ -605,10 +613,10 @@ export default function AppointmentContent({
                     {isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Confirming...
+                        {t.common.loading}
                       </>
                     ) : (
-                      <>Confirm & Schedule</>
+                      <>{t.appointments.schedule}</>
                     )}
                   </Button>
                 </DialogFooter>
@@ -619,7 +627,7 @@ export default function AppointmentContent({
         {!isMounted && (
           <Button className="bg-primary hover:bg-primary/90">
             <Plus className="mr-2 h-4 w-4" />
-            New Appointment
+            {t.appointments.newAppointment}
           </Button>
         )}
       </div>
@@ -629,9 +637,9 @@ export default function AppointmentContent({
         {/* Calendar Section */}
         <Card className="border-primary/20 !bg-gradient-to-br from-background via-background to-primary/5 overflow-hidden p-0 flex flex-col">
           <CardHeader className="border-b border-primary/10 bg-primary/10 rounded-t-xl px-6 pt-6 pb-6">
-            <CardTitle className="text-primary">Select Date</CardTitle>
+            <CardTitle className="text-primary">{t.appointments.selectDate}</CardTitle>
             <CardDescription>
-              Choose a date to view appointments
+              {t.appointments.selectDate}
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6 px-6 pb-6 flex justify-center">
@@ -641,6 +649,16 @@ export default function AppointmentContent({
               onSelect={(newDate) => newDate && setDate(newDate)}
               captionLayout="dropdown"
               className="rounded-md"
+              formatters={
+                language === "pt-BR"
+                  ? {
+                      formatMonthDropdown: (date) =>
+                        dayjs(date).locale("pt-br").format("MMMM"),
+                      formatYearDropdown: (date) =>
+                        dayjs(date).locale("pt-br").format("YYYY"),
+                    }
+                  : undefined
+              }
             />
           </CardContent>
         </Card>
@@ -655,15 +673,17 @@ export default function AppointmentContent({
                 </CardTitle>
                 <CardDescription>
                   {appointments.length}{" "}
-                  {appointments.length !== 1 ? "appointments" : "appointment"}{" "}
-                  scheduled
+                  {appointments.length !== 1 
+                    ? (language === "pt-BR" ? "agendamentos agendados" : `${t.appointments.appointments} ${t.appointments.scheduled}`)
+                    : (language === "pt-BR" ? "agendamento agendado" : `${t.appointments.appointment} ${t.appointments.scheduled}`)
+                  }
                 </CardDescription>
               </div>
               <div className="flex gap-2">
                 <div className="relative flex-1 sm:flex-initial">
                   <Search className="text-muted-foreground absolute left-2.5 top-2.5 h-4 w-4" />
                   <Input
-                    placeholder="Search patients..."
+                    placeholder={t.patients.searchPlaceholder}
                     className="pl-8 sm:w-[200px] bg-background"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -675,24 +695,24 @@ export default function AppointmentContent({
           <CardContent className="pt-6 px-6 pb-6">
             {isLoading ? (
               <div className="text-center py-8 text-muted-foreground">
-                Loading appointments...
+                {t.common.loading}
               </div>
             ) : filteredAppointments.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 {searchQuery
-                  ? "No appointments found matching your search"
-                  : "No appointments scheduled for this date"}
+                  ? t.appointments.noAppointments
+                  : t.appointments.noAppointments}
               </div>
             ) : (
               <div className="rounded-md border bg-background">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Time</TableHead>
-                      <TableHead>Patient</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead>{t.appointments.appointmentTime}</TableHead>
+                      <TableHead>{t.patients.table.patient}</TableHead>
+                      <TableHead>{t.services.title}</TableHead>
+                      <TableHead>{t.patients.table.status}</TableHead>
+                      <TableHead className="text-right">{t.common.actions}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -721,16 +741,16 @@ export default function AppointmentContent({
                           <Badge variant={getStatusVariant(appointment.status)}>
                             {getStatusIcon(appointment.status)}
                             {appointment.status === AppointmentStatus.PENDING
-                              ? "Pending"
+                              ? t.appointments.status.pending
                               : appointment.status ===
                                   AppointmentStatus.CONFIRMED
-                                ? "Confirmed"
+                                ? t.appointments.status.confirmed
                                 : appointment.status ===
                                     AppointmentStatus.CANCELLED
-                                  ? "Cancelled"
+                                  ? t.appointments.status.cancelled
                                   : appointment.status ===
                                       AppointmentStatus.COMPLETED
-                                    ? "Completed"
+                                    ? t.appointments.status.completed
                                     : appointment.status}
                           </Badge>
                         </TableCell>
@@ -743,7 +763,7 @@ export default function AppointmentContent({
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuLabel>{t.common.actions}</DropdownMenuLabel>
                                 {appointment.status ===
                                   AppointmentStatus.PENDING && (
                                   <DropdownMenuItem
@@ -753,14 +773,14 @@ export default function AppointmentContent({
                                     disabled={isPending}
                                   >
                                     <Check className="mr-2 h-4 w-4" />
-                                    Confirm Appointment
+                                    {t.appointments.confirmAppointment}
                                   </DropdownMenuItem>
                                 )}
                                 <DropdownMenuItem>
-                                  View Details
+                                  {t.patients.actions.viewDetails}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
-                                  Edit Appointment
+                                  {t.common.edit}
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 {appointment.status !==
@@ -770,7 +790,7 @@ export default function AppointmentContent({
                                       handleCompleteAppointment(appointment.id)
                                     }
                                   >
-                                    Mark as Completed
+                                    {t.appointments.completeAppointment}
                                   </DropdownMenuItem>
                                 )}
                                 {appointment.status !==
@@ -782,7 +802,7 @@ export default function AppointmentContent({
                                       setCancelDialogOpen(true);
                                     }}
                                   >
-                                    Cancel Appointment
+                                    {t.appointments.cancelAppointment}
                                   </DropdownMenuItem>
                                 )}
                               </DropdownMenuContent>
@@ -805,25 +825,25 @@ export default function AppointmentContent({
 
       {/* Time Slots Overview */}
       <Card className="border-primary/20 !bg-gradient-to-br from-background via-background to-primary/5 overflow-hidden p-0 flex flex-col">
-        <CardHeader className="border-b border-primary/10 bg-primary/10 rounded-t-xl px-6 pt-6 pb-6">
-          <CardTitle className="text-primary">Available Time Slots</CardTitle>
-          <CardDescription>
-            {hasTimeslots
-              ? `Quick view of available and booked time slots for ${formatDateShort(date)}`
-              : "Configure your available times in your profile to start accepting appointments"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-6 px-6 pb-6">
-          {!hasTimeslots ? (
-            <div className="text-center py-8">
-              <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-              <p className="text-sm text-muted-foreground mb-4">
-                No available time slots configured
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Go to your profile to set up your clinic's available hours
-              </p>
-            </div>
+          <CardHeader className="border-b border-primary/10 bg-primary/10 rounded-t-xl px-6 pt-6 pb-6">
+            <CardTitle className="text-primary">{t.appointments.availableTimeSlots}</CardTitle>
+            <CardDescription>
+              {hasTimeslots
+                ? `${t.appointments.timeSlotsDescription} ${formatDateShort(date)}`
+                : t.appointments.timeSlotsDescriptionNoConfig}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6 px-6 pb-6">
+            {!hasTimeslots ? (
+              <div className="text-center py-8">
+                <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
+                <p className="text-sm text-muted-foreground mb-4">
+                  {t.appointments.noTimeSlotsConfigured}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {t.appointments.goToProfile}
+                </p>
+              </div>
           ) : (
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
               {timeSlots.map((slot) => {
@@ -849,32 +869,32 @@ export default function AppointmentContent({
       <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Cancel Appointment</AlertDialogTitle>
+            <AlertDialogTitle>{t.appointments.cancelConfirm}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to cancel this appointment?
+              {t.appointments.cancelConfirmDescription}
               {appointmentToCancel && (
                 <div className="mt-4 space-y-2 text-sm">
                   <div>
-                    <strong>Patient:</strong> {appointmentToCancel.patient.name}
+                    <strong>{t.appointments.patient}:</strong> {appointmentToCancel.patient.name}
                   </div>
                   <div>
-                    <strong>Service:</strong> {appointmentToCancel.service.name}
+                    <strong>{t.appointments.service}:</strong> {appointmentToCancel.service.name}
                   </div>
                   <div>
-                    <strong>Date:</strong>{" "}
+                    <strong>{t.appointments.date}:</strong>{" "}
                     {dayjs(appointmentToCancel.appointmentDate).format(
                       "MMMM D, YYYY"
                     )}
                   </div>
                   <div>
-                    <strong>Time:</strong> {appointmentToCancel.appointmentTime}
+                    <strong>{t.appointments.time}:</strong> {appointmentToCancel.appointmentTime}
                   </div>
                 </div>
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isPending}>{t.common.cancel}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancelAppointment}
               disabled={isPending}
@@ -883,10 +903,10 @@ export default function AppointmentContent({
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Cancelling...
+                  {t.appointments.cancelling}
                 </>
               ) : (
-                "Yes, cancel appointment"
+                t.appointments.yesCancel
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

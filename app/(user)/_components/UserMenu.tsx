@@ -13,9 +13,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { List, LogOut, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
+import { useTranslations } from "@/hooks/use-translations";
 
 export function UserMenu() {
   const { data: session } = useSession();
+  const t = useTranslations();
 
   if (!session?.user) return null;
 
@@ -59,7 +61,7 @@ export function UserMenu() {
         <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/dashboard/services" className="flex items-center">
             <List className="mr-2 h-4 w-4" />
-            <span>Services</span>
+            <span>{t.nav.services}</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="cursor-pointer">
@@ -68,13 +70,13 @@ export function UserMenu() {
             className="flex items-center cursor-pointer"
           >
             <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
+            <span>{t.nav.profile}</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/dashboard/appointments" className="flex items-center">
             <Settings className="mr-2 h-4 w-4" />
-            <span>Appointments</span>
+            <span>{t.nav.appointments}</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -83,7 +85,7 @@ export function UserMenu() {
           onClick={() => signOut({ callbackUrl: "/" })}
         >
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span>{t.nav.logOut}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

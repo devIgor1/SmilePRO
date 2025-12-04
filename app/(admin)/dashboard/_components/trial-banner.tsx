@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import dayjs from "dayjs";
+import { getTranslations } from "@/lib/i18n/server";
 
 export async function TrialBanner() {
   const session = await getSession();
+  const t = await getTranslations();
 
   if (!session) {
     return null;
@@ -53,13 +55,13 @@ export async function TrialBanner() {
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-foreground mb-1">
                 {daysRemaining > 0
-                  ? `You're on a free trial! ${daysRemaining} day${daysRemaining !== 1 ? "s" : ""} remaining`
-                  : "Your trial has ended"}
+                  ? `${t.dashboard.trial.onTrial} ${daysRemaining} ${daysRemaining !== 1 ? t.dashboard.trial.days : t.dashboard.trial.day} ${t.dashboard.trial.daysRemaining}`
+                  : t.dashboard.trial.trialEnded}
               </h3>
               <p className="text-sm text-muted-foreground">
                 {daysRemaining > 0
-                  ? "Enjoy full access to all features. Upgrade to keep using SmilePRO after your trial ends."
-                  : "Upgrade now to continue using all features and manage your clinic seamlessly."}
+                  ? t.dashboard.trial.enjoyAccess
+                  : t.dashboard.trial.upgradeContinue}
               </p>
             </div>
           </div>
@@ -69,7 +71,7 @@ export async function TrialBanner() {
             size="sm"
           >
             <Link href="/dashboard/plans">
-              Upgrade Now
+              {t.dashboard.trial.upgradeNow}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

@@ -13,9 +13,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 import Link from "next/link";
+import { getTranslations } from "@/lib/i18n/server";
 
 export default async function PatientsPage() {
   const session = await getSession();
+  const t = await getTranslations();
 
   if (!session) {
     redirect("/");
@@ -30,10 +32,10 @@ export default async function PatientsPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            Patients
+            {t.patients.title}
           </h1>
           <p className="text-muted-foreground mt-2">
-            Manage your clinic patients
+            {t.patients.title}
           </p>
         </div>
         <Card className="border-red-500/50 bg-red-500/10">
@@ -44,18 +46,16 @@ export default async function PatientsPage() {
               </div>
               <div className="flex-1">
                 <CardTitle className="text-red-900 dark:text-red-100 mb-2">
-                  Access Restricted
+                  {t.dashboard.accessRestricted.title}
                 </CardTitle>
                 <CardDescription className="text-red-800 dark:text-red-200 mb-4">
-                  You need an active subscription or trial plan to access
-                  patients. Please upgrade to a paid plan to continue using this
-                  feature.
+                  {t.dashboard.accessRestricted.description}
                 </CardDescription>
                 <Button
                   asChild
                   className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
                 >
-                  <Link href="/dashboard/plans">View Plans</Link>
+                  <Link href="/dashboard/plans">{t.dashboard.accessRestricted.viewPlans}</Link>
                 </Button>
               </div>
             </div>

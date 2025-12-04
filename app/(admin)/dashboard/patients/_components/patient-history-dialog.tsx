@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
+import { useTranslations } from "@/hooks/use-translations";
 import {
   Select,
   SelectContent,
@@ -36,6 +37,8 @@ import {
 import dayjs from "dayjs";
 import type { PatientWithRelations } from "@/lib/types";
 import type { Appointment, Service } from "@/lib/types";
+import { formatDateByLanguage } from "@/lib/utils/date-formatter";
+import { useSession } from "next-auth/react";
 import {
   getStatusVariant,
   getStatusIcon,
@@ -59,6 +62,9 @@ export function PatientHistoryDialog({
   open,
   onOpenChange,
 }: PatientHistoryDialogProps) {
+  const t = useTranslations();
+  const { data: session } = useSession();
+  const language = (session?.user?.systemLanguage as "en" | "pt-BR") || "en";
   const [isMounted, setIsMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -137,8 +143,10 @@ export function PatientHistoryDialog({
         apt.service?.description
           ?.toLowerCase()
           .includes(searchQuery.toLowerCase()) ||
-        dayjs(apt.appointmentDate)
-          .format("DD/MM/YYYY")
+        formatDateByLanguage(apt.appointmentDate, language, "numeric")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        formatDateByLanguage(apt.appointmentDate, language, "full")
           .toLowerCase()
           .includes(searchQuery.toLowerCase());
 
@@ -159,18 +167,17 @@ export function PatientHistoryDialog({
   const groupedAppointments = useMemo(() => {
     return filteredAppointments.reduce(
       (acc, apt) => {
-        const date = dayjs(apt.appointmentDate);
-        const yearMonth = date.format("DD/MM/YYYY");
+        const dateKey = formatDateByLanguage(apt.appointmentDate, language, "full");
 
-        if (!acc[yearMonth]) {
-          acc[yearMonth] = [];
+        if (!acc[dateKey]) {
+          acc[dateKey] = [];
         }
-        acc[yearMonth].push(apt);
+        acc[dateKey].push(apt);
         return acc;
       },
       {} as Record<string, AppointmentWithService[]>
     );
-  }, [filteredAppointments]);
+  }, [filteredAppointments, language]);
 
   // Export functionality
   const handleExport = () => {
@@ -178,7 +185,7 @@ export function PatientHistoryDialog({
       ["Date", "Time", "Service", "Price", "Duration", "Status"].join(","),
       ...filteredAppointments.map((apt) =>
         [
-          dayjs(apt.appointmentDate).format("DD/MM/YYYY"),
+          formatDateByLanguage(apt.appointmentDate, language, "numeric"),
           apt.appointmentTime,
           apt.service?.name || "N/A",
           `$${((apt.service?.price || 0) / 100).toFixed(2)}`,
@@ -192,7 +199,7 @@ export function PatientHistoryDialog({
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${patient.name}-history-${dayjs().format("DD/MM/YYYY")}.csv`;
+    a.download = `${patient.name}-history-${formatDateByLanguage(new Date(), language, "numeric")}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -205,9 +212,9 @@ export function PatientHistoryDialog({
         <DialogHeader>
           <div className="flex items-start justify-between">
             <div>
-              <DialogTitle className="text-2xl">Patient History</DialogTitle>
+              <DialogTitle className="text-2xl">{t.appointments.patientHistory}</DialogTitle>
               <DialogDescription>
-                Complete appointment history for {patient.name}
+                {t.appointments.completeHistory} {patient.name}
               </DialogDescription>
             </div>
             <Button
@@ -217,7 +224,7 @@ export function PatientHistoryDialog({
               className="shrink-0"
             >
               <Download className="h-4 w-4 mr-2" />
-              Export CSV
+              {t.appointments.exportCSV}
             </Button>
           </div>
         </DialogHeader>
@@ -236,12 +243,12 @@ export function PatientHistoryDialog({
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">
-                    Total
+                    {t.patients.total}
                   </p>
                   <p className="text-3xl font-bold text-primary tracking-tight">
                     {stats.total}
                   </p>
-                  <p className="text-xs text-muted-foreground">appointments</p>
+                  <p className="text-xs text-muted-foreground">{t.appointments.appointments}</p>
                 </div>
               </div>
             </div>
@@ -257,13 +264,13 @@ export function PatientHistoryDialog({
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">
-                    Completed
+                    {t.patients.completed}
                   </p>
                   <p className="text-3xl font-bold text-primary tracking-tight">
                     {stats.completed}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {stats.completionRate.toFixed(0)}% rate
+                    {stats.completionRate.toFixed(0)}% {t.appointments.rate}
                   </p>
                 </div>
               </div>
@@ -280,13 +287,13 @@ export function PatientHistoryDialog({
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">
-                    Upcoming
+                    {t.patients.upcoming}
                   </p>
                   <p className="text-3xl font-bold text-primary tracking-tight">
                     {stats.upcoming}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {stats.pending} pending
+                    {stats.pending} {t.appointments.pending}
                   </p>
                 </div>
               </div>
@@ -303,13 +310,13 @@ export function PatientHistoryDialog({
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">
-                    Revenue
+                    {t.appointments.revenue}
                   </p>
                   <p className="text-3xl font-bold text-primary tracking-tight">
                     ${stats.totalSpent.toFixed(2)}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    ${stats.avgAppointmentValue.toFixed(2)} avg
+                    ${stats.avgAppointmentValue.toFixed(2)} {t.appointments.avg}
                   </p>
                 </div>
               </div>
@@ -326,7 +333,7 @@ export function PatientHistoryDialog({
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      Most Common Service
+                      {t.appointments.mostCommonService}
                     </p>
                     <p className="font-semibold text-lg">
                       {stats.mostCommonService}
@@ -343,14 +350,14 @@ export function PatientHistoryDialog({
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5 text-primary" />
-              <h3 className="text-lg font-semibold">Filters</h3>
+              <h3 className="text-lg font-semibold">{t.appointments.filters}</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {/* Search */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search appointments..."
+                  placeholder={t.appointments.searchAppointments}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-9"
@@ -370,24 +377,24 @@ export function PatientHistoryDialog({
               {/* Status Filter */}
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Filter by status" />
+                  <SelectValue placeholder={t.appointments.filterByStatus} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="COMPLETED">Completed</SelectItem>
-                  <SelectItem value="CONFIRMED">Confirmed</SelectItem>
-                  <SelectItem value="PENDING">Pending</SelectItem>
-                  <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                  <SelectItem value="all">{t.appointments.allStatuses}</SelectItem>
+                  <SelectItem value="COMPLETED">{t.appointments.status.completed}</SelectItem>
+                  <SelectItem value="CONFIRMED">{t.appointments.status.confirmed}</SelectItem>
+                  <SelectItem value="PENDING">{t.appointments.status.pending}</SelectItem>
+                  <SelectItem value="CANCELLED">{t.appointments.status.cancelled}</SelectItem>
                 </SelectContent>
               </Select>
 
               {/* Year Filter */}
               <Select value={yearFilter} onValueChange={setYearFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Filter by year" />
+                  <SelectValue placeholder={t.appointments.filterByYear} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Years</SelectItem>
+                  <SelectItem value="all">{t.appointments.allYears}</SelectItem>
                   {availableYears.map((year) => (
                     <SelectItem key={year} value={year}>
                       {year}
@@ -401,8 +408,8 @@ export function PatientHistoryDialog({
               yearFilter !== "all") && (
               <div className="flex items-center justify-between text-sm">
                 <p className="text-muted-foreground">
-                  Showing {filteredAppointments.length} of {appointments.length}{" "}
-                  appointments
+                  {t.appointments.showingResults} {filteredAppointments.length} {t.patients.of} {appointments.length}{" "}
+                  {t.appointments.appointments}
                 </p>
                 <Button
                   variant="ghost"
@@ -413,7 +420,7 @@ export function PatientHistoryDialog({
                     setYearFilter("all");
                   }}
                 >
-                  Clear filters
+                  {t.appointments.clearFilters}
                 </Button>
               </div>
             )}
@@ -425,7 +432,7 @@ export function PatientHistoryDialog({
           <div>
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" />
-              Appointment Timeline
+              {t.appointments.appointmentTimeline}
             </h3>
 
             {filteredAppointments.length === 0 ? (
@@ -436,8 +443,8 @@ export function PatientHistoryDialog({
                     {searchQuery ||
                     statusFilter !== "all" ||
                     yearFilter !== "all"
-                      ? "No appointments match your filters"
-                      : "No appointments found for this patient"}
+                      ? t.appointments.noAppointmentsMatch
+                      : t.appointments.noAppointmentsFound}
                   </p>
                   {(searchQuery ||
                     statusFilter !== "all" ||
@@ -451,7 +458,7 @@ export function PatientHistoryDialog({
                         setYearFilter("all");
                       }}
                     >
-                      Clear all filters
+                      {t.appointments.clearAllFilters}
                     </Button>
                   )}
                 </CardContent>
@@ -493,9 +500,11 @@ export function PatientHistoryDialog({
                                     <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-md">
                                       <Calendar className="h-4 w-4 text-primary" />
                                       <span className="font-medium text-sm">
-                                        {dayjs(
-                                          appointment.appointmentDate
-                                        ).format("DD/MM/YYYY")}
+                                        {formatDateByLanguage(
+                                          appointment.appointmentDate,
+                                          language,
+                                          "numeric"
+                                        )}
                                       </span>
                                     </div>
                                     <div className="flex items-center gap-2">
@@ -561,7 +570,7 @@ export function PatientHistoryDialog({
         {/* Footer */}
         <div className="flex justify-end pt-4 border-t">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Close
+            {t.patients.close}
           </Button>
         </div>
       </DialogContent>

@@ -11,6 +11,7 @@ interface User {
   address?: string;
   phone?: string;
   status: boolean;
+  systemLanguage?: string;
   createdAt: string;
   updatedAt: string;
 }

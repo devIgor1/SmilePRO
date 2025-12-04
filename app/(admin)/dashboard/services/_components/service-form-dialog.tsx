@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslations } from "@/hooks/use-translations";
 import {
   Dialog,
   DialogContent,
@@ -41,6 +42,7 @@ export function ServiceFormDialog({
   onOpenChange,
   service,
 }: ServiceFormDialogProps) {
+  const t = useTranslations();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -94,10 +96,10 @@ export function ServiceFormDialog({
       try {
         if (service) {
           await updateService({ id: service.id, ...validationResult.data });
-          toast.success("Service updated successfully");
+          toast.success(t.services.serviceUpdated);
         } else {
           await createService(validationResult.data);
-          toast.success("Service created successfully");
+          toast.success(t.services.serviceCreated);
         }
         setErrors({});
         onOpenChange(false);
@@ -111,8 +113,8 @@ export function ServiceFormDialog({
         });
       } catch (error) {
         console.error("Failed to save service:", error);
-        toast.error("Failed to save service. Please try again.");
-        setErrors({ submit: "Failed to save service. Please try again." });
+        toast.error(t.services.failedToSave);
+        setErrors({ submit: t.services.failedToSave });
       }
     });
   };
@@ -131,18 +133,18 @@ export function ServiceFormDialog({
           <form onSubmit={handleSubmit}>
             <DialogHeader>
               <DialogTitle>
-                {service ? "Update Service" : "Create Service"}
+                {service ? t.services.updateService : t.services.createService}
               </DialogTitle>
               <DialogDescription>
                 {service
-                  ? "Update the service details below"
-                  : "Add a new service to your clinic"}
+                  ? t.services.updateServiceDescription
+                  : t.services.createServiceDescription}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
                 <Label htmlFor="name">
-                  Service Name <span className="text-destructive">*</span>
+                  {t.services.serviceName} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="name"
@@ -153,7 +155,7 @@ export function ServiceFormDialog({
                       setErrors({ ...errors, name: "" });
                     }
                   }}
-                  placeholder="e.g., Teeth Cleaning"
+                  placeholder={t.services.serviceNamePlaceholder}
                   className={errors.name ? "border-destructive" : ""}
                 />
                 {errors.name && (
@@ -162,7 +164,7 @@ export function ServiceFormDialog({
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">{t.services.description}</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
@@ -172,7 +174,7 @@ export function ServiceFormDialog({
                       setErrors({ ...errors, description: "" });
                     }
                   }}
-                  placeholder="Brief description of the service"
+                  placeholder={t.services.descriptionPlaceholder}
                   rows={3}
                   className={errors.description ? "border-destructive" : ""}
                 />
@@ -186,7 +188,7 @@ export function ServiceFormDialog({
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="price">
-                    Price (R$) <span className="text-destructive">*</span>
+                    {t.services.priceLabel} <span className="text-destructive">*</span>
                   </Label>
                   <Input
                     id="price"
@@ -200,7 +202,7 @@ export function ServiceFormDialog({
                         setErrors({ ...errors, price: "" });
                       }
                     }}
-                    placeholder="150.00"
+                    placeholder={t.services.pricePlaceholder}
                     className={errors.price ? "border-destructive" : ""}
                   />
                   {errors.price && (
@@ -210,7 +212,7 @@ export function ServiceFormDialog({
 
                 <div className="grid gap-2">
                   <Label htmlFor="duration" className="flex items-center gap-2">
-                    Duration (min) <span className="text-destructive">*</span>
+                    {t.services.durationLabel} <span className="text-destructive">*</span>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button type="button" className="inline-flex">
@@ -219,7 +221,7 @@ export function ServiceFormDialog({
                       </TooltipTrigger>
                       <TooltipContent>
                         <p className="max-w-xs">
-                          Enter the appointment duration in minutes. Common values: 30, 45, 60, 90, 120
+                          {t.services.durationTooltip}
                         </p>
                       </TooltipContent>
                     </Tooltip>
@@ -235,7 +237,7 @@ export function ServiceFormDialog({
                         setErrors({ ...errors, duration: "" });
                       }
                     }}
-                    placeholder="60"
+                    placeholder={t.services.durationPlaceholder}
                     className={errors.duration ? "border-destructive" : ""}
                   />
                   {errors.duration && (
@@ -259,18 +261,18 @@ export function ServiceFormDialog({
                 onClick={() => handleOpenChange(false)}
                 disabled={isPending}
               >
-                Cancel
+                {t.common.cancel}
               </Button>
               <Button type="submit" disabled={isPending}>
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
+                    {t.services.saving}
                   </>
                 ) : service ? (
-                  "Update Service"
+                  t.services.updateService
                 ) : (
-                  "Create Service"
+                  t.services.createService
                 )}
               </Button>
             </DialogFooter>

@@ -26,37 +26,39 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-
-const navigationItems = [
-  {
-    title: "Appointments",
-    href: "/dashboard/appointments",
-    icon: Calendar,
-  },
-  {
-    title: "Patients",
-    href: "/dashboard/patients",
-    icon: Users,
-  },
-  {
-    title: "Plans",
-    href: "/dashboard/plans",
-    icon: CreditCard,
-  },
-  {
-    title: "Services",
-    href: "/dashboard/services",
-    icon: Settings,
-  },
-  {
-    title: "Profile",
-    href: "/dashboard/profile",
-    icon: User,
-  },
-];
+import { useTranslations } from "@/hooks/use-translations";
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const t = useTranslations();
+  
+  const navigationItems = [
+    {
+      title: t.nav.appointments,
+      href: "/dashboard/appointments",
+      icon: Calendar,
+    },
+    {
+      title: t.nav.patients,
+      href: "/dashboard/patients",
+      icon: Users,
+    },
+    {
+      title: t.nav.plans,
+      href: "/dashboard/plans",
+      icon: CreditCard,
+    },
+    {
+      title: t.nav.services,
+      href: "/dashboard/services",
+      icon: Settings,
+    },
+    {
+      title: t.nav.profile,
+      href: "/dashboard/profile",
+      icon: User,
+    },
+  ];
   return (
     <Sidebar className="border-r border-sidebar-border">
       <SidebarHeader className="border-b border-sidebar-border bg-gradient-to-br from-primary/5 via-background to-background">
@@ -72,7 +74,7 @@ export function DashboardSidebar() {
               Smile PRO
             </span>
             <span className="text-primary/70 text-xs font-medium transition-colors group-hover:text-primary">
-              Dashboard
+              {t.nav.dashboard}
             </span>
           </div>
         </Link>
@@ -80,7 +82,7 @@ export function DashboardSidebar() {
       <SidebarContent className="px-2 py-4">
         <SidebarGroup>
           <SidebarGroupLabel className="px-2 text-xs font-semibold text-sidebar-foreground/60">
-            Navigation
+            {t.common.actions}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -113,11 +115,11 @@ export function DashboardSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={() => signOut({ callbackUrl: "/" })}
-              tooltip="Log out"
+              tooltip={t.nav.logOut}
               className="text-base text-destructive hover:bg-destructive/10 hover:text-destructive w-full cursor-pointer"
             >
               <LogOut className="size-5" />
-              <span>Log out</span>
+              <span>{t.nav.logOut}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

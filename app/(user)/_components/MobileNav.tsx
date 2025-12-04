@@ -13,15 +13,18 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { Menu, Smile, Settings, LogOut } from "lucide-react";
-import { authButtons, navItems } from "./nav-config";
+import { authButtons } from "./nav-config";
 import { useSession, signOut } from "next-auth/react";
 import { handleNavClick } from "./utils";
+import { LanguageSelector } from "@/components/language-selector";
+import { useTranslations } from "@/hooks/use-translations";
 
 export function MobileNav() {
   const { data: session, status } = useSession();
   const user = session?.user;
   const isAuthenticated = !!user;
   const isLoading = status === "loading";
+  const t = useTranslations();
 
   const userInitials = user?.name
     ? user.name
@@ -53,22 +56,41 @@ export function MobileNav() {
             </span>
           </SheetTitle>
           <SheetDescription className="text-left">
-            Navigate through our services
+            {t.nav.navigation}
           </SheetDescription>
         </SheetHeader>
 
         <nav className="flex-1 flex flex-col gap-1 py-6">
-          {navItems.map((item) => (
-            <SheetClose key={item.href} asChild>
-              <Link
-                href={item.href}
-                onClick={(e) => handleNavClick(e, item.href)}
-                className="flex items-center px-4 py-3 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
-              >
-                {item.label}
-              </Link>
-            </SheetClose>
-          ))}
+          <SheetClose asChild>
+            <Link
+              href="#features"
+              onClick={(e) => handleNavClick(e, "#features")}
+              className="flex items-center px-4 py-3 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
+            >
+              {t.nav.features}
+            </Link>
+          </SheetClose>
+          <SheetClose asChild>
+            <Link
+              href="#pricing"
+              onClick={(e) => handleNavClick(e, "#pricing")}
+              className="flex items-center px-4 py-3 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
+            >
+              {t.nav.pricing}
+            </Link>
+          </SheetClose>
+          <SheetClose asChild>
+            <Link
+              href="#professionals"
+              onClick={(e) => handleNavClick(e, "#professionals")}
+              className="flex items-center px-4 py-3 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
+            >
+              {t.nav.professionals}
+            </Link>
+          </SheetClose>
+          <div className="px-4 py-3">
+            <LanguageSelector />
+          </div>
         </nav>
 
         {!isLoading && (
@@ -98,7 +120,7 @@ export function MobileNav() {
                     className="flex items-center px-4 py-3 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
                   >
                     <Settings className="mr-3 h-5 w-5" />
-                    Appointments
+                    {t.nav.appointments}
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
@@ -107,7 +129,7 @@ export function MobileNav() {
                     className="flex items-center w-full px-4 py-3 text-base font-medium text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                   >
                     <LogOut className="mr-3 h-5 w-5" />
-                    Log out
+                    {t.nav.logOut}
                   </button>
                 </SheetClose>
               </>
@@ -116,14 +138,14 @@ export function MobileNav() {
                 <SheetClose asChild>
                   <Link href={authButtons.signIn.href} className="block">
                     <Button variant="outline" className="w-full py-2">
-                      {authButtons.signIn.label}
+                      {t.nav.signIn}
                     </Button>
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
                   <Link href={authButtons.getStarted.href} className="block">
                     <Button className="w-full py-2">
-                      {authButtons.getStarted.label}
+                      {t.nav.getStarted}
                     </Button>
                   </Link>
                 </SheetClose>

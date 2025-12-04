@@ -1,3 +1,5 @@
+// This file is now deprecated - use translations instead
+// Keeping for backwards compatibility but components should use useTranslations hook
 export const navItems = [
   { label: "Features", href: "#features" },
   { label: "Pricing", href: "#pricing" },

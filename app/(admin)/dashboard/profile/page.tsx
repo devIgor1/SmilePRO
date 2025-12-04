@@ -12,9 +12,11 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Shield, CreditCard, Sparkles } from "lucide-react";
+import { getTranslations } from "@/lib/i18n/server";
 
 export default async function Profile() {
   const session = await getSession();
+  const t = await getTranslations();
 
   if (!session) {
     redirect("/");
@@ -27,11 +29,9 @@ export default async function Profile() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            Clinic Profile
+            {t.profile.clinicProfile}
           </h1>
-          <p className="text-muted-foreground mt-2">
-            Manage your clinic information and settings
-          </p>
+          <p className="text-muted-foreground mt-2">{t.profile.manageInfo}</p>
         </div>
         <div className="flex items-center gap-2">
           <Badge
@@ -39,7 +39,7 @@ export default async function Profile() {
             className="gap-2 px-4 py-2"
           >
             <Shield className="h-4 w-4" />
-            {userData.status ? "Active" : "Inactive"}
+            {userData.status ? t.profile.active : t.profile.inactive}
           </Badge>
         </div>
       </div>
@@ -70,9 +70,9 @@ export default async function Profile() {
             <CardHeader className="border-b border-primary/10 bg-primary/10 rounded-t-xl px-6 pt-6 pb-6">
               <CardTitle className="flex items-center gap-2 text-primary">
                 <Sparkles className="h-5 w-5" />
-                Subscription
+                {t.profile.subscription}
               </CardTitle>
-              <CardDescription>Your current plan</CardDescription>
+              <CardDescription>{t.profile.currentPlan}</CardDescription>
             </CardHeader>
             <CardContent className="pt-6 px-6 pb-6">
               {userData.subscription ? (
@@ -80,7 +80,7 @@ export default async function Profile() {
                   <div className="flex items-center justify-between p-4 rounded-lg bg-primary/10 border border-primary/20">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">
-                        Plan
+                        {t.profile.plan}
                       </p>
                       <p className="text-2xl font-bold text-primary capitalize mt-1">
                         {userData.subscription.plan}
@@ -92,7 +92,7 @@ export default async function Profile() {
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <span className="text-sm font-medium text-muted-foreground">
-                      Status
+                      {t.profile.status}
                     </span>
                     <Badge variant="default" className="capitalize">
                       {userData.subscription.status}
@@ -103,7 +103,7 @@ export default async function Profile() {
                 <div className="text-center py-8">
                   <CreditCard className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
                   <p className="text-sm text-muted-foreground">
-                    No active subscription
+                    {t.profile.noActiveSubscription}
                   </p>
                 </div>
               )}
