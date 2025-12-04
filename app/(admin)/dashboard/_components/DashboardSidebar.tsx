@@ -21,9 +21,11 @@ import {
   Settings,
   User,
   Users,
+  LogOut,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 const navigationItems = [
   {
@@ -106,7 +108,19 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t border-sidebar-border bg-muted/30 px-2 py-3">
+      <SidebarFooter className="border-t border-sidebar-border bg-muted/30 px-2 py-3 space-y-2">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={() => signOut({ callbackUrl: "/" })}
+              tooltip="Log out"
+              className="text-base text-destructive hover:bg-destructive/10 hover:text-destructive w-full cursor-pointer"
+            >
+              <LogOut className="size-5" />
+              <span>Log out</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
         <div className="px-2 text-xs text-muted-foreground/70">
           © 2025 Smile PRO
         </div>
