@@ -15,6 +15,7 @@ import Link from "next/link";
 import { Menu, Smile, Settings, LogOut } from "lucide-react";
 import { authButtons, navItems } from "./nav-config";
 import { useSession, signOut } from "next-auth/react";
+import { handleNavClick } from "./utils";
 
 export function MobileNav() {
   const { data: session, status } = useSession();
@@ -61,6 +62,7 @@ export function MobileNav() {
             <SheetClose key={item.href} asChild>
               <Link
                 href={item.href}
+                onClick={(e) => handleNavClick(e, item.href)}
                 className="flex items-center px-4 py-3 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
               >
                 {item.label}

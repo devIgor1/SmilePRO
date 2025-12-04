@@ -8,6 +8,7 @@ import { UserMenu } from "./UserMenu";
 import { authButtons, navItems } from "./nav-config";
 import { useSession } from "next-auth/react";
 import { handleLogin } from "../_actions/login";
+import { handleNavClick } from "./utils";
 
 export function HomeHeader() {
   const { data: session, status } = useSession();
@@ -31,6 +32,7 @@ export function HomeHeader() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={(e) => handleNavClick(e, item.href)}
               className="text-muted-foreground hover:text-foreground text-sm lg:text-base transition-colors"
             >
               {item.label}
@@ -45,7 +47,7 @@ export function HomeHeader() {
                   <Button
                     variant={authButtons.signIn.variant}
                     size="default"
-                    className="hidden lg:flex"
+                    className="hidden lg:flex cursor-pointer bg-primary/40"
                     onClick={() => handleLogin("google")}
                   >
                     {authButtons.signIn.label}

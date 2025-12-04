@@ -1,7 +1,7 @@
 export const navItems = [
   { label: "Features", href: "#features" },
   { label: "Pricing", href: "#pricing" },
-  { label: "Professionals", href: "/professionals" },
+  { label: "Professionals", href: "#professionals" },
 ] as const;
 
 export const authButtons = {
