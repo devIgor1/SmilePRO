@@ -370,6 +370,13 @@ export interface Translations {
     selectTimezone: string;
     statusTooltip: string;
     availableTimes: string;
+    timeSlotsDialogTitle: string;
+    timeSlotsDialogDescription: string;
+    timeSlotsSelected: string;
+    timeSlotsSave: string;
+    timeSlotsSelectButton: string;
+    timeSlotsSelectedButton: string;
+    timeSlotsSelectedButtonPlural: string;
     more: string;
     unsavedChanges: string;
     saving: string;
@@ -799,6 +806,14 @@ export const translations: Record<Language, Translations> = {
       selectTimezone: "Select timezone",
       statusTooltip: "Indicates whether your clinic is open or closed",
       availableTimes: "Available Times",
+      timeSlotsDialogTitle: "Available Times",
+      timeSlotsDialogDescription:
+        "Select the time slots when your clinic is available for appointments",
+      timeSlotsSelected: "Selected:",
+      timeSlotsSave: "Save Times",
+      timeSlotsSelectButton: "Select available times",
+      timeSlotsSelectedButton: "{count} time selected",
+      timeSlotsSelectedButtonPlural: "{count} times selected",
       more: "more",
       unsavedChanges: "You have unsaved changes",
       saving: "Saving...",
@@ -1231,6 +1246,14 @@ export const translations: Record<Language, Translations> = {
       selectTimezone: "Selecionar fuso horário",
       statusTooltip: "Indica se sua clínica está aberta ou fechada",
       availableTimes: "Horários Disponíveis",
+      timeSlotsDialogTitle: "Horários Disponíveis",
+      timeSlotsDialogDescription:
+        "Selecione os horários quando sua clínica está disponível para consultas",
+      timeSlotsSelected: "Selecionados:",
+      timeSlotsSave: "Salvar Horários",
+      timeSlotsSelectButton: "Selecionar horários disponíveis",
+      timeSlotsSelectedButton: "{count} horário selecionado",
+      timeSlotsSelectedButtonPlural: "{count} horários selecionados",
       more: "mais",
       unsavedChanges: "Você tem alterações não salvas",
       saving: "Salvando...",

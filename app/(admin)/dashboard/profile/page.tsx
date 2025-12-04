@@ -54,7 +54,6 @@ export default async function Profile() {
               phone: userData.phone,
               address: userData.address,
               status: userData.status,
-              timezone: userData.timezone,
               timeslots: userData.timeslots || [],
             }}
           />

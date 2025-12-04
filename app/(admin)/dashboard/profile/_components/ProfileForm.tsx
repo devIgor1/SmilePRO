@@ -5,13 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "@/hooks/use-translations";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Card,
   CardContent,
   CardDescription,
@@ -31,7 +24,6 @@ import {
   MapPin,
   Check,
   Loader2,
-  Globe,
   ToggleLeft,
   Clock,
   Info,
@@ -43,7 +35,6 @@ import {
   type ProfileFormData,
 } from "../_schemas/profile-form-schema";
 import { TimeSlotsDialog } from "./TimeSlotsDialog";
-import { getTimezoneOptions } from "@/lib/config/timezones";
 
 interface ProfileFormProps {
   initialData: {
@@ -52,12 +43,9 @@ interface ProfileFormProps {
     phone: string | null;
     address: string | null;
     status: boolean;
-    timezone: string | null;
     timeslots: string[];
   };
 }
-
-const TIMEZONE_OPTIONS = getTimezoneOptions();
 
 export function ProfileForm({ initialData }: ProfileFormProps) {
   const t = useTranslations();
@@ -69,7 +57,6 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
     phone: initialData.phone ? formatPhoneNumber(initialData.phone) : "",
     address: initialData.address || "",
     status: initialData.status ?? true,
-    timezone: initialData.timezone || "",
     timeslots: initialData.timeslots || [],
   });
   const [isDirty, setIsDirty] = useState(false);
@@ -203,34 +190,6 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
               />
               {errors.address && (
                 <p className="text-xs text-destructive">{errors.address}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <Globe className="h-4 w-4 text-primary" />
-                {t.profile.timezone}
-              </label>
-              <Select
-                value={formData.timezone || ""}
-                onValueChange={(value) => handleChange("timezone", value)}
-              >
-                <SelectTrigger
-                  className={`w-full bg-background border-primary/20 focus:border-primary ${
-                    errors.timezone ? "border-destructive" : ""
-                  }`}
-                >
-                  <SelectValue placeholder={t.profile.selectTimezone} />
-                </SelectTrigger>
-                <SelectContent>
-                  {TIMEZONE_OPTIONS.map((tz) => (
-                    <SelectItem key={tz.value} value={tz.value}>
-                      {tz.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.timezone && (
-                <p className="text-xs text-destructive">{errors.timezone}</p>
               )}
             </div>
             <div className="space-y-2">

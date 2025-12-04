@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Clock, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useTranslations } from "@/hooks/use-translations";
 
 interface TimeSlotsDialogProps {
   selectedTimes: string[];
@@ -36,6 +37,7 @@ export function TimeSlotsDialog({
   selectedTimes,
   onTimesChange,
 }: TimeSlotsDialogProps) {
+  const t = useTranslations();
   const [open, setOpen] = useState(false);
   const [tempSelected, setTempSelected] = useState<string[]>(selectedTimes);
 
@@ -67,18 +69,26 @@ export function TimeSlotsDialog({
         >
           <Clock className="mr-2 h-4 w-4" />
           {selectedTimes.length > 0
-            ? `${selectedTimes.length} time${selectedTimes.length > 1 ? "s" : ""} selected`
-            : "Select available times"}
+            ? selectedTimes.length === 1
+              ? t.profile.timeSlotsSelectedButton.replace(
+                  "{count}",
+                  selectedTimes.length.toString()
+                )
+              : t.profile.timeSlotsSelectedButtonPlural.replace(
+                  "{count}",
+                  selectedTimes.length.toString()
+                )
+            : t.profile.timeSlotsSelectButton}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5 text-primary" />
-            Available Times
+            {t.profile.timeSlotsDialogTitle}
           </DialogTitle>
           <DialogDescription>
-            Select the time slots when your clinic is available for appointments
+            {t.profile.timeSlotsDialogDescription}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
@@ -107,7 +117,7 @@ export function TimeSlotsDialog({
           {tempSelected.length > 0 && (
             <div className="flex flex-wrap gap-2 pt-2 border-t">
               <span className="text-sm font-medium text-muted-foreground">
-                Selected:
+                {t.profile.timeSlotsSelected}
               </span>
               {tempSelected.map((time) => (
                 <Badge key={time} variant="secondary">
@@ -119,11 +129,11 @@ export function TimeSlotsDialog({
         </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={handleCancel}>
-            Cancel
+            {t.common.cancel}
           </Button>
           <Button type="button" onClick={handleSave}>
             <Check className="mr-2 h-4 w-4" />
-            Save Times
+            {t.profile.timeSlotsSave}
           </Button>
         </DialogFooter>
       </DialogContent>
