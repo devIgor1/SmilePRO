@@ -116,8 +116,6 @@ export async function getUploadPresignedUrl(params: {
       Bucket: s3Config.bucketName,
       Key: key,
       ContentType: params.fileType,
-      // Note: Only include parameters that the browser will send
-      // ServerSideEncryption is handled by S3 bucket default encryption
     });
 
     const url = await getSignedUrl(s3Client, command, {
