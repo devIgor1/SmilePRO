@@ -20,7 +20,7 @@ export function Features() {
                 </div>
                 <CardTitle>Smart Scheduling</CardTitle>
                 <CardDescription>
-                  Intuitive calendar with drag-and-drop appointments, automated reminders, and online booking
+                  Intuitive calendar view with easy appointment management and public online booking for your patients
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -32,7 +32,7 @@ export function Features() {
                 </div>
                 <CardTitle>Patient Management</CardTitle>
                 <CardDescription>
-                  Complete patient profiles with medical history, treatment plans, and appointment records
+                  Complete patient profiles with contact information, notes, photos, and full appointment history
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -44,7 +44,7 @@ export function Features() {
                 </div>
                 <CardTitle>Analytics & Insights</CardTitle>
                 <CardDescription>
-                  Track revenue, monitor performance, and make data-driven decisions with detailed reports
+                  Track revenue trends, monitor appointment statistics, and view key performance metrics
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -54,9 +54,9 @@ export function Features() {
                 <div className="bg-primary/10 text-primary mb-4 flex size-12 items-center justify-center rounded-lg">
                   <Clock className="size-6" />
                 </div>
-                <CardTitle>Automated Reminders</CardTitle>
+                <CardTitle>Service Management</CardTitle>
                 <CardDescription>
-                  Reduce no-shows with SMS and email reminders sent automatically to patients
+                  Create and manage your clinic services with pricing, duration, and availability settings
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -66,9 +66,9 @@ export function Features() {
                 <div className="bg-primary/10 text-primary mb-4 flex size-12 items-center justify-center rounded-lg">
                   <Shield className="size-6" />
                 </div>
-                <CardTitle>HIPAA Compliant</CardTitle>
+                <CardTitle>Secure & Reliable</CardTitle>
                 <CardDescription>
-                  Enterprise-grade security with encrypted data storage and HIPAA compliance built-in
+                  Secure authentication, data protection, and reliable infrastructure to keep your clinic data safe
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -78,9 +78,9 @@ export function Features() {
                 <div className="bg-primary/10 text-primary mb-4 flex size-12 items-center justify-center rounded-lg">
                   <Zap className="size-6" />
                 </div>
-                <CardTitle>Quick Setup</CardTitle>
+                <CardTitle>Easy to Use</CardTitle>
                 <CardDescription>
-                  Get started in minutes with our guided onboarding and import your existing patient data
+                  Simple, intuitive interface designed for dental professionals. Get started in minutes with no training needed
                 </CardDescription>
               </CardHeader>
             </Card>
