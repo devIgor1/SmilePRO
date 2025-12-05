@@ -942,29 +942,27 @@ export default function AppointmentContent({
             <AlertDialogDescription>
               Tem certeza de que deseja cancelar este agendamento? Esta ação não
               pode ser desfeita.
-              {appointmentToCancel && (
-                <div className="mt-4 space-y-2 text-sm">
-                  <div>
-                    <strong>Paciente:</strong>{" "}
-                    {appointmentToCancel.patient.name}
-                  </div>
-                  <div>
-                    <strong>Serviço:</strong> {appointmentToCancel.service.name}
-                  </div>
-                  <div>
-                    <strong>Data:</strong>{" "}
-                    {dayjs(appointmentToCancel.appointmentDate).format(
-                      "D [de] MMMM [de] YYYY"
-                    )}
-                  </div>
-                  <div>
-                    <strong>Horário:</strong>{" "}
-                    {appointmentToCancel.appointmentTime}
-                  </div>
-                </div>
-              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
+          {appointmentToCancel && (
+            <div className="mt-4 space-y-2 text-sm">
+              <div>
+                <strong>Paciente:</strong> {appointmentToCancel.patient.name}
+              </div>
+              <div>
+                <strong>Serviço:</strong> {appointmentToCancel.service.name}
+              </div>
+              <div>
+                <strong>Data:</strong>{" "}
+                {dayjs(appointmentToCancel.appointmentDate).format(
+                  "D [de] MMMM [de] YYYY"
+                )}
+              </div>
+              <div>
+                <strong>Horário:</strong> {appointmentToCancel.appointmentTime}
+              </div>
+            </div>
+          )}
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isPending}>Cancelar</AlertDialogCancel>
             <AlertDialogAction
