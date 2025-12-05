@@ -7,7 +7,7 @@ import { canPermission } from "@/utils/permissions/canPermission";
 export default async function Services() {
   const session = await getSession();
 
-  if (!session) {
+  if (!session?.user.id) {
     redirect("/");
   }
 

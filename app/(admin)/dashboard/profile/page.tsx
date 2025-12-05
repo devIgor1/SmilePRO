@@ -18,7 +18,7 @@ export default async function Profile() {
   const session = await getSession();
   const t = await getTranslations();
 
-  if (!session) {
+  if (!session?.user.id) {
     redirect("/");
   }
 
