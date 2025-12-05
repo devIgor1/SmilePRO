@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
 
     return config;
   },
+  // Silencia o erro do Turbopack quando webpack está configurado
+  turbopack: {},
   outputFileTracingIncludes: {
     "/api/**/*": ["./lib/generated/prisma/**/*"],
     "/*": ["./lib/generated/prisma/**/*"],
