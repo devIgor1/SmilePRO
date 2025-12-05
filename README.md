@@ -257,15 +257,6 @@ smilepro/
 
 ---
 
-## 📚 Documentação
-
-### Documentação Adicional
-
-- [System Design](./SYSTEM_DESIGN.md) - Arquitetura completa do sistema
-- [i18n README](./i18n-README.md) - Guia de internacionalização (se existir)
-
-### Principais Conceitos
-
 #### Sistema de Permissões
 
 O SmilePro utiliza um sistema de permissões baseado em planos:
