@@ -37,7 +37,10 @@ export function getPlanFeatures(language: "en" | "pt-BR" = "en") {
 }
 
 // Helper function to get translated plan descriptions
-export function getPlanDescription(planId: string, language: "en" | "pt-BR" = "en"): string {
+export function getPlanDescription(
+  planId: string,
+  language: "en" | "pt-BR" = "en"
+): string {
   const descriptions = {
     en: {
       basic: "Perfect for smaller clinics",

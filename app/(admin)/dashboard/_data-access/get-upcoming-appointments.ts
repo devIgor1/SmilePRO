@@ -27,10 +27,7 @@ export async function getUpcomingAppointments(userId: string, limit = 5) {
         patient: true,
         service: true,
       },
-      orderBy: [
-        { appointmentDate: "asc" },
-        { appointmentTime: "asc" },
-      ],
+      orderBy: [{ appointmentDate: "asc" }, { appointmentTime: "asc" }],
       take: limit,
     });
 
@@ -40,4 +37,3 @@ export async function getUpcomingAppointments(userId: string, limit = 5) {
     throw new Error("Failed to get upcoming appointments");
   }
 }
-
