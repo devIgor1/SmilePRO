@@ -10,13 +10,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Ensure Prisma binaries are included in the build
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals = [...(config.externals || []), "@prisma/client"];
-    }
-    return config;
-  },
 };
 
 export default nextConfig;
