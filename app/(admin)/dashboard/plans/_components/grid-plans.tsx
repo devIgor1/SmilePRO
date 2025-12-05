@@ -12,16 +12,14 @@ import { Badge } from "@/components/ui/badge";
 import { PLANS, getPlanFeatures, getPlanDescription } from "@/utils/plans";
 import { formatPrice } from "@/lib/utils";
 import { SubscriptionButton } from "./subscription-button";
-import { useTranslations } from "@/hooks/use-translations";
 import { PLANS_LIMITS } from "@/utils/permissions/plan-limits";
 import { useSession } from "next-auth/react";
 
 export function GridPlans() {
-  const t = useTranslations();
   const { data: session } = useSession();
 
-  // Get language from session
-  const language = (session?.user?.systemLanguage as "en" | "pt-BR") || "en";
+  // Always use Portuguese
+  const language = "pt-BR";
   const planFeatures = getPlanFeatures(language);
 
   // Translate features for each plan
@@ -60,10 +58,10 @@ export function GridPlans() {
     <div className="container mx-auto px-4 py-8">
       <div className="mx-auto max-w-2xl text-center mb-16">
         <h1 className="font-bold text-3xl text-balance md:text-4xl">
-          {t.home.pricing.dashboardTitle}
+          Preços simples e transparentes
         </h1>
         <p className="text-muted-foreground mt-4 text-balance text-lg">
-          {t.home.pricing.dashboardSubtitle}
+          Escolha o plano que se adequa ao tamanho da sua prática
         </p>
       </div>
 
@@ -77,14 +75,10 @@ export function GridPlans() {
             >
               <CardHeader>
                 {plan.isPopular && (
-                  <Badge className="mb-2 w-fit">
-                    {t.home.pricing.mostPopular}
-                  </Badge>
+                  <Badge className="mb-2 w-fit">Mais Popular</Badge>
                 )}
                 <CardTitle>
-                  {plan.id === "basic"
-                    ? t.home.pricing.planNames.basic
-                    : t.home.pricing.planNames.professional}
+                  {plan.id === "basic" ? "Básico" : "Profissional"}
                 </CardTitle>
                 <CardDescription>
                   {getPlanDescription(plan.id, language)}
@@ -101,9 +95,7 @@ export function GridPlans() {
                     <span className="font-bold text-4xl">
                       R$ {formatPrice(plan.price)}
                     </span>
-                    <span className="text-muted-foreground">
-                      {language === "pt-BR" ? "/mês" : t.home.pricing.perMonth}
-                    </span>
+                    <span className="text-muted-foreground">/mês</span>
                   </div>
                 </div>
               </CardHeader>

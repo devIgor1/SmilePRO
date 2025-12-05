@@ -3,7 +3,6 @@
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useTranslations } from "@/hooks/use-translations";
 import {
   Card,
   CardContent,
@@ -48,7 +47,6 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ initialData }: ProfileFormProps) {
-  const t = useTranslations();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -105,7 +103,9 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
         router.refresh();
       } catch (error) {
         console.error("Failed to update profile:", error);
-        setErrors({ submit: "Failed to update profile. Please try again." });
+        setErrors({
+          submit: "Falha ao atualizar perfil. Por favor, tente novamente.",
+        });
       }
     });
   };
@@ -116,10 +116,10 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
         <CardHeader className="border-b border-primary/10 bg-primary/10 rounded-t-xl px-6 pt-6 pb-6">
           <CardTitle className="flex items-center gap-2 text-primary text-2xl">
             <User className="h-6 w-6" />
-            {t.profile.clinicInformation}
+            Informações da Clínica
           </CardTitle>
           <CardDescription className="text-base">
-            {t.profile.updateContactDetails}
+            Atualize os detalhes de contato da sua clínica
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 pt-6 px-6 pb-6">
@@ -127,13 +127,13 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
             <div className="space-y-2">
               <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <User className="h-4 w-4 text-primary" />
-                {t.patients.name}
+                Nome
               </label>
               <Input
                 type="text"
                 value={formData.name}
                 onChange={(e) => handleChange("name", e.target.value)}
-                placeholder={t.profile.enterName}
+                placeholder="Digite seu nome"
                 className={`bg-background border-primary/20 focus-visible:border-primary ${
                   errors.name ? "border-destructive" : ""
                 }`}
@@ -145,7 +145,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
             <div className="space-y-2">
               <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <Mail className="h-4 w-4 text-primary" />
-                {t.patients.email}
+                E-mail
               </label>
               <Input
                 type="email"
@@ -154,13 +154,13 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                 className="bg-muted/50 text-muted-foreground cursor-not-allowed border-primary/10"
               />
               <p className="text-xs text-muted-foreground">
-                {t.profile.emailCannotBeChanged}
+                O email não pode ser alterado
               </p>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <Phone className="h-4 w-4 text-primary" />
-                {t.patients.phone}
+                Telefone
               </label>
               <Input
                 type="tel"
@@ -179,13 +179,13 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
             <div className="space-y-2">
               <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-primary" />
-                {t.patients.address}
+                Endereço
               </label>
               <Input
                 type="text"
                 value={formData.address}
                 onChange={(e) => handleChange("address", e.target.value)}
-                placeholder={t.profile.enterAddress}
+                placeholder="Digite seu endereço"
                 className="bg-background border-primary/20 focus-visible:border-primary"
               />
               {errors.address && (
@@ -195,7 +195,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
             <div className="space-y-2">
               <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <ToggleLeft className="h-4 w-4 text-primary" />
-                {t.profile.status}
+                Status
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button type="button" className="inline-flex">
@@ -203,7 +203,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>{t.profile.statusTooltip}</p>
+                    <p>Indica se sua clínica está aberta ou fechada</p>
                   </TooltipContent>
                 </Tooltip>
               </label>
@@ -222,14 +222,14 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                   />
                 </button>
                 <span className="text-sm text-muted-foreground">
-                  {formData.status ? t.profile.active : t.profile.inactive}
+                  {formData.status ? "Ativo" : "Inativo"}
                 </span>
               </div>
             </div>
             <div className="space-y-2 md:col-span-2">
               <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <Clock className="h-4 w-4 text-primary" />
-                {t.profile.availableTimes}
+                Horários Disponíveis
               </label>
               <TimeSlotsDialog
                 selectedTimes={formData.timeslots}
@@ -257,7 +257,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                   ))}
                   {formData.timeslots.length > 5 && (
                     <span className="text-sm text-muted-foreground px-2 py-1">
-                      +{formData.timeslots.length - 5} {t.profile.more}
+                      +{formData.timeslots.length - 5} mais
                     </span>
                   )}
                 </div>
@@ -278,7 +278,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
       <div className="mt-6 flex items-center justify-end gap-4">
         {isDirty && (
           <p className="text-sm text-muted-foreground">
-            {t.profile.unsavedChanges}
+            Você tem alterações não salvas
           </p>
         )}
         <Button
@@ -289,12 +289,12 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
           {isPending ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              {t.profile.saving}
+              Salvando...
             </>
           ) : (
             <>
               <Check className="h-4 w-4" />
-              {t.profile.saveChanges}
+              Salvar Alterações
             </>
           )}
         </Button>

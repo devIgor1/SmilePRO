@@ -11,7 +11,6 @@ import { PLANS, getPlanFeatures, getPlanDescription } from "@/utils/plans";
 import { formatPrice } from "@/lib/utils";
 import type { Plan } from "@/lib/generated/prisma/enums";
 import { ManageSubscriptionButton } from "./manage-subscription-button";
-import { getTranslations } from "@/lib/i18n/server";
 import { PLANS_LIMITS } from "@/utils/permissions/plan-limits";
 
 interface ActiveSubscriptionProps {
@@ -23,11 +22,10 @@ export async function ActiveSubscription({
   plan,
   createdAt,
 }: ActiveSubscriptionProps) {
-  const t = await getTranslations();
   const planDetails = PLANS.find((p) => p.id === plan.toLowerCase());
 
-  // Get language from translations
-  const language = t.__language || "en";
+  // Always use Portuguese
+  const language = "pt-BR";
   const planFeatures = getPlanFeatures(language);
 
   // Format date based on language
@@ -108,10 +106,10 @@ export async function ActiveSubscription({
     <div className="container mx-auto px-4 py-8">
       <div className="mx-auto max-w-2xl text-center mb-8">
         <h1 className="font-bold text-3xl text-balance md:text-4xl">
-          {t.profile.subscriptionActive}
+          Sua Assinatura Está Ativa
         </h1>
         <p className="text-muted-foreground mt-4 text-balance text-lg">
-          {t.profile.subscriptionActiveDescription}
+          Tudo pronto! Aproveite todos os recursos do seu plano.
         </p>
       </div>
 
@@ -121,16 +119,14 @@ export async function ActiveSubscription({
             <div className="flex items-center justify-between mb-2">
               <Badge className="bg-primary hover:bg-primary/80">
                 <CheckCircle2 className="size-3 mr-1" />
-                {t.profile.active}
+                Ativo
               </Badge>
               {planDetails?.isPopular && (
-                <Badge variant="outline">{t.profile.mostPopular}</Badge>
+                <Badge variant="outline">Mais Popular</Badge>
               )}
             </div>
             <CardTitle>
-              {planDetails?.id === "basic"
-                ? t.home.pricing.planNames.basic
-                : t.home.pricing.planNames.professional}
+              {planDetails?.id === "basic" ? "Básico" : "Profissional"}
             </CardTitle>
             <CardDescription>
               {planDetails ? getPlanDescription(planDetails.id, language) : ""}
@@ -165,8 +161,7 @@ export async function ActiveSubscription({
             </ul>
             <div className="pt-4 border-t space-y-4">
               <p className="text-sm text-muted-foreground">
-                {t.profile.subscribedSince}{" "}
-                {formatDate(new Date(createdAt), language)}
+                Assinado desde {formatDate(new Date(createdAt), language)}
               </p>
               <ManageSubscriptionButton />
             </div>

@@ -6,39 +6,39 @@ import { z } from "zod";
  */
 const phoneValidator = z
   .string()
-  .min(8, "Phone must be at least 8 characters")
-  .max(25, "Phone must be less than 25 characters")
+  .min(8, "O telefone deve ter pelo menos 8 caracteres")
+  .max(25, "O telefone deve ter menos de 25 caracteres")
   .regex(
     /^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,5}[-\s\.]?[0-9]{1,5}$/,
-    "Please enter a valid phone number"
+    "Por favor, insira um número de telefone válido"
   )
   .refine((phone) => {
     const digitsOnly = phone.replace(/\D/g, "");
     return digitsOnly.length >= 8 && digitsOnly.length <= 15;
-  }, "Phone number must contain between 8 and 15 digits");
+  }, "O número de telefone deve conter entre 8 e 15 dígitos");
 
 export const bookingFormSchema = z.object({
   // Patient information
   name: z
     .string()
-    .min(2, "Name must be at least 2 characters")
-    .max(100, "Name must be less than 100 characters"),
+    .min(2, "O nome deve ter pelo menos 2 caracteres")
+    .max(100, "O nome deve ter menos de 100 caracteres"),
   email: z
     .string()
-    .email("Please enter a valid email address")
-    .max(255, "Email must be less than 255 characters"),
+    .email("Por favor, insira um endereço de e-mail válido")
+    .max(255, "O e-mail deve ter menos de 255 caracteres"),
   phone: phoneValidator,
   dateOfBirth: z.date().optional().nullable(),
 
   // Appointment information
-  serviceId: z.string().min(1, "Please select a service"),
+  serviceId: z.string().min(1, "Por favor, selecione um serviço"),
   appointmentDate: z.date({
-    message: "Please select a date",
+    message: "Por favor, selecione uma data",
   }),
-  appointmentTime: z.string().min(1, "Please select a time"),
+  appointmentTime: z.string().min(1, "Por favor, selecione um horário"),
   notes: z
     .string()
-    .max(500, "Notes must be less than 500 characters")
+    .max(500, "As observações devem ter menos de 500 caracteres")
     .optional()
     .nullable(),
 });

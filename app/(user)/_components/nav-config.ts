@@ -1,26 +1,24 @@
-// This file is now deprecated - use translations instead
-// Keeping for backwards compatibility but components should use useTranslations hook
+// Configuração de navegação - todos os textos em português
 export const navItems = [
-  { label: "Features", href: "#features" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "Professionals", href: "#professionals" },
+  { label: "Recursos", href: "#features" },
+  { label: "Preços", href: "#pricing" },
+  { label: "Profissionais", href: "#professionals" },
 ] as const;
 
 export const authButtons = {
   signIn: {
-    label: "Sign In",
+    label: "Entrar",
     href: "/dashboard/appointments",
     variant: "ghost" as const,
   },
   getStarted: {
-    label: "Get Started",
+    label: "Começar",
     href: "/dashboard/appointments",
     variant: "default" as const,
   },
   professionals: {
-    label: "Professionals",
+    label: "Profissionais",
     href: "/professionals",
     variant: "ghost" as const,
   },
 } as const;
-

@@ -16,12 +16,9 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { DashboardSidebar } from "./DashboardSidebar";
-import { LanguageSelector } from "@/components/language-selector";
-import { useTranslations } from "@/hooks/use-translations";
 
 function DashboardBreadcrumb() {
   const pathname = usePathname();
-  const t = useTranslations();
 
   const pathSegments = pathname.split("/").filter(Boolean);
 
@@ -31,11 +28,11 @@ function DashboardBreadcrumb() {
   // Map segment to display name
   const getSegmentName = (segment: string): string => {
     const keyMap: Record<string, string> = {
-      appointments: t.nav.appointments,
-      patients: t.nav.patients,
-      services: t.nav.services,
-      profile: t.nav.profile,
-      plans: t.nav.plans,
+      appointments: "Agendamentos",
+      patients: "Pacientes",
+      services: "Serviços",
+      profile: "Perfil",
+      plans: "Planos",
     };
     return keyMap[segment] || segment;
   };
@@ -45,30 +42,31 @@ function DashboardBreadcrumb() {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href="/dashboard/appointments">{t.nav.appointments}</Link>
+            <Link href="/dashboard/appointments">Agendamentos</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
-        {subSegments.length > 1 && subSegments.map((segment, index) => {
-          const href =
-            "/dashboard/" + subSegments.slice(0, index + 1).join("/");
-          const isLast = index === subSegments.length - 2;
-          const segmentName = getSegmentName(segment);
+        {subSegments.length > 1 &&
+          subSegments.map((segment, index) => {
+            const href =
+              "/dashboard/" + subSegments.slice(0, index + 1).join("/");
+            const isLast = index === subSegments.length - 2;
+            const segmentName = getSegmentName(segment);
 
-          return (
-            <div key={href} className="flex items-center gap-1.5">
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                {isLast ? (
-                  <BreadcrumbPage>{segmentName}</BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink asChild>
-                    <Link href={href}>{segmentName}</Link>
-                  </BreadcrumbLink>
-                )}
-              </BreadcrumbItem>
-            </div>
-          );
-        })}
+            return (
+              <div key={href} className="flex items-center gap-1.5">
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  {isLast ? (
+                    <BreadcrumbPage>{segmentName}</BreadcrumbPage>
+                  ) : (
+                    <BreadcrumbLink asChild>
+                      <Link href={href}>{segmentName}</Link>
+                    </BreadcrumbLink>
+                  )}
+                </BreadcrumbItem>
+              </div>
+            );
+          })}
       </BreadcrumbList>
     </Breadcrumb>
   );
@@ -87,7 +85,6 @@ export function DashboardLayoutClient({
           <SidebarTrigger className="-ml-1 hover:bg-accent/50" />
           <DashboardBreadcrumb />
           <div className="flex-1" />
-          <LanguageSelector />
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 md:p-6 bg-muted/20">
           {children}
@@ -96,4 +93,3 @@ export function DashboardLayoutClient({
     </SidebarProvider>
   );
 }
-

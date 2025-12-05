@@ -7,10 +7,8 @@ import { Plan } from "@/utils/plans";
 import { toast } from "sonner";
 import { getStripeJs } from "@/utils/stripe-js";
 import { Loader2 } from "lucide-react";
-import { useTranslations } from "@/hooks/use-translations";
 
 export const SubscriptionButton = ({ plan }: { plan: Plan }) => {
-  const t = useTranslations();
   const [isPending, startTransition] = useTransition();
 
   const handleCheckout = () => {
@@ -28,13 +26,11 @@ export const SubscriptionButton = ({ plan }: { plan: Plan }) => {
         if (stripe && url) {
           window.location.href = url;
         } else {
-          toast.error("Failed to initialize checkout");
+          toast.error("Falha ao inicializar checkout");
         }
       } catch (error) {
         toast.error(
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred"
+          error instanceof Error ? error.message : "Ocorreu um erro inesperado"
         );
       }
     });
@@ -50,10 +46,10 @@ export const SubscriptionButton = ({ plan }: { plan: Plan }) => {
       {isPending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          {t.home.pricing.redirectingToCheckout}
+          Redirecionando para o checkout...
         </>
       ) : (
-        t.home.pricing.activateSubscription
+        "Ativar assinatura"
       )}
     </Button>
   );

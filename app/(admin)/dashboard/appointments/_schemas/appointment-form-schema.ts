@@ -3,23 +3,26 @@ import { z } from "zod";
 export const appointmentFormSchema = z.object({
   patientName: z
     .string()
-    .min(2, "Name must be at least 2 characters")
-    .max(100, "Name must be less than 100 characters"),
+    .min(2, "O nome deve ter pelo menos 2 caracteres")
+    .max(100, "O nome deve ter menos de 100 caracteres"),
   email: z
     .string()
-    .email("Please enter a valid email address")
-    .max(255, "Email must be less than 255 characters"),
+    .email("Por favor, insira um endereço de e-mail válido")
+    .max(255, "O e-mail deve ter menos de 255 caracteres"),
   phone: z
     .string()
-    .min(10, "Phone must be at least 10 characters")
-    .max(20, "Phone must be less than 20 characters")
-    .regex(/^[0-9\s\-\+\(\)]+$/, "Please enter a valid phone number"),
-  serviceId: z.string().min(1, "Please select a service"),
+    .min(10, "O telefone deve ter pelo menos 10 caracteres")
+    .max(20, "O telefone deve ter menos de 20 caracteres")
+    .regex(
+      /^[0-9\s\-\+\(\)]+$/,
+      "Por favor, insira um número de telefone válido"
+    ),
+  serviceId: z.string().min(1, "Por favor, selecione um serviço"),
   appointmentDate: z.date(),
-  appointmentTime: z.string().min(1, "Please select a time slot"),
+  appointmentTime: z.string().min(1, "Por favor, selecione um horário"),
   notes: z
     .string()
-    .max(2000, "Notes must be less than 2000 characters")
+    .max(2000, "As observações devem ter menos de 2000 caracteres")
     .optional()
     .or(z.literal("")),
 });

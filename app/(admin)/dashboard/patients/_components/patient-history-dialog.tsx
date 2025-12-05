@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-import { useTranslations } from "@/hooks/use-translations";
 import {
   Select,
   SelectContent,
@@ -62,9 +61,7 @@ export function PatientHistoryDialog({
   open,
   onOpenChange,
 }: PatientHistoryDialogProps) {
-  const t = useTranslations();
   const { data: session } = useSession();
-  const language = (session?.user?.systemLanguage as "en" | "pt-BR") || "en";
   const [isMounted, setIsMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -143,10 +140,10 @@ export function PatientHistoryDialog({
         apt.service?.description
           ?.toLowerCase()
           .includes(searchQuery.toLowerCase()) ||
-        formatDateByLanguage(apt.appointmentDate, language, "numeric")
+        formatDateByLanguage(apt.appointmentDate, undefined, "numeric")
           .toLowerCase()
           .includes(searchQuery.toLowerCase()) ||
-        formatDateByLanguage(apt.appointmentDate, language, "full")
+        formatDateByLanguage(apt.appointmentDate, undefined, "full")
           .toLowerCase()
           .includes(searchQuery.toLowerCase());
 
@@ -167,7 +164,11 @@ export function PatientHistoryDialog({
   const groupedAppointments = useMemo(() => {
     return filteredAppointments.reduce(
       (acc, apt) => {
-        const dateKey = formatDateByLanguage(apt.appointmentDate, language, "full");
+        const dateKey = formatDateByLanguage(
+          apt.appointmentDate,
+          undefined,
+          "full"
+        );
 
         if (!acc[dateKey]) {
           acc[dateKey] = [];
@@ -177,18 +178,18 @@ export function PatientHistoryDialog({
       },
       {} as Record<string, AppointmentWithService[]>
     );
-  }, [filteredAppointments, language]);
+  }, [filteredAppointments]);
 
   // Export functionality
   const handleExport = () => {
     const csvContent = [
-      ["Date", "Time", "Service", "Price", "Duration", "Status"].join(","),
+      ["Data", "Horário", "Serviço", "Preço", "Duração", "Status"].join(","),
       ...filteredAppointments.map((apt) =>
         [
-          formatDateByLanguage(apt.appointmentDate, language, "numeric"),
+          formatDateByLanguage(apt.appointmentDate, undefined, "numeric"),
           apt.appointmentTime,
           apt.service?.name || "N/A",
-          `$${((apt.service?.price || 0) / 100).toFixed(2)}`,
+          `R$${((apt.service?.price || 0) / 100).toFixed(2)}`,
           `${apt.service?.duration || 0} min`,
           apt.status,
         ].join(",")
@@ -199,7 +200,7 @@ export function PatientHistoryDialog({
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${patient.name}-history-${formatDateByLanguage(new Date(), language, "numeric")}.csv`;
+    a.download = `${patient.name}-historico-${formatDateByLanguage(new Date(), undefined, "numeric")}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -212,9 +213,11 @@ export function PatientHistoryDialog({
         <DialogHeader>
           <div className="flex items-start justify-between">
             <div>
-              <DialogTitle className="text-2xl">{t.appointments.patientHistory}</DialogTitle>
+              <DialogTitle className="text-2xl">
+                Histórico do Paciente
+              </DialogTitle>
               <DialogDescription>
-                {t.appointments.completeHistory} {patient.name}
+                Histórico completo de agendamentos para {patient.name}
               </DialogDescription>
             </div>
             <Button
@@ -224,7 +227,7 @@ export function PatientHistoryDialog({
               className="shrink-0"
             >
               <Download className="h-4 w-4 mr-2" />
-              {t.appointments.exportCSV}
+              Exportar CSV
             </Button>
           </div>
         </DialogHeader>
@@ -243,12 +246,12 @@ export function PatientHistoryDialog({
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">
-                    {t.patients.total}
+                    Total
                   </p>
                   <p className="text-3xl font-bold text-primary tracking-tight">
                     {stats.total}
                   </p>
-                  <p className="text-xs text-muted-foreground">{t.appointments.appointments}</p>
+                  <p className="text-xs text-muted-foreground">agendamentos</p>
                 </div>
               </div>
             </div>
@@ -264,13 +267,13 @@ export function PatientHistoryDialog({
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">
-                    {t.patients.completed}
+                    Concluído
                   </p>
                   <p className="text-3xl font-bold text-primary tracking-tight">
                     {stats.completed}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {stats.completionRate.toFixed(0)}% {t.appointments.rate}
+                    {stats.completionRate.toFixed(0)}% taxa
                   </p>
                 </div>
               </div>
@@ -287,36 +290,13 @@ export function PatientHistoryDialog({
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">
-                    {t.patients.upcoming}
+                    Próximos
                   </p>
                   <p className="text-3xl font-bold text-primary tracking-tight">
                     {stats.upcoming}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {stats.pending} {t.appointments.pending}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Revenue Card */}
-            <div className="relative group overflow-hidden rounded-xl bg-gradient-to-br from-primary/18 via-primary/9 to-transparent border border-primary/28 hover:border-primary/48 transition-all duration-300 hover:shadow-lg hover:shadow-primary/18">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-primary/9 rounded-full -mr-12 -mt-12 group-hover:scale-110 transition-transform duration-300" />
-              <div className="relative p-6">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="p-2.5 bg-primary/18 rounded-lg group-hover:bg-primary/28 transition-colors">
-                    <DollarSign className="h-5 w-5 text-primary" />
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    {t.appointments.revenue}
-                  </p>
-                  <p className="text-3xl font-bold text-primary tracking-tight">
-                    ${stats.totalSpent.toFixed(2)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    ${stats.avgAppointmentValue.toFixed(2)} {t.appointments.avg}
+                    {stats.pending} pendente
                   </p>
                 </div>
               </div>
@@ -333,7 +313,7 @@ export function PatientHistoryDialog({
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      {t.appointments.mostCommonService}
+                      Serviço Mais Comum
                     </p>
                     <p className="font-semibold text-lg">
                       {stats.mostCommonService}
@@ -350,14 +330,14 @@ export function PatientHistoryDialog({
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5 text-primary" />
-              <h3 className="text-lg font-semibold">{t.appointments.filters}</h3>
+              <h3 className="text-lg font-semibold">Filtros</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {/* Search */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder={t.appointments.searchAppointments}
+                  placeholder="Buscar agendamentos..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-9"
@@ -375,26 +355,34 @@ export function PatientHistoryDialog({
               </div>
 
               {/* Status Filter */}
-              <Select value={statusFilter} onValueChange={setStatusFilter} defaultValue="all">
+              <Select
+                value={statusFilter}
+                onValueChange={setStatusFilter}
+                defaultValue="all"
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder={t.appointments.filterByStatus} />
+                  <SelectValue placeholder="Filtrar por status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{t.appointments.allStatuses}</SelectItem>
-                  <SelectItem value="COMPLETED">{t.appointments.status.completed}</SelectItem>
-                  <SelectItem value="CONFIRMED">{t.appointments.status.confirmed}</SelectItem>
-                  <SelectItem value="PENDING">{t.appointments.status.pending}</SelectItem>
-                  <SelectItem value="CANCELLED">{t.appointments.status.cancelled}</SelectItem>
+                  <SelectItem value="all">Todos os Status</SelectItem>
+                  <SelectItem value="COMPLETED">Concluído</SelectItem>
+                  <SelectItem value="CONFIRMED">Confirmado</SelectItem>
+                  <SelectItem value="PENDING">Pendente</SelectItem>
+                  <SelectItem value="CANCELLED">Cancelado</SelectItem>
                 </SelectContent>
               </Select>
 
               {/* Year Filter */}
-              <Select value={yearFilter} onValueChange={setYearFilter} defaultValue="all">
+              <Select
+                value={yearFilter}
+                onValueChange={setYearFilter}
+                defaultValue="all"
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder={t.appointments.filterByYear} />
+                  <SelectValue placeholder="Filtrar por ano" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{t.appointments.allYears}</SelectItem>
+                  <SelectItem value="all">Todos os Anos</SelectItem>
                   {availableYears.map((year) => (
                     <SelectItem key={year} value={year}>
                       {year}
@@ -408,8 +396,8 @@ export function PatientHistoryDialog({
               yearFilter !== "all") && (
               <div className="flex items-center justify-between text-sm">
                 <p className="text-muted-foreground">
-                  {t.appointments.showingResults} {filteredAppointments.length} {t.patients.of} {appointments.length}{" "}
-                  {t.appointments.appointments}
+                  Mostrando {filteredAppointments.length} de{" "}
+                  {appointments.length} agendamentos
                 </p>
                 <Button
                   variant="ghost"
@@ -420,7 +408,7 @@ export function PatientHistoryDialog({
                     setYearFilter("all");
                   }}
                 >
-                  {t.appointments.clearFilters}
+                  Limpar filtros
                 </Button>
               </div>
             )}
@@ -432,7 +420,7 @@ export function PatientHistoryDialog({
           <div>
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" />
-              {t.appointments.appointmentTimeline}
+              Linha do Tempo de Agendamentos
             </h3>
 
             {filteredAppointments.length === 0 ? (
@@ -443,8 +431,8 @@ export function PatientHistoryDialog({
                     {searchQuery ||
                     statusFilter !== "all" ||
                     yearFilter !== "all"
-                      ? t.appointments.noAppointmentsMatch
-                      : t.appointments.noAppointmentsFound}
+                      ? "Nenhum agendamento corresponde aos seus filtros"
+                      : "Nenhum agendamento encontrado para este paciente"}
                   </p>
                   {(searchQuery ||
                     statusFilter !== "all" ||
@@ -458,7 +446,7 @@ export function PatientHistoryDialog({
                         setYearFilter("all");
                       }}
                     >
-                      {t.appointments.clearAllFilters}
+                      Limpar todos os filtros
                     </Button>
                   )}
                 </CardContent>
@@ -502,7 +490,7 @@ export function PatientHistoryDialog({
                                       <span className="font-medium text-sm">
                                         {formatDateByLanguage(
                                           appointment.appointmentDate,
-                                          language,
+                                          undefined,
                                           "numeric"
                                         )}
                                       </span>
@@ -570,7 +558,7 @@ export function PatientHistoryDialog({
         {/* Footer */}
         <div className="flex justify-end pt-4 border-t">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t.patients.close}
+            Fechar
           </Button>
         </div>
       </DialogContent>

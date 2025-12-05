@@ -6,11 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import dayjs from "dayjs";
-import { getTranslations } from "@/lib/i18n/server";
-
 export async function TrialBanner() {
   const session = await getSession();
-  const t = await getTranslations();
 
   if (!session?.user?.id) {
     return null;
@@ -55,13 +52,13 @@ export async function TrialBanner() {
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-foreground mb-1">
                 {daysRemaining > 0
-                  ? `${t.dashboard.trial.onTrial} ${daysRemaining} ${daysRemaining !== 1 ? t.dashboard.trial.days : t.dashboard.trial.day} ${t.dashboard.trial.daysRemaining}`
-                  : t.dashboard.trial.trialEnded}
+                  ? `Você está em um teste grátis! ${daysRemaining} ${daysRemaining !== 1 ? "dias" : "dia"} restantes`
+                  : "Seu teste expirou"}
               </h3>
               <p className="text-sm text-muted-foreground">
                 {daysRemaining > 0
-                  ? t.dashboard.trial.enjoyAccess
-                  : t.dashboard.trial.upgradeContinue}
+                  ? "Aproveite acesso completo a todos os recursos. Faça upgrade para continuar usando o SmilePRO após o término do teste."
+                  : "Faça upgrade agora para continuar usando todos os recursos e gerenciar sua clínica sem problemas."}
               </p>
             </div>
           </div>
@@ -71,7 +68,7 @@ export async function TrialBanner() {
             size="sm"
           >
             <Link href="/dashboard/plans">
-              {t.dashboard.trial.upgradeNow}
+              Fazer Upgrade Agora
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

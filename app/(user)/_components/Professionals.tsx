@@ -8,15 +8,11 @@ import { MapPin, Calendar, Award, Briefcase, Star } from "lucide-react";
 import Link from "next/link";
 import dayjs from "dayjs";
 import type { ActiveClinic } from "../_data-access/get-active-clinics";
-import { useTranslations } from "@/hooks/use-translations";
-
 interface ProfessionalsProps {
   clinics: ActiveClinic[];
 }
 
 export function Professionals({ clinics }: ProfessionalsProps) {
-  const t = useTranslations();
-
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -32,10 +28,11 @@ export function Professionals({ clinics }: ProfessionalsProps) {
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-bold text-3xl text-balance md:text-4xl">
-              {t.home.professionals.title}
+              Clínicas Odontológicas em Destaque
             </h2>
             <p className="text-muted-foreground mt-4 text-balance text-lg">
-              {t.home.professionals.noClinics}
+              Nenhuma clínica disponível para agendamento no momento. Volte em
+              breve!
             </p>
           </div>
         </div>
@@ -48,10 +45,11 @@ export function Professionals({ clinics }: ProfessionalsProps) {
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-bold text-3xl text-balance md:text-4xl">
-            {t.home.professionals.title}
+            Clínicas Odontológicas em Destaque
           </h2>
           <p className="text-muted-foreground mt-4 text-balance text-lg">
-            {t.home.professionals.subtitle}
+            Agende consultas com profissionais odontológicos verificados perto
+            de você
           </p>
         </div>
 
@@ -83,9 +81,7 @@ export function Professionals({ clinics }: ProfessionalsProps) {
                         className="bg-primary text-primary-foreground shadow-lg"
                       >
                         <Star className="size-3 mr-1 fill-current" />
-                        {t.home.professionals.title.includes("Destaque")
-                          ? "PROFISSIONAL"
-                          : "PROFESSIONAL"}
+                        PROFISSIONAL
                       </Badge>
                     </div>
                   )}
@@ -139,25 +135,21 @@ export function Professionals({ clinics }: ProfessionalsProps) {
                     <div className="flex items-center gap-2 flex-wrap text-sm">
                       <Badge variant="secondary" className="text-xs">
                         <Briefcase className="size-3 mr-1" />
-                        {clinic._count.services} {t.home.professionals.services}
-                        {clinic._count.services !== 1 &&
-                        t.home.professionals.services === "service"
-                          ? "s"
-                          : ""}
+                        {clinic._count.services}{" "}
+                        {clinic._count.services !== 1 ? "serviços" : "serviço"}
                       </Badge>
                       <Badge variant="outline" className="text-xs">
-                        {t.home.professionals.activeClinic}
+                        Clínica ativa
                       </Badge>
                     </div>
                     <div className="pt-2 text-xs text-muted-foreground">
-                      {clinic._count.appointments}+{" "}
-                      {t.home.professionals.appointmentsCompleted}
+                      {clinic._count.appointments}+ agendamentos concluídos
                     </div>
                     <div className="pt-2">
                       <Link href={`/clinic/${clinic.id}`}>
                         <Button className="w-full cursor-pointer" size="sm">
                           <Calendar className="size-4 mr-2" />
-                          {t.home.professionals.bookAppointment}
+                          Agendar Consulta
                         </Button>
                       </Link>
                     </div>
@@ -169,15 +161,12 @@ export function Professionals({ clinics }: ProfessionalsProps) {
 
         <div className="mx-auto mt-12 max-w-2xl text-center">
           <p className="text-muted-foreground text-sm">
-            {t.home.professionals.showing}{" "}
+            Mostrando{" "}
             <span className="font-semibold text-foreground">
               {clinics.length}
             </span>{" "}
-            {t.home.professionals.featured}{" "}
-            {clinics.length === 1
-              ? t.home.professionals.clinic
-              : t.home.professionals.clinics}{" "}
-            {t.home.professionals.acceptingBookings}
+            em destaque {clinics.length === 1 ? "clínica" : "clínicas"}{" "}
+            aceitando agendamentos online
           </p>
         </div>
       </div>

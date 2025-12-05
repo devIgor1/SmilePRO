@@ -8,8 +8,6 @@ import { UserMenu } from "./UserMenu";
 import { authButtons } from "./nav-config";
 import { handleLogin } from "../_actions/login";
 import { handleNavClick } from "./utils";
-import { LanguageSelector } from "@/components/language-selector";
-import { useTranslations } from "@/hooks/use-translations";
 
 import type { Session } from "next-auth";
 
@@ -18,8 +16,6 @@ interface HomeHeaderClientProps {
 }
 
 export function HomeHeaderClient({ session }: HomeHeaderClientProps) {
-  const t = useTranslations();
-
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -39,23 +35,15 @@ export function HomeHeaderClient({ session }: HomeHeaderClientProps) {
             onClick={(e) => handleNavClick(e, "#features")}
             className="text-muted-foreground hover:text-foreground text-sm lg:text-base transition-colors"
           >
-            {t.nav.features}
+            Recursos
           </Link>
           <Link
             href="#pricing"
             onClick={(e) => handleNavClick(e, "#pricing")}
             className="text-muted-foreground hover:text-foreground text-sm lg:text-base transition-colors"
           >
-            {t.nav.pricing}
+            Preços
           </Link>
-          {/* <Link
-            href="#professionals"
-            onClick={(e) => handleNavClick(e, "#professionals")}
-            className="text-muted-foreground hover:text-foreground text-sm lg:text-base transition-colors"
-          >
-            {t.nav.professionals}
-          </Link> */}
-          <LanguageSelector />
           {session?.user ? (
             <UserMenu user={session.user} />
           ) : (
@@ -65,7 +53,7 @@ export function HomeHeaderClient({ session }: HomeHeaderClientProps) {
               className="hidden lg:flex cursor-pointer bg-primary/40"
               onClick={() => handleLogin("google")}
             >
-              {t.nav.signIn}
+              Entrar
             </Button>
           )}
         </nav>

@@ -3,7 +3,6 @@
 import { useState, useEffect, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "@/hooks/use-translations";
 import {
   Dialog,
   DialogContent,
@@ -47,9 +46,7 @@ export function PatientFormDialog({
   onOpenChange,
   onSuccess,
 }: PatientFormDialogProps) {
-  const t = useTranslations();
   const { data: session } = useSession();
-  const language = (session?.user?.systemLanguage as "en" | "pt-BR") || "en";
   const [isPending, startTransition] = useTransition();
   const [isMounted, setIsMounted] = useState(false);
 
@@ -105,12 +102,12 @@ export function PatientFormDialog({
           notes: data.notes || null,
         });
 
-        toast.success(t.profile.patientUpdated);
+        toast.success("Paciente atualizado com sucesso");
         onOpenChange(false);
         onSuccess?.();
       } catch (error) {
         toast.error(
-          error instanceof Error ? error.message : t.profile.failedToUpdate
+          error instanceof Error ? error.message : "Falha ao atualizar paciente"
         );
       }
     });
@@ -122,9 +119,10 @@ export function PatientFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t.profile.updatePatient}</DialogTitle>
+          <DialogTitle>Editar Paciente</DialogTitle>
           <DialogDescription>
-            {t.profile.updatePatientDescription}
+            Atualize as informações do paciente. Todos os campos marcados com *
+            são obrigatórios.
           </DialogDescription>
         </DialogHeader>
 
@@ -133,11 +131,11 @@ export function PatientFormDialog({
             {/* Name */}
             <div className="space-y-2">
               <Label htmlFor="name">
-                {t.patients.name} <span className="text-destructive">*</span>
+                Nome <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="name"
-                placeholder={t.patients.name}
+                placeholder="Nome"
                 {...register("name")}
                 disabled={isPending}
               />
@@ -151,12 +149,12 @@ export function PatientFormDialog({
             {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email">
-                {t.patients.email} <span className="text-destructive">*</span>
+                E-mail <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="email"
                 type="email"
-                placeholder={t.patients.email}
+                placeholder="E-mail"
                 {...register("email")}
                 disabled={isPending}
               />
@@ -170,12 +168,12 @@ export function PatientFormDialog({
             {/* Phone */}
             <div className="space-y-2">
               <Label htmlFor="phone">
-                {t.patients.phone} <span className="text-destructive">*</span>
+                Telefone <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="phone"
                 type="tel"
-                placeholder={t.patients.phone}
+                placeholder="Telefone"
                 {...register("phone")}
                 disabled={isPending}
               />
@@ -188,7 +186,7 @@ export function PatientFormDialog({
 
             {/* Date of Birth */}
             <div className="space-y-2">
-              <Label>{t.patients.dateOfBirth}</Label>
+              <Label>Data de Nascimento</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -201,8 +199,8 @@ export function PatientFormDialog({
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {dateOfBirth
-                      ? formatDateByLanguage(dateOfBirth, language, "full")
-                      : t.profile.pickDate}
+                      ? formatDateByLanguage(dateOfBirth, undefined, "full")
+                      : "Escolher uma data"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -230,10 +228,10 @@ export function PatientFormDialog({
 
           {/* Address */}
           <div className="space-y-2">
-            <Label htmlFor="address">{t.patients.address}</Label>
+            <Label htmlFor="address">Endereço</Label>
             <Input
               id="address"
-              placeholder={t.profile.addressPlaceholder}
+              placeholder="Rua Principal, 123, Cidade, Estado, CEP"
               {...register("address")}
               disabled={isPending}
             />
@@ -246,10 +244,10 @@ export function PatientFormDialog({
 
           {/* Notes */}
           <div className="space-y-2">
-            <Label htmlFor="notes">{t.patients.notes}</Label>
+            <Label htmlFor="notes">Observações</Label>
             <Textarea
               id="notes"
-              placeholder={t.profile.notesPlaceholder}
+              placeholder="Qualquer informação adicional sobre o paciente..."
               rows={4}
               {...register("notes")}
               disabled={isPending}
@@ -267,7 +265,7 @@ export function PatientFormDialog({
               onClick={() => onOpenChange(false)}
               disabled={isPending}
             >
-              {t.common.cancel}
+              Cancelar
             </Button>
             <Button
               type="submit"
@@ -275,7 +273,7 @@ export function PatientFormDialog({
               className="cursor-pointer"
             >
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t.profile.saveChanges}
+              Salvar Alterações
             </Button>
           </div>
         </form>

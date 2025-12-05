@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useTranslations } from "@/hooks/use-translations";
 import {
   Dialog,
   DialogContent,
@@ -34,7 +33,6 @@ interface BookingLinkCardProps {
 }
 
 export function BookingLinkCard({ userId }: BookingLinkCardProps) {
-  const t = useTranslations();
   const [copied, setCopied] = useState(false);
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
 
@@ -52,14 +50,16 @@ export function BookingLinkCard({ userId }: BookingLinkCardProps) {
     try {
       await navigator.clipboard.writeText(bookingUrl);
       setCopied(true);
-      toast.success(t.booking.linkCopied);
+      toast.success(
+        "Link de agendamento copiado para a área de transferência!"
+      );
 
       // Reset the icon after 2 seconds
       setTimeout(() => {
         setCopied(false);
       }, 2000);
     } catch (error) {
-      toast.error(t.booking.failedToCopy);
+      toast.error("Falha ao copiar link");
     }
   };
 
@@ -76,7 +76,7 @@ export function BookingLinkCard({ userId }: BookingLinkCardProps) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    toast.success(t.booking.qrCodeDownloaded);
+    toast.success("Código QR baixado com sucesso!");
   };
 
   return (
@@ -84,10 +84,10 @@ export function BookingLinkCard({ userId }: BookingLinkCardProps) {
       <CardHeader className="border-b border-primary/10 bg-primary/10 rounded-t-xl px-6 pt-6 pb-6">
         <CardTitle className="flex items-center gap-2 text-primary">
           <Link2 className="h-5 w-5" />
-          {t.booking.publicBookingLink}
+          Link Público de Agendamento
         </CardTitle>
         <CardDescription>
-          {t.booking.shareLinkDescription}
+          Compartilhe este link com seus pacientes para agendamento online
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-6 px-6 pb-6 space-y-4">
@@ -114,12 +114,12 @@ export function BookingLinkCard({ userId }: BookingLinkCardProps) {
             {copied ? (
               <>
                 <CheckCircle2 className="mr-2 h-4 w-4" />
-                {t.booking.copied}
+                Copiado!
               </>
             ) : (
               <>
                 <Copy className="mr-2 h-4 w-4" />
-                {t.booking.copyLink}
+                Copiar Link
               </>
             )}
           </Button>
@@ -127,7 +127,7 @@ export function BookingLinkCard({ userId }: BookingLinkCardProps) {
             onClick={openInNewTab}
             variant="outline"
             size="icon"
-            title={t.booking.openInNewTab}
+            title="Abrir em nova aba"
           >
             <ExternalLink className="h-4 w-4" />
           </Button>
@@ -136,7 +136,9 @@ export function BookingLinkCard({ userId }: BookingLinkCardProps) {
         {/* Info */}
         <div className="p-4 rounded-lg bg-primary/5 border border-primary/10">
           <p className="text-xs text-muted-foreground leading-relaxed">
-            <strong className="text-foreground">{t.booking.tip}</strong> {t.booking.tipDescription}
+            <strong className="text-foreground">Dica:</strong> Compartilhe este
+            link no seu site, redes sociais ou por e-mail para permitir que os
+            pacientes agendem consultas diretamente com sua clínica.
           </p>
         </div>
 
@@ -146,14 +148,15 @@ export function BookingLinkCard({ userId }: BookingLinkCardProps) {
             <DialogTrigger asChild>
               <Button variant="outline" className="w-full cursor-pointer">
                 <QrCode className="mr-2 h-4 w-4" />
-                {t.booking.viewQRCode}
+                Ver Código QR
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>{t.booking.qrCodeForBooking}</DialogTitle>
+                <DialogTitle>Código QR para Agendamento</DialogTitle>
                 <DialogDescription>
-                  {t.booking.qrCodeDescription}
+                  Compartilhe este código QR para que os pacientes agendem
+                  consultas
                 </DialogDescription>
               </DialogHeader>
               <div className="flex flex-col items-center space-y-4 py-4">
@@ -175,20 +178,20 @@ export function BookingLinkCard({ userId }: BookingLinkCardProps) {
                   variant="default"
                 >
                   <Download className="mr-2 h-4 w-4" />
-                  {t.booking.downloadQRCode}
+                  Baixar Código QR
                 </Button>
 
                 {/* Usage Tips */}
                 <div className="w-full p-3 rounded-lg bg-primary/5 border border-primary/10">
                   <p className="text-xs text-muted-foreground">
-                    <strong className="text-foreground">{t.booking.usageTips}</strong>
+                    <strong className="text-foreground">Dicas de Uso:</strong>
                     <br />
-                    • {t.booking.usageTip1}
+                    • Imprima e exiba na recepção
                     <br />
-                    • {t.booking.usageTip2}
+                    • Adicione aos cartões de visita
                     <br />
-                    • {t.booking.usageTip3}
-                    <br />• {t.booking.usageTip4}
+                    • Compartilhe nas redes sociais
+                    <br />• Inclua nas assinaturas de e-mail
                   </p>
                 </div>
               </div>

@@ -7,11 +7,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import heroImage from "@/public/heroImage.png";
 import { handleLogin } from "../_actions/login";
-import { useTranslations } from "@/hooks/use-translations";
-
 export function Hero() {
-  const t = useTranslations();
-
   return (
     <section className="container mx-auto px-4 py-20 md:py-32">
       <div className="mx-auto max-w-7xl">
@@ -19,14 +15,16 @@ export function Hero() {
           <div className="text-center lg:text-left">
             <Badge className="mb-4" variant="secondary">
               <Sparkles className="mr-1 size-3" />
-              {t.home.hero.badge}
+              Confiado pelas clínicas odontológicas do Brasil
             </Badge>
             <h1 className="font-bold text-4xl text-balance leading-tight md:text-5xl lg:text-6xl mt-4">
-              {t.home.hero.titlePart1}
-              <span className="text-primary">{t.home.hero.titlePart2}</span>
+              Gestão Moderna para{" "}
+              <span className="text-primary">Consultórios Odontológicos</span>
             </h1>
             <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-balance text-lg md:text-xl lg:mx-0">
-              {t.home.hero.subtitle}
+              Simplifique agendamentos, gerencie pacientes e expanda sua prática
+              com nossa plataforma completa projetada especificamente para
+              profissionais odontológicos.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row lg:justify-start">
               <Button
@@ -34,12 +32,12 @@ export function Hero() {
                 className="w-full sm:w-auto cursor-pointer"
                 onClick={() => handleLogin("google")}
               >
-                {t.home.hero.cta}
+                Iniciar Teste Grátis
                 <ArrowRight className="ml-2 size-4" />
               </Button>
             </div>
             <p className="text-muted-foreground mt-4 text-sm">
-              {t.home.hero.trialText}
+              Sem cartão de crédito • Teste grátis de 3 dias
             </p>
           </div>
 

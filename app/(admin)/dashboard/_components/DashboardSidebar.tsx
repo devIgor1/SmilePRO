@@ -26,35 +26,32 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { useTranslations } from "@/hooks/use-translations";
-
 export function DashboardSidebar() {
   const pathname = usePathname();
-  const t = useTranslations();
-  
+
   const navigationItems = [
     {
-      title: t.nav.appointments,
+      title: "Agendamentos",
       href: "/dashboard/appointments",
       icon: Calendar,
     },
     {
-      title: t.nav.patients,
+      title: "Pacientes",
       href: "/dashboard/patients",
       icon: Users,
     },
     {
-      title: t.nav.plans,
+      title: "Planos",
       href: "/dashboard/plans",
       icon: CreditCard,
     },
     {
-      title: t.nav.services,
+      title: "Serviços",
       href: "/dashboard/services",
       icon: Settings,
     },
     {
-      title: t.nav.profile,
+      title: "Perfil",
       href: "/dashboard/profile",
       icon: User,
     },
@@ -74,7 +71,7 @@ export function DashboardSidebar() {
               Smile PRO
             </span>
             <span className="text-primary/70 text-xs font-medium transition-colors group-hover:text-primary">
-              {t.nav.dashboard}
+              Painel
             </span>
           </div>
         </Link>
@@ -82,7 +79,7 @@ export function DashboardSidebar() {
       <SidebarContent className="px-2 py-4">
         <SidebarGroup>
           <SidebarGroupLabel className="px-2 text-xs font-semibold text-sidebar-foreground/60">
-            {t.common.actions}
+            Ações
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -115,11 +112,11 @@ export function DashboardSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={() => signOut({ callbackUrl: "/" })}
-              tooltip={t.nav.logOut}
+              tooltip="Sair"
               className="text-base text-destructive hover:bg-destructive/10 hover:text-destructive w-full cursor-pointer"
             >
               <LogOut className="size-5" />
-              <span>{t.nav.logOut}</span>
+              <span>Sair</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

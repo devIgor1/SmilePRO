@@ -5,10 +5,8 @@ import { Button } from "@/components/ui/button";
 import { createPortalSession } from "../_actions/create-portal-session";
 import { toast } from "sonner";
 import { Loader2, Settings } from "lucide-react";
-import { useTranslations } from "@/hooks/use-translations";
 
 export function ManageSubscriptionButton() {
-  const t = useTranslations();
   const [isPending, startTransition] = useTransition();
 
   const handleManageSubscription = () => {
@@ -24,13 +22,11 @@ export function ManageSubscriptionButton() {
         if (sessionId) {
           window.location.href = sessionId;
         } else {
-          toast.error("Failed to create portal session");
+          toast.error("Falha ao criar sessão do portal");
         }
       } catch (error) {
         toast.error(
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred"
+          error instanceof Error ? error.message : "Ocorreu um erro inesperado"
         );
       }
     });
@@ -46,12 +42,12 @@ export function ManageSubscriptionButton() {
       {isPending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          {t.common.loading}
+          Carregando...
         </>
       ) : (
         <>
           <Settings className="mr-2 h-4 w-4" />
-          {t.profile.manageSubscription}
+          Gerenciar Assinatura
         </>
       )}
     </Button>

@@ -12,7 +12,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useTranslations } from "@/hooks/use-translations";
 import {
   Mail,
   Phone,
@@ -25,7 +24,10 @@ import {
 import dayjs from "dayjs";
 import type { PatientWithRelations } from "@/lib/types";
 import { getInitials } from "../_utils/patient-helpers";
-import { formatDateByLanguage, formatMonthYear } from "@/lib/utils/date-formatter";
+import {
+  formatDateByLanguage,
+  formatMonthYear,
+} from "@/lib/utils/date-formatter";
 import { useSession } from "next-auth/react";
 import {
   getStatusVariant,
@@ -46,9 +48,7 @@ export function PatientDetailsDialog({
   onOpenChange,
   onEdit,
 }: PatientDetailsDialogProps) {
-  const t = useTranslations();
   const { data: session } = useSession();
-  const language = (session?.user?.systemLanguage as "en" | "pt-BR") || "en";
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -94,14 +94,14 @@ export function PatientDetailsDialog({
           <div>
             <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" />
-              {t.patients.personalInformation}
+              Informações Pessoais
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Email */}
               <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
                 <Mail className="h-4 w-4 text-muted-foreground mt-0.5" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs text-muted-foreground">{t.patients.email}</p>
+                  <p className="text-xs text-muted-foreground">E-mail</p>
                   <p className="text-sm font-medium truncate">
                     {patient.email}
                   </p>
@@ -112,7 +112,7 @@ export function PatientDetailsDialog({
               <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
                 <Phone className="h-4 w-4 text-muted-foreground mt-0.5" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs text-muted-foreground">{t.patients.phone}</p>
+                  <p className="text-xs text-muted-foreground">Telefone</p>
                   <p className="text-sm font-medium">{patient.phone}</p>
                 </div>
               </div>
@@ -123,13 +123,17 @@ export function PatientDetailsDialog({
                   <Calendar className="h-4 w-4 text-muted-foreground mt-0.5" />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-muted-foreground">
-                      {t.patients.dateOfBirth}
+                      Data de Nascimento
                     </p>
                     <p className="text-sm font-medium">
-                      {formatDateByLanguage(patient.dateOfBirth, language, "full")}
+                      {formatDateByLanguage(
+                        patient.dateOfBirth,
+                        undefined,
+                        "full"
+                      )}
                       {age && (
                         <span className="text-muted-foreground ml-2">
-                          ({age} {t.patients.yearsOld})
+                          ({age} anos)
                         </span>
                       )}
                     </p>
@@ -142,7 +146,7 @@ export function PatientDetailsDialog({
                 <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
                   <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-muted-foreground">{t.patients.address}</p>
+                    <p className="text-xs text-muted-foreground">Endereço</p>
                     <p className="text-sm font-medium">{patient.address}</p>
                   </div>
                 </div>
@@ -158,7 +162,7 @@ export function PatientDetailsDialog({
               <div>
                 <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                   <FileText className="h-5 w-5 text-primary" />
-                  {t.patients.notes}
+                  Observações
                 </h3>
                 <div className="p-4 rounded-lg bg-muted/50">
                   <p className="text-sm whitespace-pre-wrap">{patient.notes}</p>
@@ -172,26 +176,26 @@ export function PatientDetailsDialog({
           <div>
             <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
               <Clock className="h-5 w-5 text-primary" />
-              {t.patients.appointmentSummary}
+              Resumo de Agendamentos
             </h3>
             <div className="grid grid-cols-3 gap-3">
               <div className="p-4 rounded-lg bg-muted/50 text-center">
                 <p className="text-2xl font-bold text-primary">
                   {appointmentCount}
                 </p>
-                <p className="text-xs text-muted-foreground">{t.patients.total}</p>
+                <p className="text-xs text-muted-foreground">Total</p>
               </div>
               <div className="p-4 rounded-lg bg-muted/50 text-center">
                 <p className="text-2xl font-bold text-blue-600">
                   {upcomingAppointments?.length || 0}
                 </p>
-                <p className="text-xs text-muted-foreground">{t.patients.upcoming}</p>
+                <p className="text-xs text-muted-foreground">Próximos</p>
               </div>
               <div className="p-4 rounded-lg bg-muted/50 text-center">
                 <p className="text-2xl font-bold text-green-600">
                   {pastAppointments?.length || 0}
                 </p>
-                <p className="text-xs text-muted-foreground">{t.patients.completed}</p>
+                <p className="text-xs text-muted-foreground">Concluído</p>
               </div>
             </div>
           </div>
@@ -203,7 +207,7 @@ export function PatientDetailsDialog({
               <div>
                 <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-primary" />
-                  {t.patients.recentAppointments}
+                  Agendamentos Recentes
                 </h3>
                 <div className="space-y-2">
                   {patient.appointments
@@ -222,8 +226,12 @@ export function PatientDetailsDialog({
                           <Calendar className="h-4 w-4 text-muted-foreground" />
                           <div>
                             <p className="text-sm font-medium">
-                              {formatDateByLanguage(appointment.appointmentDate, language, "full")}{" "}
-                              {t.patients.at} {appointment.appointmentTime}
+                              {formatDateByLanguage(
+                                appointment.appointmentDate,
+                                undefined,
+                                "full"
+                              )}{" "}
+                              às {appointment.appointmentTime}
                             </p>
                             {appointment.service && (
                               <p className="text-xs text-muted-foreground">
@@ -241,7 +249,7 @@ export function PatientDetailsDialog({
                 </div>
                 {patient.appointments.length > 5 && (
                   <p className="text-xs text-muted-foreground text-center mt-2">
-                    {t.patients.showing} 5 {t.patients.of} {patient.appointments.length} {t.appointments.appointments}
+                    Mostrando 5 de {patient.appointments.length} agendamentos
                   </p>
                 )}
               </div>
@@ -252,10 +260,11 @@ export function PatientDetailsDialog({
           <Separator />
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span>
-              {t.patients.patientSince} {formatMonthYear(patient.createdAt, language)}
+              Paciente desde {formatMonthYear(patient.createdAt, undefined)}
             </span>
             <span>
-              {t.patients.lastUpdated} {formatDateByLanguage(patient.updatedAt, language, "full")}
+              Última atualização{" "}
+              {formatDateByLanguage(patient.updatedAt, undefined, "full")}
             </span>
           </div>
         </div>
@@ -263,9 +272,9 @@ export function PatientDetailsDialog({
         {/* Actions */}
         <div className="flex justify-end gap-2 pt-4 border-t">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t.patients.close}
+            Fechar
           </Button>
-          {onEdit && <Button onClick={onEdit}>{t.patients.editPatient}</Button>}
+          {onEdit && <Button onClick={onEdit}>Editar Paciente</Button>}
         </div>
       </DialogContent>
     </Dialog>

@@ -7,20 +7,17 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { useTranslations } from "@/hooks/use-translations";
-
 export function Features() {
-  const t = useTranslations();
-  
   return (
     <section id="features" className="border-t bg-muted/50 py-20">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-bold text-3xl text-balance md:text-4xl">
-            {t.home.features.title}
+            Tudo que você precisa para administrar sua clínica
           </h2>
           <p className="text-muted-foreground mt-4 text-balance text-lg">
-            {t.home.features.subtitle}
+            Recursos poderosos projetados para economizar tempo e melhorar o
+            atendimento ao paciente
           </p>
         </div>
 
@@ -30,9 +27,10 @@ export function Features() {
               <div className="bg-primary/10 text-primary mb-4 flex size-12 items-center justify-center rounded-lg">
                 <Calendar className="size-6" />
               </div>
-              <CardTitle>{t.home.features.smartScheduling.title}</CardTitle>
+              <CardTitle>Agendamento Inteligente</CardTitle>
               <CardDescription>
-                {t.home.features.smartScheduling.description}
+                Visualização intuitiva do calendário com gerenciamento fácil de
+                agendamentos e reserva online pública para seus pacientes
               </CardDescription>
             </CardHeader>
           </Card>
@@ -42,9 +40,10 @@ export function Features() {
               <div className="bg-primary/10 text-primary mb-4 flex size-12 items-center justify-center rounded-lg">
                 <Users className="size-6" />
               </div>
-              <CardTitle>{t.home.features.patientManagement.title}</CardTitle>
+              <CardTitle>Gestão de Pacientes</CardTitle>
               <CardDescription>
-                {t.home.features.patientManagement.description}
+                Perfis completos de pacientes com informações de contato,
+                observações, fotos e histórico completo de agendamentos
               </CardDescription>
             </CardHeader>
           </Card>
@@ -54,9 +53,10 @@ export function Features() {
               <div className="bg-primary/10 text-primary mb-4 flex size-12 items-center justify-center rounded-lg">
                 <BarChart3 className="size-6" />
               </div>
-              <CardTitle>{t.home.features.analytics.title}</CardTitle>
+              <CardTitle>Análises e Insights</CardTitle>
               <CardDescription>
-                {t.home.features.analytics.description}
+                Acompanhe tendências de receita, monitore estatísticas de
+                agendamentos e visualize métricas-chave de desempenho
               </CardDescription>
             </CardHeader>
           </Card>
@@ -66,9 +66,10 @@ export function Features() {
               <div className="bg-primary/10 text-primary mb-4 flex size-12 items-center justify-center rounded-lg">
                 <Clock className="size-6" />
               </div>
-              <CardTitle>{t.home.features.serviceManagement.title}</CardTitle>
+              <CardTitle>Gestão de Serviços</CardTitle>
               <CardDescription>
-                {t.home.features.serviceManagement.description}
+                Crie e gerencie os serviços da sua clínica com preços, duração e
+                configurações de disponibilidade
               </CardDescription>
             </CardHeader>
           </Card>
@@ -78,9 +79,10 @@ export function Features() {
               <div className="bg-primary/10 text-primary mb-4 flex size-12 items-center justify-center rounded-lg">
                 <Shield className="size-6" />
               </div>
-              <CardTitle>{t.home.features.secure.title}</CardTitle>
+              <CardTitle>Seguro e Confiável</CardTitle>
               <CardDescription>
-                {t.home.features.secure.description}
+                Autenticação segura, proteção de dados e infraestrutura
+                confiável para manter os dados da sua clínica seguros
               </CardDescription>
             </CardHeader>
           </Card>
@@ -90,9 +92,10 @@ export function Features() {
               <div className="bg-primary/10 text-primary mb-4 flex size-12 items-center justify-center rounded-lg">
                 <Zap className="size-6" />
               </div>
-              <CardTitle>{t.home.features.easyToUse.title}</CardTitle>
+              <CardTitle>Fácil de Usar</CardTitle>
               <CardDescription>
-                {t.home.features.easyToUse.description}
+                Interface simples e intuitiva projetada para profissionais
+                odontológicos. Comece em minutos sem necessidade de treinamento
               </CardDescription>
             </CardHeader>
           </Card>

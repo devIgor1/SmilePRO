@@ -12,12 +12,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PLANS, getPlanFeatures, getPlanDescription } from "@/utils/plans";
-import { useTranslations } from "@/hooks/use-translations";
 import { PLANS_LIMITS } from "@/utils/permissions/plan-limits";
 
 export function Pricing() {
-  const t = useTranslations();
-  const language = t.__language || "en";
+  // Always use Portuguese
+  const language = "pt-BR";
   const planFeatures = getPlanFeatures(language);
   const formatPrice = (price: number) => price.toFixed(2).replace(".", ",");
 
@@ -58,10 +57,10 @@ export function Pricing() {
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-bold text-3xl text-balance md:text-4xl">
-            {t.home.pricing.title}
+            Preços simples e transparentes
           </h2>
           <p className="text-muted-foreground mt-4 text-balance text-lg">
-            {t.home.pricing.subtitle}
+            Escolha o plano que se adequa ao tamanho da sua prática
           </p>
         </div>
 
@@ -74,14 +73,10 @@ export function Pricing() {
               >
                 <CardHeader>
                   {plan.isPopular && (
-                    <Badge className="mb-2 w-fit">
-                      {t.home.pricing.mostPopular}
-                    </Badge>
+                    <Badge className="mb-2 w-fit">Mais Popular</Badge>
                   )}
                   <CardTitle>
-                    {plan.id === "basic"
-                      ? t.home.pricing.planNames.basic
-                      : t.home.pricing.planNames.professional}
+                    {plan.id === "basic" ? "Básico" : "Profissional"}
                   </CardTitle>
                   <CardDescription>
                     {getPlanDescription(plan.id, language)}
@@ -99,11 +94,7 @@ export function Pricing() {
                       <span className="font-bold text-4xl">
                         R$ {formatPrice(plan.price)}
                       </span>
-                      <span className="text-muted-foreground">
-                        {language === "pt-BR"
-                          ? "/mês"
-                          : t.home.pricing.perMonth}
-                      </span>
+                      <span className="text-muted-foreground">/mês</span>
                     </div>
                   </div>
                 </CardHeader>
@@ -121,7 +112,7 @@ export function Pricing() {
                       className="w-full cursor-pointer"
                       variant={plan.buttonVariant}
                     >
-                      {t.home.pricing.activateSubscription}
+                      Ativar assinatura
                     </Button>
                   </Link>
                 </CardContent>

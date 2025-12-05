@@ -45,14 +45,16 @@ export function PatientPhotoUpload({
     // Validate file type
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
     if (!allowedTypes.includes(file.type)) {
-      alert("Please select a valid image file (JPEG, PNG, or WebP)");
+      alert(
+        "Por favor, selecione um arquivo de imagem válido (JPEG, PNG ou WebP)"
+      );
       return;
     }
 
     // Validate file size (5MB)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      alert("File is too large. Maximum size is 5MB.");
+      alert("O arquivo é muito grande. O tamanho máximo é 5MB.");
       return;
     }
 
@@ -88,7 +90,7 @@ export function PatientPhotoUpload({
     if (!currentPhotoUrl) return;
 
     const confirmed = window.confirm(
-      `Are you sure you want to delete ${patientName}'s photo?`
+      `Tem certeza que deseja excluir a foto de ${patientName}?`
     );
 
     if (!confirmed) return;
@@ -135,9 +137,9 @@ export function PatientPhotoUpload({
       <Dialog open={isOpen} onOpenChange={handleOpenChange}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Patient Photo</DialogTitle>
+            <DialogTitle>Foto do Paciente</DialogTitle>
             <DialogDescription>
-              Upload a photo for {patientName}. Max size: 5MB.
+              Envie uma foto para {patientName}. Tamanho máximo: 5MB.
             </DialogDescription>
           </DialogHeader>
 
@@ -216,7 +218,7 @@ export function PatientPhotoUpload({
                   disabled={isUploading}
                 >
                   <Upload className="mr-2 h-4 w-4" />
-                  Select Photo
+                  Selecionar Foto
                 </Button>
               )}
 
@@ -229,7 +231,7 @@ export function PatientPhotoUpload({
                     disabled={isUploading}
                   >
                     <Upload className="mr-2 h-4 w-4" />
-                    Change Photo
+                    Alterar Foto
                   </Button>
                   <Button
                     onClick={handleDelete}
@@ -240,12 +242,12 @@ export function PatientPhotoUpload({
                     {isUploading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Deleting...
+                        Excluindo...
                       </>
                     ) : (
                       <>
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Delete Photo
+                        Excluir Foto
                       </>
                     )}
                   </Button>
@@ -283,7 +285,7 @@ export function PatientPhotoUpload({
                     className="w-full"
                     disabled={isUploading}
                   >
-                    Cancel
+                    Cancelar
                   </Button>
                 </>
               )}
@@ -292,7 +294,7 @@ export function PatientPhotoUpload({
 
           <DialogFooter className="sm:justify-start">
             <p className="text-xs text-muted-foreground">
-              Supported formats: JPEG, PNG, WebP (Max 5MB)
+              Formatos suportados: JPEG, PNG, WebP (Máx. 5MB)
             </p>
           </DialogFooter>
         </DialogContent>

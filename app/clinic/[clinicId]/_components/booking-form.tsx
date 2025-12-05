@@ -363,11 +363,12 @@ export function BookingForm({ clinic }: BookingFormProps) {
                 </div>
               ) : selectedDate ? (
                 <p className="text-sm text-muted-foreground p-4 border rounded-md">
-                  No available times for this date. Please select another date.
+                  Não há horários disponíveis para esta data. Por favor,
+                  selecione outra data.
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground p-4 border rounded-md">
-                  Please select a date first
+                  Por favor, selecione uma data primeiro
                 </p>
               )}
               {errors.appointmentTime && (

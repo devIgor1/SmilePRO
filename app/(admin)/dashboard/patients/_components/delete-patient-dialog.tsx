@@ -15,7 +15,6 @@ import { toast } from "sonner";
 import { deletePatient } from "../_data-access/delete-patient";
 import type { PatientWithRelations } from "@/lib/types";
 import { Loader2 } from "lucide-react";
-import { useTranslations } from "@/hooks/use-translations";
 
 interface DeletePatientDialogProps {
   patient: PatientWithRelations | null;
@@ -30,7 +29,6 @@ export function DeletePatientDialog({
   onOpenChange,
   onSuccess,
 }: DeletePatientDialogProps) {
-  const t = useTranslations();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -44,7 +42,7 @@ export function DeletePatientDialog({
       onSuccess();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to delete patient"
+        error instanceof Error ? error.message : "Falha ao excluir paciente"
       );
     } finally {
       setIsDeleting(false);
@@ -59,25 +57,26 @@ export function DeletePatientDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t.patients.deleteConfirm}</AlertDialogTitle>
+          <AlertDialogTitle>Excluir Paciente</AlertDialogTitle>
           <AlertDialogDescription className="space-y-2">
             <p>
-              {t.patients.deleteConfirmDescription.replace("{name}", patient.name)}
+              Isso excluirá permanentemente {patient.name} e todos os dados
+              associados.
             </p>
             {appointmentCount > 0 && (
               <p className="text-destructive font-medium">
-                {t.patients.deleteConfirmWarning
-                  .replace("{count}", appointmentCount.toString())
-                  .replace(/\{plural\}/g, appointmentCount !== 1 ? "s" : "")}
+                Aviso: Isso também excluirá {appointmentCount}{" "}
+                {appointmentCount !== 1 ? "agendamentos" : "agendamento"}{" "}
+                associado{appointmentCount !== 1 ? "s" : ""} a este paciente.
               </p>
             )}
             <p className="text-xs text-muted-foreground mt-2">
-              {t.services.deleteConfirmDescription}
+              Esta ação não pode ser desfeita.
             </p>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>{t.common.cancel}</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault();
@@ -89,10 +88,10 @@ export function DeletePatientDialog({
             {isDeleting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t.patients.deleting}
+                Excluindo...
               </>
             ) : (
-              t.patients.deletePatient
+              "Excluir Paciente"
             )}
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -100,4 +99,3 @@ export function DeletePatientDialog({
     </AlertDialog>
   );
 }
-

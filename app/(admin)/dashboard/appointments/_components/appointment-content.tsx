@@ -5,8 +5,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { useTranslations } from "@/hooks/use-translations";
-import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import {
   Card,
@@ -79,11 +77,14 @@ import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import { cn } from "@/lib/utils";
 import { formatDateByLanguage } from "@/lib/utils/date-formatter";
+import { getCalendarLocale } from "@/lib/utils/calendar-locale";
 import { getAppointmentsByDate } from "../_data-access/get-appointments-by-date";
 import { getAllServices } from "../../services/_data-access/get-all-services";
 import { findOrCreatePatient } from "../_data-access/find-or-create-patient";
 import { createAppointment } from "../_data-access/create-appointment";
 import { updateAppointmentStatus } from "../_data-access/update-appointment-status";
+import { updateAppointment } from "../_data-access/update-appointment";
+import { AppointmentDetailsDialog } from "./appointment-details-dialog";
 import {
   getStatusVariant,
   getStatusIcon,
@@ -115,22 +116,17 @@ export default function AppointmentContent({
   initialDate = new Date(),
   userTimeslots = [],
 }: AppointmentContentProps) {
-  const t = useTranslations();
   const router = useRouter();
   const [date, setDate] = useState<Date>(initialDate);
-  const { data: session } = useSession();
 
-  // Get language from session
-  const language = (session?.user?.systemLanguage as "en" | "pt-BR") || "en";
-
-  // Format date based on language
+  // Format date in Portuguese
   const formatDate = (date: Date) => {
-    return formatDateByLanguage(date, language, "full");
+    return formatDateByLanguage(date, undefined, "full");
   };
 
   // Format date without year (for quick view)
   const formatDateShort = (date: Date) => {
-    return formatDateByLanguage(date, language, "short");
+    return formatDateByLanguage(date, undefined, "short");
   };
   const [searchQuery, setSearchQuery] = useState("");
   const [appointments, setAppointments] =
@@ -145,6 +141,10 @@ export default function AppointmentContent({
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [appointmentToCancel, setAppointmentToCancel] =
     useState<AppointmentWithRelations | null>(null);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<AppointmentWithRelations | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const {
     register,
@@ -209,7 +209,7 @@ export default function AppointmentContent({
 
   // Reset form when dialog opens/closes
   useEffect(() => {
-    if (isDialogOpen) {
+    if (isDialogOpen && !isEditMode) {
       reset({
         patientName: "",
         email: "",
@@ -219,8 +219,19 @@ export default function AppointmentContent({
         appointmentTime: "",
         notes: "",
       });
+    } else if (isDialogOpen && isEditMode && selectedAppointment) {
+      // Populate form with appointment data for editing
+      reset({
+        patientName: selectedAppointment.patient?.name || "",
+        email: selectedAppointment.patient?.email || "",
+        phone: selectedAppointment.patient?.phone || "",
+        serviceId: selectedAppointment.serviceId,
+        appointmentDate: new Date(selectedAppointment.appointmentDate),
+        appointmentTime: selectedAppointment.appointmentTime,
+        notes: selectedAppointment.notes || "",
+      });
     }
-  }, [isDialogOpen, date, reset]);
+  }, [isDialogOpen, isEditMode, selectedAppointment, date, reset]);
 
   // Update available timeslots when appointment date changes
   useEffect(() => {
@@ -246,46 +257,89 @@ export default function AppointmentContent({
   const onSubmit = async (data: AppointmentFormValues) => {
     startTransition(async () => {
       try {
-        // Find or create patient
-        const patientResult = await findOrCreatePatient({
-          name: data.patientName,
-          email: data.email,
-          phone: data.phone,
-          userId,
-        });
+        if (isEditMode && selectedAppointment) {
+          // Update existing appointment
+          // Find or create patient
+          const patientResult = await findOrCreatePatient({
+            name: data.patientName,
+            email: data.email,
+            phone: data.phone,
+            userId,
+          });
 
-        if (!patientResult.success || !patientResult.patient) {
-          throw new Error("Failed to create or find patient");
+          if (!patientResult.success || !patientResult.patient) {
+            throw new Error("Failed to create or find patient");
+          }
+
+          // Update appointment
+          const updateResult = await updateAppointment({
+            id: selectedAppointment.id,
+            patientId: patientResult.patient.id,
+            serviceId: data.serviceId,
+            appointmentDate: data.appointmentDate,
+            appointmentTime: data.appointmentTime,
+            notes: data.notes || undefined,
+            userId,
+          });
+
+          if (!updateResult.success) {
+            throw new Error("Failed to update appointment");
+          }
+
+          toast.success("Agendamento atualizado com sucesso!");
+          setIsDialogOpen(false);
+          setIsEditMode(false);
+          setSelectedAppointment(null);
+          router.refresh();
+
+          // Reload appointments for the current date
+          const appts = await getAppointmentsByDate({ userId, date });
+          setAppointments(appts as AppointmentWithRelations[]);
+        } else {
+          // Create new appointment
+          // Find or create patient
+          const patientResult = await findOrCreatePatient({
+            name: data.patientName,
+            email: data.email,
+            phone: data.phone,
+            userId,
+          });
+
+          if (!patientResult.success || !patientResult.patient) {
+            throw new Error("Failed to create or find patient");
+          }
+
+          // Create appointment
+          const appointmentResult = await createAppointment({
+            patientId: patientResult.patient.id,
+            serviceId: data.serviceId,
+            appointmentDate: data.appointmentDate,
+            appointmentTime: data.appointmentTime,
+            notes: data.notes || undefined,
+            userId,
+            status: AppointmentStatus.CONFIRMED,
+          });
+
+          if (!appointmentResult.success) {
+            throw new Error("Failed to create appointment");
+          }
+
+          toast.success("Agendamento agendado e confirmado com sucesso!");
+          setIsDialogOpen(false);
+          router.refresh();
+
+          // Reload appointments for the current date
+          const appts = await getAppointmentsByDate({ userId, date });
+          setAppointments(appts as AppointmentWithRelations[]);
         }
-
-        // Create appointment
-        const appointmentResult = await createAppointment({
-          patientId: patientResult.patient.id,
-          serviceId: data.serviceId,
-          appointmentDate: data.appointmentDate,
-          appointmentTime: data.appointmentTime,
-          notes: data.notes || undefined,
-          userId,
-          status: AppointmentStatus.CONFIRMED,
-        });
-
-        if (!appointmentResult.success) {
-          throw new Error("Failed to create appointment");
-        }
-
-        toast.success(t.appointments.scheduledSuccess);
-        setIsDialogOpen(false);
-        router.refresh();
-
-        // Reload appointments for the current date
-        const appts = await getAppointmentsByDate({ userId, date });
-        setAppointments(appts as AppointmentWithRelations[]);
       } catch (error) {
-        console.error("Failed to schedule appointment:", error);
+        console.error("Failed to save appointment:", error);
         toast.error(
           error instanceof Error
             ? error.message
-            : t.appointments.scheduledSuccess
+            : isEditMode
+              ? "Falha ao atualizar agendamento"
+              : "Falha ao agendar consulta"
         );
       }
     });
@@ -294,8 +348,21 @@ export default function AppointmentContent({
   const handleOpenChange = (open: boolean) => {
     if (!open && !isPending) {
       reset();
+      setIsEditMode(false);
+      setSelectedAppointment(null);
     }
     setIsDialogOpen(open);
+  };
+
+  const handleViewDetails = (appointment: AppointmentWithRelations) => {
+    setSelectedAppointment(appointment);
+    setDetailsDialogOpen(true);
+  };
+
+  const handleEdit = (appointment: AppointmentWithRelations) => {
+    setSelectedAppointment(appointment);
+    setIsEditMode(true);
+    setIsDialogOpen(true);
   };
 
   const handleConfirmAppointment = async (appointmentId: string) => {
@@ -311,7 +378,7 @@ export default function AppointmentContent({
           throw new Error("Failed to confirm appointment");
         }
 
-        toast.success(t.appointments.confirmedSuccess);
+        toast.success("Agendamento confirmado com sucesso!");
         router.refresh();
 
         // Reload appointments for the current date
@@ -322,7 +389,7 @@ export default function AppointmentContent({
         toast.error(
           error instanceof Error
             ? error.message
-            : t.appointments.confirmedSuccess
+            : "Falha ao confirmar agendamento"
         );
       }
     });
@@ -343,7 +410,7 @@ export default function AppointmentContent({
           throw new Error("Failed to cancel appointment");
         }
 
-        toast.success(t.appointments.cancelledSuccess);
+        toast.success("Agendamento cancelado com sucesso");
         setCancelDialogOpen(false);
         setAppointmentToCancel(null);
         router.refresh();
@@ -356,7 +423,7 @@ export default function AppointmentContent({
         toast.error(
           error instanceof Error
             ? error.message
-            : t.appointments.cancelledSuccess
+            : "Falha ao cancelar agendamento"
         );
       }
     });
@@ -375,7 +442,7 @@ export default function AppointmentContent({
           throw new Error("Failed to complete appointment");
         }
 
-        toast.success(t.appointments.completedSuccess);
+        toast.success("Agendamento marcado como concluído!");
         router.refresh();
 
         // Reload appointments for the current date
@@ -386,7 +453,7 @@ export default function AppointmentContent({
         toast.error(
           error instanceof Error
             ? error.message
-            : t.appointments.completedSuccess
+            : "Falha ao marcar agendamento como concluído"
         );
       }
     });
@@ -398,10 +465,10 @@ export default function AppointmentContent({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            {t.appointments.scheduleTitle}
+            Agenda de Agendamentos
           </h1>
           <p className="text-muted-foreground mt-2">
-            {t.appointments.scheduleSubtitle}
+            Gerencie e agende consultas de pacientes
           </p>
         </div>
         {isMounted && (
@@ -409,28 +476,32 @@ export default function AppointmentContent({
             <DialogTrigger asChild>
               <Button className="bg-primary hover:bg-primary/90 cursor-pointer">
                 <Plus className="mr-2 h-4 w-4" />
-                {t.appointments.newAppointment}
+                Novo Agendamento
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
               <form onSubmit={handleSubmit(onSubmit)}>
                 <DialogHeader>
-                  <DialogTitle>{t.appointments.scheduleNew}</DialogTitle>
+                  <DialogTitle>
+                    {isEditMode
+                      ? "Editar Agendamento"
+                      : "Agendar Nova Consulta"}
+                  </DialogTitle>
                   <DialogDescription>
-                    {t.appointments.scheduleDescription}
+                    {isEditMode
+                      ? "Atualize os detalhes do agendamento abaixo."
+                      : "Preencha os detalhes para agendar uma nova consulta para um paciente."}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
                     <Label htmlFor="patient-name">
-                      {t.appointments.patientName}{" "}
-                      <span className="text-destructive">
-                        {t.appointments.required}
-                      </span>
+                      Nome do Paciente{" "}
+                      <span className="text-destructive">*</span>
                     </Label>
                     <Input
                       id="patient-name"
-                      placeholder={t.appointments.patientNamePlaceholder}
+                      placeholder="Digite o nome do paciente"
                       {...register("patientName")}
                     />
                     {errors.patientName && (
@@ -441,15 +512,12 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="email">
-                      {t.patients.email}{" "}
-                      <span className="text-destructive">
-                        {t.appointments.required}
-                      </span>
+                      E-mail <span className="text-destructive">*</span>
                     </Label>
                     <Input
                       id="email"
                       type="email"
-                      placeholder={t.appointments.emailPlaceholder}
+                      placeholder="paciente@exemplo.com"
                       {...register("email")}
                     />
                     {errors.email && (
@@ -460,15 +528,13 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="phone">
-                      {t.appointments.phoneNumber}{" "}
-                      <span className="text-destructive">
-                        {t.appointments.required}
-                      </span>
+                      Número de Telefone{" "}
+                      <span className="text-destructive">*</span>
                     </Label>
                     <Input
                       id="phone"
                       type="tel"
-                      placeholder={t.appointments.phonePlaceholder}
+                      placeholder="21 99999-9999"
                       {...register("phone")}
                     />
                     {errors.phone && (
@@ -479,10 +545,7 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="service">
-                      {t.services.title}{" "}
-                      <span className="text-destructive">
-                        {t.appointments.required}
-                      </span>
+                      Serviços <span className="text-destructive">*</span>
                     </Label>
                     <Select
                       value={watch("serviceId") || ""}
@@ -490,9 +553,7 @@ export default function AppointmentContent({
                       defaultValue=""
                     >
                       <SelectTrigger id="service">
-                        <SelectValue
-                          placeholder={t.appointments.selectService}
-                        />
+                        <SelectValue placeholder="Selecionar serviço" />
                       </SelectTrigger>
                       <SelectContent>
                         {services.map((service) => (
@@ -510,10 +571,8 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="appointment-date">
-                      {t.appointments.appointmentDate}{" "}
-                      <span className="text-destructive">
-                        {t.appointments.required}
-                      </span>
+                      Data do Agendamento{" "}
+                      <span className="text-destructive">*</span>
                     </Label>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -529,7 +588,7 @@ export default function AppointmentContent({
                           {appointmentDate ? (
                             formatDate(appointmentDate)
                           ) : (
-                            <span>{t.appointments.pickDate}</span>
+                            <span>Escolher uma data</span>
                           )}
                         </Button>
                       </PopoverTrigger>
@@ -551,6 +610,7 @@ export default function AppointmentContent({
                             new Date(new Date().getFullYear() + 1, 11, 31)
                           }
                           initialFocus
+                          formatters={getCalendarLocale()}
                         />
                       </PopoverContent>
                     </Popover>
@@ -562,10 +622,8 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="time-slot">
-                      {t.appointments.appointmentTime}{" "}
-                      <span className="text-destructive">
-                        {t.appointments.required}
-                      </span>
+                      Horário do Agendamento{" "}
+                      <span className="text-destructive">*</span>
                     </Label>
                     <Select
                       value={watch("appointmentTime")}
@@ -574,7 +632,7 @@ export default function AppointmentContent({
                       }
                     >
                       <SelectTrigger id="time-slot">
-                        <SelectValue placeholder={t.booking.selectTime} />
+                        <SelectValue placeholder="Selecionar Horário" />
                       </SelectTrigger>
                       <SelectContent>
                         {timeSlots
@@ -601,10 +659,10 @@ export default function AppointmentContent({
                     )}
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="notes">{t.appointments.notes}</Label>
+                    <Label htmlFor="notes">Observações</Label>
                     <Textarea
                       id="notes"
-                      placeholder={t.appointments.notesPlaceholder}
+                      placeholder="Observações adicionais (opcional)"
                       rows={3}
                       {...register("notes")}
                     />
@@ -623,7 +681,7 @@ export default function AppointmentContent({
                     disabled={isPending}
                     className="cursor-pointer"
                   >
-                    {t.common.cancel}
+                    Cancelar
                   </Button>
                   <Button
                     type="submit"
@@ -633,10 +691,10 @@ export default function AppointmentContent({
                     {isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {t.common.loading}
+                        Carregando...
                       </>
                     ) : (
-                      <>{t.appointments.schedule}</>
+                      <>{isEditMode ? "Salvar" : "Agendar Consulta"}</>
                     )}
                   </Button>
                 </DialogFooter>
@@ -647,7 +705,7 @@ export default function AppointmentContent({
         {!isMounted && (
           <Button className="bg-primary hover:bg-primary/90">
             <Plus className="mr-2 h-4 w-4" />
-            {t.appointments.newAppointment}
+            Novo Agendamento
           </Button>
         )}
       </div>
@@ -657,10 +715,8 @@ export default function AppointmentContent({
         {/* Calendar Section */}
         <Card className="border-primary/20 !bg-gradient-to-br from-background via-background to-primary/5 overflow-hidden p-0 flex flex-col">
           <CardHeader className="border-b border-primary/10 bg-primary/10 rounded-t-xl px-6 pt-6 pb-6">
-            <CardTitle className="text-primary">
-              {t.appointments.selectDate}
-            </CardTitle>
-            <CardDescription>{t.appointments.selectDate}</CardDescription>
+            <CardTitle className="text-primary">Selecionar Data</CardTitle>
+            <CardDescription>Selecionar Data</CardDescription>
           </CardHeader>
           <CardContent className="pt-6 px-6 pb-6 flex justify-center">
             <Calendar
@@ -669,16 +725,7 @@ export default function AppointmentContent({
               onSelect={(newDate) => newDate && setDate(newDate)}
               captionLayout="dropdown"
               className="rounded-md"
-              formatters={
-                language === "pt-BR"
-                  ? {
-                      formatMonthDropdown: (date) =>
-                        dayjs(date).locale("pt-br").format("MMMM"),
-                      formatYearDropdown: (date) =>
-                        dayjs(date).locale("pt-br").format("YYYY"),
-                    }
-                  : undefined
-              }
+              formatters={getCalendarLocale()}
             />
           </CardContent>
         </Card>
@@ -694,19 +741,15 @@ export default function AppointmentContent({
                 <CardDescription>
                   {appointments.length}{" "}
                   {appointments.length !== 1
-                    ? language === "pt-BR"
-                      ? "agendamentos agendados"
-                      : `${t.appointments.appointments} ${t.appointments.scheduled}`
-                    : language === "pt-BR"
-                      ? "agendamento agendado"
-                      : `${t.appointments.appointment} ${t.appointments.scheduled}`}
+                    ? "agendamentos agendados"
+                    : "agendamento agendado"}
                 </CardDescription>
               </div>
               <div className="flex gap-2">
                 <div className="relative flex-1 sm:flex-initial">
                   <Search className="text-muted-foreground absolute left-2.5 top-2.5 h-4 w-4" />
                   <Input
-                    placeholder={t.patients.searchPlaceholder}
+                    placeholder="Buscar pacientes..."
                     className="pl-8 sm:w-[200px] bg-background"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -718,26 +761,22 @@ export default function AppointmentContent({
           <CardContent className="pt-6 px-6 pb-6">
             {isLoading ? (
               <div className="text-center py-8 text-muted-foreground">
-                {t.common.loading}
+                Carregando...
               </div>
             ) : filteredAppointments.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                {searchQuery
-                  ? t.appointments.noAppointments
-                  : t.appointments.noAppointments}
+                Nenhum agendamento encontrado
               </div>
             ) : (
               <div className="rounded-md border bg-background">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>{t.appointments.appointmentTime}</TableHead>
-                      <TableHead>{t.patients.table.patient}</TableHead>
-                      <TableHead>{t.services.title}</TableHead>
-                      <TableHead>{t.patients.table.status}</TableHead>
-                      <TableHead className="text-right">
-                        {t.common.actions}
-                      </TableHead>
+                      <TableHead>Horário do Agendamento</TableHead>
+                      <TableHead>Paciente</TableHead>
+                      <TableHead>Serviços</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -766,16 +805,16 @@ export default function AppointmentContent({
                           <Badge variant={getStatusVariant(appointment.status)}>
                             {getStatusIcon(appointment.status)}
                             {appointment.status === AppointmentStatus.PENDING
-                              ? t.appointments.status.pending
+                              ? "Pendente"
                               : appointment.status ===
                                   AppointmentStatus.CONFIRMED
-                                ? t.appointments.status.confirmed
+                                ? "Confirmado"
                                 : appointment.status ===
                                     AppointmentStatus.CANCELLED
-                                  ? t.appointments.status.cancelled
+                                  ? "Cancelado"
                                   : appointment.status ===
                                       AppointmentStatus.COMPLETED
-                                    ? t.appointments.status.completed
+                                    ? "Concluído"
                                     : appointment.status}
                           </Badge>
                         </TableCell>
@@ -788,9 +827,7 @@ export default function AppointmentContent({
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>
-                                  {t.common.actions}
-                                </DropdownMenuLabel>
+                                <DropdownMenuLabel>Ações</DropdownMenuLabel>
                                 {appointment.status ===
                                   AppointmentStatus.PENDING && (
                                   <DropdownMenuItem
@@ -800,14 +837,18 @@ export default function AppointmentContent({
                                     disabled={isPending}
                                   >
                                     <Check className="mr-2 h-4 w-4" />
-                                    {t.appointments.confirmAppointment}
+                                    Confirmar Agendamento
                                   </DropdownMenuItem>
                                 )}
-                                <DropdownMenuItem>
-                                  {t.patients.actions.viewDetails}
+                                <DropdownMenuItem
+                                  onClick={() => handleViewDetails(appointment)}
+                                >
+                                  Ver Detalhes
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  {t.common.edit}
+                                <DropdownMenuItem
+                                  onClick={() => handleEdit(appointment)}
+                                >
+                                  Editar
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 {appointment.status !==
@@ -817,7 +858,7 @@ export default function AppointmentContent({
                                       handleCompleteAppointment(appointment.id)
                                     }
                                   >
-                                    {t.appointments.completeAppointment}
+                                    Marcar como Concluído
                                   </DropdownMenuItem>
                                 )}
                                 {appointment.status !==
@@ -829,7 +870,7 @@ export default function AppointmentContent({
                                       setCancelDialogOpen(true);
                                     }}
                                   >
-                                    {t.appointments.cancelAppointment}
+                                    Cancelar Agendamento
                                   </DropdownMenuItem>
                                 )}
                               </DropdownMenuContent>
@@ -853,13 +894,11 @@ export default function AppointmentContent({
       {/* Time Slots Overview */}
       <Card className="border-primary/20 !bg-gradient-to-br from-background via-background to-primary/5 overflow-hidden p-0 flex flex-col">
         <CardHeader className="border-b border-primary/10 bg-primary/10 rounded-t-xl px-6 pt-6 pb-6">
-          <CardTitle className="text-primary">
-            {t.appointments.availableTimeSlots}
-          </CardTitle>
+          <CardTitle className="text-primary">Horários Disponíveis</CardTitle>
           <CardDescription>
             {hasTimeslots
-              ? `${t.appointments.timeSlotsDescription} ${formatDateShort(date)}`
-              : t.appointments.timeSlotsDescriptionNoConfig}
+              ? `Visualização rápida dos horários disponíveis e reservados para ${formatDateShort(date)}`
+              : "Configure seus horários disponíveis no seu perfil para começar a aceitar agendamentos"}
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6 px-6 pb-6">
@@ -867,10 +906,11 @@ export default function AppointmentContent({
             <div className="text-center py-8">
               <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
               <p className="text-sm text-muted-foreground mb-4">
-                {t.appointments.noTimeSlotsConfigured}
+                Nenhum horário disponível configurado
               </p>
               <p className="text-xs text-muted-foreground">
-                {t.appointments.goToProfile}
+                Vá ao seu perfil para configurar os horários disponíveis da sua
+                clínica
               </p>
             </div>
           ) : (
@@ -898,27 +938,27 @@ export default function AppointmentContent({
       <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t.appointments.cancelConfirm}</AlertDialogTitle>
+            <AlertDialogTitle>Cancelar Agendamento</AlertDialogTitle>
             <AlertDialogDescription>
-              {t.appointments.cancelConfirmDescription}
+              Tem certeza de que deseja cancelar este agendamento? Esta ação não
+              pode ser desfeita.
               {appointmentToCancel && (
                 <div className="mt-4 space-y-2 text-sm">
                   <div>
-                    <strong>{t.appointments.patient}:</strong>{" "}
+                    <strong>Paciente:</strong>{" "}
                     {appointmentToCancel.patient.name}
                   </div>
                   <div>
-                    <strong>{t.appointments.service}:</strong>{" "}
-                    {appointmentToCancel.service.name}
+                    <strong>Serviço:</strong> {appointmentToCancel.service.name}
                   </div>
                   <div>
-                    <strong>{t.appointments.date}:</strong>{" "}
+                    <strong>Data:</strong>{" "}
                     {dayjs(appointmentToCancel.appointmentDate).format(
-                      "MMMM D, YYYY"
+                      "D [de] MMMM [de] YYYY"
                     )}
                   </div>
                   <div>
-                    <strong>{t.appointments.time}:</strong>{" "}
+                    <strong>Horário:</strong>{" "}
                     {appointmentToCancel.appointmentTime}
                   </div>
                 </div>
@@ -926,9 +966,7 @@ export default function AppointmentContent({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isPending}>
-              {t.common.cancel}
-            </AlertDialogCancel>
+            <AlertDialogCancel disabled={isPending}>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancelAppointment}
               disabled={isPending}
@@ -937,15 +975,28 @@ export default function AppointmentContent({
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {t.appointments.cancelling}
+                  Cancelando...
                 </>
               ) : (
-                t.appointments.yesCancel
+                "Sim, cancelar agendamento"
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Appointment Details Dialog */}
+      {selectedAppointment && (
+        <AppointmentDetailsDialog
+          appointment={selectedAppointment}
+          open={detailsDialogOpen}
+          onOpenChange={setDetailsDialogOpen}
+          onEdit={() => {
+            setDetailsDialogOpen(false);
+            handleEdit(selectedAppointment);
+          }}
+        />
+      )}
     </div>
   );
 }
