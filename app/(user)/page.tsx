@@ -1,4 +1,4 @@
-import { HomeHeader } from "./_components/HomeHeader";
+import { HomeHeaderWrapper } from "./_components/HomeHeaderWrapper";
 import { Hero } from "./_components/Hero";
 import { Features } from "./_components/Features";
 // import { Professionals } from "./_components/Professionals";
@@ -10,8 +10,8 @@ export default async function Home() {
   // const clinics = await getActiveClinics();
 
   return (
-    <div className="flex min-h-screen flex-col w-full" >
-      <HomeHeader />
+    <div className="flex min-h-screen flex-col w-full">
+      <HomeHeaderWrapper />
       <Hero />
       <Features />
       {/* <Professionals clinics={clinics} /> */}

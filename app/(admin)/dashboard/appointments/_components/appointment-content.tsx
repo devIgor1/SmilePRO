@@ -119,7 +119,7 @@ export default function AppointmentContent({
   const router = useRouter();
   const [date, setDate] = useState<Date>(initialDate);
   const { data: session } = useSession();
-  
+
   // Get language from session
   const language = (session?.user?.systemLanguage as "en" | "pt-BR") || "en";
 
@@ -423,7 +423,10 @@ export default function AppointmentContent({
                 <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
                     <Label htmlFor="patient-name">
-                      {t.appointments.patientName} <span className="text-destructive">{t.appointments.required}</span>
+                      {t.appointments.patientName}{" "}
+                      <span className="text-destructive">
+                        {t.appointments.required}
+                      </span>
                     </Label>
                     <Input
                       id="patient-name"
@@ -438,7 +441,10 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="email">
-                      {t.patients.email} <span className="text-destructive">{t.appointments.required}</span>
+                      {t.patients.email}{" "}
+                      <span className="text-destructive">
+                        {t.appointments.required}
+                      </span>
                     </Label>
                     <Input
                       id="email"
@@ -454,7 +460,10 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="phone">
-                      {t.appointments.phoneNumber} <span className="text-destructive">{t.appointments.required}</span>
+                      {t.appointments.phoneNumber}{" "}
+                      <span className="text-destructive">
+                        {t.appointments.required}
+                      </span>
                     </Label>
                     <Input
                       id="phone"
@@ -470,7 +479,10 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="service">
-                      {t.services.title} <span className="text-destructive">{t.appointments.required}</span>
+                      {t.services.title}{" "}
+                      <span className="text-destructive">
+                        {t.appointments.required}
+                      </span>
                     </Label>
                     <Select
                       value={watch("serviceId") || ""}
@@ -478,7 +490,9 @@ export default function AppointmentContent({
                       defaultValue=""
                     >
                       <SelectTrigger id="service">
-                        <SelectValue placeholder={t.appointments.selectService} />
+                        <SelectValue
+                          placeholder={t.appointments.selectService}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {services.map((service) => (
@@ -497,7 +511,9 @@ export default function AppointmentContent({
                   <div className="grid gap-2">
                     <Label htmlFor="appointment-date">
                       {t.appointments.appointmentDate}{" "}
-                      <span className="text-destructive">{t.appointments.required}</span>
+                      <span className="text-destructive">
+                        {t.appointments.required}
+                      </span>
                     </Label>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -546,7 +562,10 @@ export default function AppointmentContent({
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="time-slot">
-                      {t.appointments.appointmentTime} <span className="text-destructive">{t.appointments.required}</span>
+                      {t.appointments.appointmentTime}{" "}
+                      <span className="text-destructive">
+                        {t.appointments.required}
+                      </span>
                     </Label>
                     <Select
                       value={watch("appointmentTime")}
@@ -638,10 +657,10 @@ export default function AppointmentContent({
         {/* Calendar Section */}
         <Card className="border-primary/20 !bg-gradient-to-br from-background via-background to-primary/5 overflow-hidden p-0 flex flex-col">
           <CardHeader className="border-b border-primary/10 bg-primary/10 rounded-t-xl px-6 pt-6 pb-6">
-            <CardTitle className="text-primary">{t.appointments.selectDate}</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-primary">
               {t.appointments.selectDate}
-            </CardDescription>
+            </CardTitle>
+            <CardDescription>{t.appointments.selectDate}</CardDescription>
           </CardHeader>
           <CardContent className="pt-6 px-6 pb-6 flex justify-center">
             <Calendar
@@ -674,10 +693,13 @@ export default function AppointmentContent({
                 </CardTitle>
                 <CardDescription>
                   {appointments.length}{" "}
-                  {appointments.length !== 1 
-                    ? (language === "pt-BR" ? "agendamentos agendados" : `${t.appointments.appointments} ${t.appointments.scheduled}`)
-                    : (language === "pt-BR" ? "agendamento agendado" : `${t.appointments.appointment} ${t.appointments.scheduled}`)
-                  }
+                  {appointments.length !== 1
+                    ? language === "pt-BR"
+                      ? "agendamentos agendados"
+                      : `${t.appointments.appointments} ${t.appointments.scheduled}`
+                    : language === "pt-BR"
+                      ? "agendamento agendado"
+                      : `${t.appointments.appointment} ${t.appointments.scheduled}`}
                 </CardDescription>
               </div>
               <div className="flex gap-2">
@@ -713,7 +735,9 @@ export default function AppointmentContent({
                       <TableHead>{t.patients.table.patient}</TableHead>
                       <TableHead>{t.services.title}</TableHead>
                       <TableHead>{t.patients.table.status}</TableHead>
-                      <TableHead className="text-right">{t.common.actions}</TableHead>
+                      <TableHead className="text-right">
+                        {t.common.actions}
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -764,7 +788,9 @@ export default function AppointmentContent({
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>{t.common.actions}</DropdownMenuLabel>
+                                <DropdownMenuLabel>
+                                  {t.common.actions}
+                                </DropdownMenuLabel>
                                 {appointment.status ===
                                   AppointmentStatus.PENDING && (
                                   <DropdownMenuItem
@@ -826,25 +852,27 @@ export default function AppointmentContent({
 
       {/* Time Slots Overview */}
       <Card className="border-primary/20 !bg-gradient-to-br from-background via-background to-primary/5 overflow-hidden p-0 flex flex-col">
-          <CardHeader className="border-b border-primary/10 bg-primary/10 rounded-t-xl px-6 pt-6 pb-6">
-            <CardTitle className="text-primary">{t.appointments.availableTimeSlots}</CardTitle>
-            <CardDescription>
-              {hasTimeslots
-                ? `${t.appointments.timeSlotsDescription} ${formatDateShort(date)}`
-                : t.appointments.timeSlotsDescriptionNoConfig}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6 px-6 pb-6">
-            {!hasTimeslots ? (
-              <div className="text-center py-8">
-                <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-                <p className="text-sm text-muted-foreground mb-4">
-                  {t.appointments.noTimeSlotsConfigured}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {t.appointments.goToProfile}
-                </p>
-              </div>
+        <CardHeader className="border-b border-primary/10 bg-primary/10 rounded-t-xl px-6 pt-6 pb-6">
+          <CardTitle className="text-primary">
+            {t.appointments.availableTimeSlots}
+          </CardTitle>
+          <CardDescription>
+            {hasTimeslots
+              ? `${t.appointments.timeSlotsDescription} ${formatDateShort(date)}`
+              : t.appointments.timeSlotsDescriptionNoConfig}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-6 px-6 pb-6">
+          {!hasTimeslots ? (
+            <div className="text-center py-8">
+              <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
+              <p className="text-sm text-muted-foreground mb-4">
+                {t.appointments.noTimeSlotsConfigured}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {t.appointments.goToProfile}
+              </p>
+            </div>
           ) : (
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
               {timeSlots.map((slot) => {
@@ -876,10 +904,12 @@ export default function AppointmentContent({
               {appointmentToCancel && (
                 <div className="mt-4 space-y-2 text-sm">
                   <div>
-                    <strong>{t.appointments.patient}:</strong> {appointmentToCancel.patient.name}
+                    <strong>{t.appointments.patient}:</strong>{" "}
+                    {appointmentToCancel.patient.name}
                   </div>
                   <div>
-                    <strong>{t.appointments.service}:</strong> {appointmentToCancel.service.name}
+                    <strong>{t.appointments.service}:</strong>{" "}
+                    {appointmentToCancel.service.name}
                   </div>
                   <div>
                     <strong>{t.appointments.date}:</strong>{" "}
@@ -888,14 +918,17 @@ export default function AppointmentContent({
                     )}
                   </div>
                   <div>
-                    <strong>{t.appointments.time}:</strong> {appointmentToCancel.appointmentTime}
+                    <strong>{t.appointments.time}:</strong>{" "}
+                    {appointmentToCancel.appointmentTime}
                   </div>
                 </div>
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isPending}>{t.common.cancel}</AlertDialogCancel>
+            <AlertDialogCancel disabled={isPending}>
+              {t.common.cancel}
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancelAppointment}
               disabled={isPending}

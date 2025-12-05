@@ -19,7 +19,7 @@ export default async function PatientsPage() {
   const session = await getSession();
   const t = await getTranslations();
 
-  if (!session) {
+  if (!session?.user?.id) {
     redirect("/");
   }
 
@@ -34,9 +34,7 @@ export default async function PatientsPage() {
           <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
             {t.patients.title}
           </h1>
-          <p className="text-muted-foreground mt-2">
-            {t.patients.title}
-          </p>
+          <p className="text-muted-foreground mt-2">{t.patients.title}</p>
         </div>
         <Card className="border-red-500/50 bg-red-500/10">
           <CardContent className="pt-6 pb-6 px-6">
@@ -55,7 +53,9 @@ export default async function PatientsPage() {
                   asChild
                   className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
                 >
-                  <Link href="/dashboard/plans">{t.dashboard.accessRestricted.viewPlans}</Link>
+                  <Link href="/dashboard/plans">
+                    {t.dashboard.accessRestricted.viewPlans}
+                  </Link>
                 </Button>
               </div>
             </div>

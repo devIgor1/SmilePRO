@@ -19,24 +19,31 @@ import { useSession } from "next-auth/react";
 export function GridPlans() {
   const t = useTranslations();
   const { data: session } = useSession();
-  
+
   // Get language from session
   const language = (session?.user?.systemLanguage as "en" | "pt-BR") || "en";
   const planFeatures = getPlanFeatures(language);
-  
+
   // Translate features for each plan
-  const getTranslatedFeatures = (plan: typeof PLANS[0]) => {
+  const getTranslatedFeatures = (plan: (typeof PLANS)[0]) => {
     return plan.features.map((feature) => {
       if (feature.includes("Up to") || feature.includes("Até")) {
-        const count = plan.id === "basic" 
-          ? PLANS_LIMITS.BASIC.maxServices 
-          : PLANS_LIMITS.PROFESSIONAL.maxServices;
+        const count =
+          plan.id === "basic"
+            ? PLANS_LIMITS.BASIC.maxServices
+            : PLANS_LIMITS.PROFESSIONAL.maxServices;
         return planFeatures.upToServices(count);
       }
-      if (feature.includes("Unlimited appointments") || feature.includes("Agendamentos ilimitados")) {
+      if (
+        feature.includes("Unlimited appointments") ||
+        feature.includes("Agendamentos ilimitados")
+      ) {
         return planFeatures.unlimitedAppointments;
       }
-      if (feature.includes("Priority support") || feature.includes("Suporte prioritário")) {
+      if (
+        feature.includes("Priority support") ||
+        feature.includes("Suporte prioritário")
+      ) {
         return planFeatures.prioritySupport;
       }
       if (feature.includes("Support") && !feature.includes("Priority")) {
@@ -48,7 +55,7 @@ export function GridPlans() {
       return feature;
     });
   };
-  
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mx-auto max-w-2xl text-center mb-16">
@@ -70,14 +77,18 @@ export function GridPlans() {
             >
               <CardHeader>
                 {plan.isPopular && (
-                  <Badge className="mb-2 w-fit">{t.home.pricing.mostPopular}</Badge>
+                  <Badge className="mb-2 w-fit">
+                    {t.home.pricing.mostPopular}
+                  </Badge>
                 )}
                 <CardTitle>
-                  {plan.id === "basic" 
-                    ? t.home.pricing.planNames.basic 
+                  {plan.id === "basic"
+                    ? t.home.pricing.planNames.basic
                     : t.home.pricing.planNames.professional}
                 </CardTitle>
-                <CardDescription>{getPlanDescription(plan.id, language)}</CardDescription>
+                <CardDescription>
+                  {getPlanDescription(plan.id, language)}
+                </CardDescription>
                 <div className="mt-4">
                   {plan.originalPrice && plan.originalPrice !== plan.price && (
                     <div className="mb-2">

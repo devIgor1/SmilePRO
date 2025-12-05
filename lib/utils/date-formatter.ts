@@ -15,10 +15,10 @@ export function formatDateByLanguage(
   format: "full" | "short" | "numeric" = "full"
 ): string {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  
+
   if (language === "pt-BR") {
     dayjs.locale("pt-br");
-    
+
     switch (format) {
       case "full":
         return dayjs(dateObj).format("D [de] MMMM [de] YYYY");
@@ -31,7 +31,7 @@ export function formatDateByLanguage(
     }
   } else {
     dayjs.locale("en");
-    
+
     switch (format) {
       case "full":
         return dayjs(dateObj).format("MMMM D, YYYY");
@@ -56,7 +56,7 @@ export function formatMonthYear(
   language: Language = "en"
 ): string {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  
+
   if (language === "pt-BR") {
     dayjs.locale("pt-br");
     return dayjs(dateObj).format("MMMM [de] YYYY");
@@ -65,4 +65,3 @@ export function formatMonthYear(
     return dayjs(dateObj).format("MMMM YYYY");
   }
 }
-

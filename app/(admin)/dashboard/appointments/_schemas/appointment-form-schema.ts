@@ -17,8 +17,11 @@ export const appointmentFormSchema = z.object({
   serviceId: z.string().min(1, "Please select a service"),
   appointmentDate: z.date(),
   appointmentTime: z.string().min(1, "Please select a time slot"),
-  notes: z.string().max(2000, "Notes must be less than 2000 characters").optional().or(z.literal("")),
+  notes: z
+    .string()
+    .max(2000, "Notes must be less than 2000 characters")
+    .optional()
+    .or(z.literal("")),
 });
 
 export type AppointmentFormValues = z.infer<typeof appointmentFormSchema>;
-

@@ -12,16 +12,20 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { List, LogOut, Settings, User } from "lucide-react";
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { useTranslations } from "@/hooks/use-translations";
 
-export function UserMenu() {
-  const { data: session } = useSession();
+interface UserMenuProps {
+  user: {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
+}
+
+export function UserMenu({ user }: UserMenuProps) {
   const t = useTranslations();
-
-  if (!session?.user) return null;
-
-  const user = session.user;
   const userInitials = user.name
     ? user.name
         .split(" ")

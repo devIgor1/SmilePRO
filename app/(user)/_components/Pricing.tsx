@@ -20,20 +20,27 @@ export function Pricing() {
   const language = t.__language || "en";
   const planFeatures = getPlanFeatures(language);
   const formatPrice = (price: number) => price.toFixed(2).replace(".", ",");
-  
+
   // Translate features for each plan
-  const getTranslatedFeatures = (plan: typeof PLANS[0]) => {
+  const getTranslatedFeatures = (plan: (typeof PLANS)[0]) => {
     return plan.features.map((feature) => {
       if (feature.includes("Up to") || feature.includes("Até")) {
-        const count = plan.id === "basic" 
-          ? PLANS_LIMITS.BASIC.maxServices 
-          : PLANS_LIMITS.PROFESSIONAL.maxServices;
+        const count =
+          plan.id === "basic"
+            ? PLANS_LIMITS.BASIC.maxServices
+            : PLANS_LIMITS.PROFESSIONAL.maxServices;
         return planFeatures.upToServices(count);
       }
-      if (feature.includes("Unlimited appointments") || feature.includes("Agendamentos ilimitados")) {
+      if (
+        feature.includes("Unlimited appointments") ||
+        feature.includes("Agendamentos ilimitados")
+      ) {
         return planFeatures.unlimitedAppointments;
       }
-      if (feature.includes("Priority support") || feature.includes("Suporte prioritário")) {
+      if (
+        feature.includes("Priority support") ||
+        feature.includes("Suporte prioritário")
+      ) {
         return planFeatures.prioritySupport;
       }
       if (feature.includes("Support") && !feature.includes("Priority")) {
@@ -67,14 +74,18 @@ export function Pricing() {
               >
                 <CardHeader>
                   {plan.isPopular && (
-                    <Badge className="mb-2 w-fit">{t.home.pricing.mostPopular}</Badge>
+                    <Badge className="mb-2 w-fit">
+                      {t.home.pricing.mostPopular}
+                    </Badge>
                   )}
                   <CardTitle>
-                    {plan.id === "basic" 
-                      ? t.home.pricing.planNames.basic 
+                    {plan.id === "basic"
+                      ? t.home.pricing.planNames.basic
                       : t.home.pricing.planNames.professional}
                   </CardTitle>
-                  <CardDescription>{getPlanDescription(plan.id, language)}</CardDescription>
+                  <CardDescription>
+                    {getPlanDescription(plan.id, language)}
+                  </CardDescription>
                   <div className="mt-4">
                     {plan.originalPrice &&
                       plan.originalPrice !== plan.price && (
@@ -89,7 +100,9 @@ export function Pricing() {
                         R$ {formatPrice(plan.price)}
                       </span>
                       <span className="text-muted-foreground">
-                        {language === "pt-BR" ? "/mês" : t.home.pricing.perMonth}
+                        {language === "pt-BR"
+                          ? "/mês"
+                          : t.home.pricing.perMonth}
                       </span>
                     </div>
                   </div>

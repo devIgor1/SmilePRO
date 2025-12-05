@@ -6,15 +6,18 @@ import { Smile } from "lucide-react";
 import { MobileNav } from "./MobileNav";
 import { UserMenu } from "./UserMenu";
 import { authButtons } from "./nav-config";
-import { useSession } from "next-auth/react";
 import { handleLogin } from "../_actions/login";
 import { handleNavClick } from "./utils";
 import { LanguageSelector } from "@/components/language-selector";
 import { useTranslations } from "@/hooks/use-translations";
 
-export function HomeHeader() {
-  const { data: session, status } = useSession();
-  const isLoading = status === "loading";
+import type { Session } from "next-auth";
+
+interface HomeHeaderClientProps {
+  session: Session | null;
+}
+
+export function HomeHeaderClient({ session }: HomeHeaderClientProps) {
   const t = useTranslations();
 
   return (
@@ -53,23 +56,17 @@ export function HomeHeader() {
             {t.nav.professionals}
           </Link> */}
           <LanguageSelector />
-          {!isLoading && (
-            <>
-              {session?.user ? (
-                <UserMenu />
-              ) : (
-                <>
-                  <Button
-                    variant={authButtons.signIn.variant}
-                    size="default"
-                    className="hidden lg:flex cursor-pointer bg-primary/40"
-                    onClick={() => handleLogin("google")}
-                  >
-                    {t.nav.signIn}
-                  </Button>
-                </>
-              )}
-            </>
+          {session?.user ? (
+            <UserMenu user={session.user} />
+          ) : (
+            <Button
+              variant={authButtons.signIn.variant}
+              size="default"
+              className="hidden lg:flex cursor-pointer bg-primary/40"
+              onClick={() => handleLogin("google")}
+            >
+              {t.nav.signIn}
+            </Button>
           )}
         </nav>
 
