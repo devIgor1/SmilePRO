@@ -1,5 +1,3 @@
-import { Plan } from "@/lib/generated/prisma/enums";
-
 export const PLANS_LIMITS = {
   BASIC: {
     maxServices: 3,
