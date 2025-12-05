@@ -25,50 +25,84 @@ export async function ActiveSubscription({
 }: ActiveSubscriptionProps) {
   const t = await getTranslations();
   const planDetails = PLANS.find((p) => p.id === plan.toLowerCase());
-  
+
   // Get language from translations
   const language = t.__language || "en";
   const planFeatures = getPlanFeatures(language);
-  
+
   // Format date based on language
   const formatDate = (date: Date, lang: "en" | "pt-BR") => {
     const months = {
-      en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-      "pt-BR": ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"]
+      en: [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ],
+      "pt-BR": [
+        "janeiro",
+        "fevereiro",
+        "março",
+        "abril",
+        "maio",
+        "junho",
+        "julho",
+        "agosto",
+        "setembro",
+        "outubro",
+        "novembro",
+        "dezembro",
+      ],
     };
-    
+
     const month = months[lang][date.getMonth()];
     const day = date.getDate();
     const year = date.getFullYear();
-    
+
     if (lang === "pt-BR") {
       return `${day} de ${month} de ${year}`;
     }
     return `${month} ${day}, ${year}`;
   };
-  
+
   // Translate features based on plan
-  const translatedFeatures = planDetails?.features.map((feature) => {
-    if (feature.includes("Up to") || feature.includes("Até")) {
-      const count = planDetails.id === "basic" 
-        ? PLANS_LIMITS.BASIC.maxServices 
-        : PLANS_LIMITS.PROFESSIONAL.maxServices;
-      return planFeatures.upToServices(count);
-    }
-    if (feature.includes("Unlimited appointments") || feature.includes("Agendamentos ilimitados")) {
-      return planFeatures.unlimitedAppointments;
-    }
-    if (feature.includes("Priority support") || feature.includes("Suporte prioritário")) {
-      return planFeatures.prioritySupport;
-    }
-    if (feature.includes("Support") && !feature.includes("Priority")) {
-      return planFeatures.support;
-    }
-    if (feature.includes("Reports") || feature.includes("Relatórios")) {
-      return planFeatures.reports;
-    }
-    return feature;
-  }) || [];
+  const translatedFeatures =
+    planDetails?.features.map((feature) => {
+      if (feature.includes("Up to") || feature.includes("Até")) {
+        const count =
+          planDetails.id === "basic"
+            ? PLANS_LIMITS.BASIC.maxServices
+            : PLANS_LIMITS.PROFESSIONAL.maxServices;
+        return planFeatures.upToServices(count);
+      }
+      if (
+        feature.includes("Unlimited appointments") ||
+        feature.includes("Agendamentos ilimitados")
+      ) {
+        return planFeatures.unlimitedAppointments;
+      }
+      if (
+        feature.includes("Priority support") ||
+        feature.includes("Suporte prioritário")
+      ) {
+        return planFeatures.prioritySupport;
+      }
+      if (feature.includes("Support") && !feature.includes("Priority")) {
+        return planFeatures.support;
+      }
+      if (feature.includes("Reports") || feature.includes("Relatórios")) {
+        return planFeatures.reports;
+      }
+      return feature;
+    }) || [];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -93,13 +127,13 @@ export async function ActiveSubscription({
                 <Badge variant="outline">{t.profile.mostPopular}</Badge>
               )}
             </div>
-                  <CardTitle>
-                    {planDetails?.id === "basic"
-                      ? t.home.pricing.planNames.basic
-                      : t.home.pricing.planNames.professional}
-                  </CardTitle>
+            <CardTitle>
+              {planDetails?.id === "basic"
+                ? t.home.pricing.planNames.basic
+                : t.home.pricing.planNames.professional}
+            </CardTitle>
             <CardDescription>
-              {planDetails ? getPlanDescription(planDetails.id, language) : planDetails?.description}
+              {planDetails ? getPlanDescription(planDetails.id, language) : ""}
             </CardDescription>
             <div className="mt-4">
               {planDetails?.originalPrice &&
