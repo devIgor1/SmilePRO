@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  outputFileTracingIncludes: {
+    "/api/**/*": ["./node_modules/.prisma/client/**/*"],
+
+    "/*": ["./node_modules/.prisma/client/**/*"],
+  },
   images: {
     remotePatterns: [
       {
@@ -9,9 +13,6 @@ const nextConfig: NextConfig = {
         hostname: "avatars.githubusercontent.com",
       },
     ],
-  },
-  experimental: {
-    optimizePackageImports: ["@prisma/client"],
   },
 };
 
