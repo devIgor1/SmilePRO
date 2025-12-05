@@ -12,7 +12,7 @@ export async function TrialBanner() {
   const session = await getSession();
   const t = await getTranslations();
 
-  if (!session) {
+  if (!session?.user?.id) {
     return null;
   }
 
@@ -80,4 +80,3 @@ export async function TrialBanner() {
     </Card>
   );
 }
-

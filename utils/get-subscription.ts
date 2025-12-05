@@ -2,9 +2,9 @@
 
 import prisma from "@/lib/prisma";
 
-export async function getSubscription(userId: string) {
+export async function getSubscription(userId: string | undefined | null) {
   if (!userId) {
-    throw new Error("User ID is required to get subscriptions");
+    return null;
   }
   try {
     const subscription = await prisma.subscription.findFirst({

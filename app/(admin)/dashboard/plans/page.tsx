@@ -6,7 +6,7 @@ import { getSubscription } from "@/utils/get-subscription";
 
 export default async function Plans() {
   const session = await getSession();
-  if (!session) {
+  if (!session?.user?.id) {
     redirect("/");
   }
 
