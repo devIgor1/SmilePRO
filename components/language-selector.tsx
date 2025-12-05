@@ -35,22 +35,23 @@ export function LanguageSelector() {
   useEffect(() => {
     if (!isMounted) return;
 
-    // Get language from session (if logged in) or localStorage (if not logged in)
+    // Always check localStorage first as it's the source of truth
+    const storedLanguage = localStorage.getItem(
+      LANGUAGE_STORAGE_KEY
+    ) as Language;
+    if (
+      storedLanguage &&
+      (storedLanguage === "en" || storedLanguage === "pt-BR")
+    ) {
+      setCurrentLanguage(storedLanguage);
+      return;
+    }
+
+    // Fallback to session for logged users
     if (session?.user) {
       const userLanguage = (session.user.systemLanguage || "en") as Language;
       const validLanguage = userLanguage === "pt-BR" ? "pt-BR" : "en";
       setCurrentLanguage(validLanguage);
-    } else {
-      // For non-logged users, use localStorage
-      const storedLanguage = localStorage.getItem(
-        LANGUAGE_STORAGE_KEY
-      ) as Language;
-      if (
-        storedLanguage &&
-        (storedLanguage === "en" || storedLanguage === "pt-BR")
-      ) {
-        setCurrentLanguage(storedLanguage);
-      }
     }
   }, [session?.user?.systemLanguage, session?.user, isMounted]);
 
@@ -61,7 +62,9 @@ export function LanguageSelector() {
 
     // Dispatch custom event to notify all components immediately
     if (typeof window !== "undefined") {
-      window.dispatchEvent(new CustomEvent("languageChanged", { detail: newLanguage }));
+      window.dispatchEvent(
+        new CustomEvent("languageChanged", { detail: newLanguage })
+      );
     }
 
     // If user is logged in, update in database
@@ -71,14 +74,16 @@ export function LanguageSelector() {
       if (result.success) {
         // Update the session to reflect the new language
         await update();
+        // Sync localStorage with database value
+        localStorage.setItem(LANGUAGE_STORAGE_KEY, newLanguage);
       }
     }
 
     // Refresh the page to apply translations in server components
-    // Using a small delay to ensure session update completes
+    // Using a delay to ensure session update completes
     setTimeout(() => {
       router.refresh();
-    }, 50);
+    }, 200);
   };
 
   // Prevent hydration mismatch by not rendering Select until mounted

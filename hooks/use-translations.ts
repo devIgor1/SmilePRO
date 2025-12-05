@@ -37,7 +37,7 @@ export function useTranslations(): Translations {
   useEffect(() => {
     if (!isClient) return;
     
-    // Sync with localStorage when session changes
+    // Sync with localStorage - always check localStorage first as it's the source of truth
     if (typeof window !== "undefined") {
       const lang = localStorage.getItem(LANGUAGE_STORAGE_KEY) as Language;
       if (lang && (lang === "en" || lang === "pt-BR")) {
@@ -47,17 +47,33 @@ export function useTranslations(): Translations {
   }, [session?.user?.systemLanguage, isClient]);
   
   const language = useMemo(() => {
-    if (session?.user) {
-      // For logged users, prefer session language but fallback to localStorage
-      const userLanguage = (session.user.systemLanguage || storedLanguage || "en") as Language;
-      return userLanguage === "pt-BR" ? "pt-BR" : "en";
-    } else if (isClient) {
-      // For non-logged users, use localStorage
-      return storedLanguage;
-    } else {
+    if (!isClient) {
       // Default during SSR
       return "en";
     }
+    
+    // Always prioritize localStorage as it's updated immediately when language changes
+    // This ensures immediate UI updates without waiting for session refresh
+    if (typeof window !== "undefined") {
+      const storedLang = localStorage.getItem(LANGUAGE_STORAGE_KEY) as Language;
+      if (storedLang && (storedLang === "en" || storedLang === "pt-BR")) {
+        return storedLang;
+      }
+    }
+    
+    // Fallback to stored state (from useState)
+    if (storedLanguage && (storedLanguage === "en" || storedLanguage === "pt-BR")) {
+      return storedLanguage;
+    }
+    
+    // Fallback to session for logged users
+    if (session?.user) {
+      const userLanguage = (session.user.systemLanguage || "en") as Language;
+      return userLanguage === "pt-BR" ? "pt-BR" : "en";
+    }
+    
+    // Final fallback
+    return "en";
   }, [session?.user?.systemLanguage, storedLanguage, isClient]);
   
   return { ...translations[language], __language: language };
