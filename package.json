@@ -9,6 +9,7 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "postinstall": "prisma generate",
     "db:seed": "npx prisma migrate reset --force --skip-seed && tsx prisma/seed.ts",
     "db:seed:only": "tsx prisma/seed.ts",
     "stripe:listen": "stripe listen --forward-to localhost:3000/api/webhook"

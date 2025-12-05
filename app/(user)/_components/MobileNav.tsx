@@ -136,7 +136,7 @@ export function MobileNav() {
             ) : (
               <>
                 <SheetClose asChild>
-                  <Link href={authButtons.signIn.href} className="block">
+                  <Link href="/dashboard/appointments" className="block">
                     <Button variant="outline" className="w-full py-2">
                       {t.nav.signIn}
                     </Button>
@@ -144,9 +144,7 @@ export function MobileNav() {
                 </SheetClose>
                 <SheetClose asChild>
                   <Link href={authButtons.getStarted.href} className="block">
-                    <Button className="w-full py-2">
-                      {t.nav.getStarted}
-                    </Button>
+                    <Button className="w-full py-2">{t.nav.getStarted}</Button>
                   </Link>
                 </SheetClose>
               </>
