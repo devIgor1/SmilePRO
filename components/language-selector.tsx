@@ -55,8 +55,14 @@ export function LanguageSelector() {
   }, [session?.user?.systemLanguage, session?.user, isMounted]);
 
   const handleLanguageChange = async (newLanguage: Language) => {
-    // Save to localStorage for non-logged users
+    // Save to localStorage immediately (for both logged and non-logged users)
     localStorage.setItem(LANGUAGE_STORAGE_KEY, newLanguage);
+    setCurrentLanguage(newLanguage);
+
+    // Dispatch custom event to notify all components immediately
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("languageChanged", { detail: newLanguage }));
+    }
 
     // If user is logged in, update in database
     if (session?.user) {
@@ -65,14 +71,14 @@ export function LanguageSelector() {
       if (result.success) {
         // Update the session to reflect the new language
         await update();
-        setCurrentLanguage(newLanguage);
       }
-    } else {
-      setCurrentLanguage(newLanguage);
     }
 
-    // Refresh the page to apply translations
-    router.refresh();
+    // Refresh the page to apply translations in server components
+    // Using a small delay to ensure session update completes
+    setTimeout(() => {
+      router.refresh();
+    }, 50);
   };
 
   // Prevent hydration mismatch by not rendering Select until mounted

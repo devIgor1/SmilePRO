@@ -13,19 +13,43 @@ export function useTranslations(): Translations {
   
   useEffect(() => {
     setIsClient(true);
-    // Get language from localStorage for non-logged users
-    if (!session?.user && typeof window !== "undefined") {
+    
+    // Get language from localStorage (works for both logged and non-logged users)
+    if (typeof window !== "undefined") {
       const lang = localStorage.getItem(LANGUAGE_STORAGE_KEY) as Language;
       if (lang && (lang === "en" || lang === "pt-BR")) {
         setStoredLanguage(lang);
       }
     }
-  }, [session?.user]);
+
+    // Listen for language change events
+    const handleLanguageChange = (event: CustomEvent<Language>) => {
+      setStoredLanguage(event.detail);
+    };
+
+    window.addEventListener("languageChanged", handleLanguageChange as EventListener);
+    
+    return () => {
+      window.removeEventListener("languageChanged", handleLanguageChange as EventListener);
+    };
+  }, []);
+  
+  useEffect(() => {
+    if (!isClient) return;
+    
+    // Sync with localStorage when session changes
+    if (typeof window !== "undefined") {
+      const lang = localStorage.getItem(LANGUAGE_STORAGE_KEY) as Language;
+      if (lang && (lang === "en" || lang === "pt-BR")) {
+        setStoredLanguage(lang);
+      }
+    }
+  }, [session?.user?.systemLanguage, isClient]);
   
   const language = useMemo(() => {
     if (session?.user) {
-      // Get language from session user, default to "en"
-      const userLanguage = (session.user.systemLanguage || "en") as Language;
+      // For logged users, prefer session language but fallback to localStorage
+      const userLanguage = (session.user.systemLanguage || storedLanguage || "en") as Language;
       return userLanguage === "pt-BR" ? "pt-BR" : "en";
     } else if (isClient) {
       // For non-logged users, use localStorage
