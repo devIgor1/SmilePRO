@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 
 const languages: { value: Language; label: string }[] = [
   { value: "en", label: "English" },
-  { value: "pt-BR", label: "Português (Brasil)" },
+  { value: "pt-BR", label: "Português" },
 ];
 
 const LANGUAGE_STORAGE_KEY = "smilepro-language";
@@ -27,14 +27,14 @@ export function LanguageSelector() {
   const router = useRouter();
   const [currentLanguage, setCurrentLanguage] = useState<Language>("en");
   const [isMounted, setIsMounted] = useState(false);
-  
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
   useEffect(() => {
     if (!isMounted) return;
-    
+
     // Get language from session (if logged in) or localStorage (if not logged in)
     if (session?.user) {
       const userLanguage = (session.user.systemLanguage || "en") as Language;
@@ -42,8 +42,13 @@ export function LanguageSelector() {
       setCurrentLanguage(validLanguage);
     } else {
       // For non-logged users, use localStorage
-      const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY) as Language;
-      if (storedLanguage && (storedLanguage === "en" || storedLanguage === "pt-BR")) {
+      const storedLanguage = localStorage.getItem(
+        LANGUAGE_STORAGE_KEY
+      ) as Language;
+      if (
+        storedLanguage &&
+        (storedLanguage === "en" || storedLanguage === "pt-BR")
+      ) {
         setCurrentLanguage(storedLanguage);
       }
     }
@@ -52,11 +57,11 @@ export function LanguageSelector() {
   const handleLanguageChange = async (newLanguage: Language) => {
     // Save to localStorage for non-logged users
     localStorage.setItem(LANGUAGE_STORAGE_KEY, newLanguage);
-    
+
     // If user is logged in, update in database
     if (session?.user) {
       const result = await updateLanguage(newLanguage);
-      
+
       if (result.success) {
         // Update the session to reflect the new language
         await update();
@@ -65,7 +70,7 @@ export function LanguageSelector() {
     } else {
       setCurrentLanguage(newLanguage);
     }
-    
+
     // Refresh the page to apply translations
     router.refresh();
   };
@@ -81,10 +86,7 @@ export function LanguageSelector() {
   }
 
   return (
-    <Select
-      value={currentLanguage}
-      onValueChange={handleLanguageChange}
-    >
+    <Select value={currentLanguage} onValueChange={handleLanguageChange}>
       <SelectTrigger className="w-[160px] h-9">
         <div className="flex items-center gap-2">
           <Globe className="size-4 text-muted-foreground" />
@@ -103,4 +105,3 @@ export function LanguageSelector() {
     </Select>
   );
 }
-

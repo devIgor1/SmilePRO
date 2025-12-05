@@ -45,13 +45,13 @@ export function HomeHeader() {
           >
             {t.nav.pricing}
           </Link>
-          <Link
+          {/* <Link
             href="#professionals"
             onClick={(e) => handleNavClick(e, "#professionals")}
             className="text-muted-foreground hover:text-foreground text-sm lg:text-base transition-colors"
           >
             {t.nav.professionals}
-          </Link>
+          </Link> */}
           <LanguageSelector />
           {!isLoading && (
             <>
