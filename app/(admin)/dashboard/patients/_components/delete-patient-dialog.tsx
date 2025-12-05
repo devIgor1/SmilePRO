@@ -58,23 +58,23 @@ export function DeletePatientDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Excluir Paciente</AlertDialogTitle>
-          <AlertDialogDescription className="space-y-2">
-            <p>
-              Isso excluirá permanentemente {patient.name} e todos os dados
-              associados.
-            </p>
-            {appointmentCount > 0 && (
-              <p className="text-destructive font-medium">
-                Aviso: Isso também excluirá {appointmentCount}{" "}
-                {appointmentCount !== 1 ? "agendamentos" : "agendamento"}{" "}
-                associado{appointmentCount !== 1 ? "s" : ""} a este paciente.
-              </p>
-            )}
-            <p className="text-xs text-muted-foreground mt-2">
-              Esta ação não pode ser desfeita.
-            </p>
+          <AlertDialogDescription>
+            Isso excluirá permanentemente {patient.name} e todos os dados
+            associados.
           </AlertDialogDescription>
         </AlertDialogHeader>
+        <div className="space-y-2">
+          {appointmentCount > 0 && (
+            <p className="text-destructive font-medium text-sm">
+              Aviso: Isso também excluirá {appointmentCount}{" "}
+              {appointmentCount !== 1 ? "agendamentos" : "agendamento"}{" "}
+              associado{appointmentCount !== 1 ? "s" : ""} a este paciente.
+            </p>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Esta ação não pode ser desfeita.
+          </p>
+        </div>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
           <AlertDialogAction

@@ -35,8 +35,10 @@ export async function updateAppointment(data: UpdateAppointmentParams) {
 
     // If updating date/time, check for conflicts (excluding the current appointment)
     if (data.appointmentDate || data.appointmentTime) {
-      const appointmentDate = data.appointmentDate || existingAppointment.appointmentDate;
-      const appointmentTime = data.appointmentTime || existingAppointment.appointmentTime;
+      const appointmentDate =
+        data.appointmentDate || existingAppointment.appointmentDate;
+      const appointmentTime =
+        data.appointmentTime || existingAppointment.appointmentTime;
 
       const conflictingAppointment = await prisma.appointment.findFirst({
         where: {
@@ -89,7 +91,7 @@ export async function updateAppointment(data: UpdateAppointmentParams) {
       patientId?: string;
       appointmentDate?: Date;
       appointmentTime?: string;
-      status?: string;
+      status?: "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED";
       serviceId?: string;
       notes?: string | null;
     } = {};
@@ -103,7 +105,7 @@ export async function updateAppointment(data: UpdateAppointmentParams) {
 
     const updatedAppointment = await prisma.appointment.update({
       where: { id: data.id },
-      data: updateData,
+      data: updateData as any,
       include: {
         patient: true,
         service: true,
