@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && npx prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint",
+    "postinstall": "prisma generate",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "db:seed": "npx prisma migrate reset --force --skip-seed && tsx prisma/seed.ts",
