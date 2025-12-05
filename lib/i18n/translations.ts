@@ -462,7 +462,7 @@ export const translations: Record<Language, Translations> = {
     },
     home: {
       hero: {
-        badge: "Trusted by 500+ dental clinics",
+        badge: "Trusted by dental clinics in Brazil",
         titlePart1: "Modern Practice Management for ",
         titlePart2: "Dental Clinics",
         subtitle:
@@ -898,7 +898,7 @@ export const translations: Record<Language, Translations> = {
     },
     home: {
       hero: {
-        badge: "Confiado por mais de 500 clínicas odontológicas",
+        badge: "Confiado pelas clínicas odontológicas do Brasil",
         titlePart1: "Gestão Moderna para ",
         titlePart2: "Consultórios Odontológicos",
         subtitle:

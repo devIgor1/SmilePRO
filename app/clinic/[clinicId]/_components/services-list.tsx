@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, DollarSign } from "lucide-react";
+import { Clock } from "lucide-react";
 import type { ClinicInfo } from "../_data-access/get-clinic-info";
 
 interface ServicesListProps {
@@ -56,7 +56,6 @@ export function ServicesList({ services }: ServicesListProps) {
                     {service.duration} min
                   </Badge>
                   <Badge variant="default" className="flex items-center gap-1">
-                    <DollarSign className="h-3 w-3" />
                     R$ {(service.price / 100).toFixed(2)}
                   </Badge>
                 </div>

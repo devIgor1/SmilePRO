@@ -16,7 +16,7 @@ interface ProfessionalsProps {
 
 export function Professionals({ clinics }: ProfessionalsProps) {
   const t = useTranslations();
-  
+
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -83,7 +83,9 @@ export function Professionals({ clinics }: ProfessionalsProps) {
                         className="bg-primary text-primary-foreground shadow-lg"
                       >
                         <Star className="size-3 mr-1 fill-current" />
-                        {t.home.professionals.title.includes("Destaque") ? "PROFISSIONAL" : "PROFESSIONAL"}
+                        {t.home.professionals.title.includes("Destaque")
+                          ? "PROFISSIONAL"
+                          : "PROFESSIONAL"}
                       </Badge>
                     </div>
                   )}
@@ -138,18 +140,22 @@ export function Professionals({ clinics }: ProfessionalsProps) {
                       <Badge variant="secondary" className="text-xs">
                         <Briefcase className="size-3 mr-1" />
                         {clinic._count.services} {t.home.professionals.services}
-                        {clinic._count.services !== 1 && t.home.professionals.services === "service" ? "s" : ""}
+                        {clinic._count.services !== 1 &&
+                        t.home.professionals.services === "service"
+                          ? "s"
+                          : ""}
                       </Badge>
                       <Badge variant="outline" className="text-xs">
                         {t.home.professionals.activeClinic}
                       </Badge>
                     </div>
                     <div className="pt-2 text-xs text-muted-foreground">
-                      {clinic._count.appointments}+ {t.home.professionals.appointmentsCompleted}
+                      {clinic._count.appointments}+{" "}
+                      {t.home.professionals.appointmentsCompleted}
                     </div>
                     <div className="pt-2">
                       <Link href={`/clinic/${clinic.id}`}>
-                        <Button className="w-full" size="sm">
+                        <Button className="w-full cursor-pointer" size="sm">
                           <Calendar className="size-4 mr-2" />
                           {t.home.professionals.bookAppointment}
                         </Button>
@@ -168,7 +174,9 @@ export function Professionals({ clinics }: ProfessionalsProps) {
               {clinics.length}
             </span>{" "}
             {t.home.professionals.featured}{" "}
-            {clinics.length === 1 ? t.home.professionals.clinic : t.home.professionals.clinics}{" "}
+            {clinics.length === 1
+              ? t.home.professionals.clinic
+              : t.home.professionals.clinics}{" "}
             {t.home.professionals.acceptingBookings}
           </p>
         </div>
