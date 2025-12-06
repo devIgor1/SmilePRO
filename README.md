@@ -199,15 +199,9 @@ smilepro/
 │
 ├── components/                   # Componentes compartilhados
 │   ├── ui/                     # Componentes shadcn/ui
-│   └── language-selector.tsx   # Seletor de idioma
-│
-├── hooks/                       # React Hooks customizados
-│   └── use-translations.ts     # Hook de traduções
-│
 ├── lib/                         # Bibliotecas e utilitários
 │   ├── auth.ts                 # Configuração NextAuth
 │   ├── prisma.ts               # Cliente Prisma
-│   ├── i18n/                   # Sistema de traduções
 │   └── utils/                  # Funções utilitárias
 │
 ├── utils/                       # Utilitários de negócio
