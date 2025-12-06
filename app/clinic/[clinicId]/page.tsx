@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getClinicInfo } from "./_data-access/get-clinic-info";
 import { ClinicHeader } from "./_components/clinic-header";
 import { ServicesList } from "./_components/services-list";
-// import { BookingForm } from "./_components/booking-form";
+import { BookingForm } from "./_components/booking-form";
 
 interface PageProps {
   params: Promise<{
@@ -24,21 +24,28 @@ export default async function ClinicBookingPage({ params }: PageProps) {
         {/* Clinic Header */}
         <ClinicHeader clinic={clinic} />
 
-        {/* Services List */}
-        <ServicesList services={clinic.services} />
-
-        {/* Booking Form - Comentado para ativação futura */}
-        {/* {clinic.services.length > 0 && clinic.timeslots.length > 0 ? (
-          <BookingForm clinic={clinic} />
-        ) : (
-          <div className="text-center py-8 text-muted-foreground">
-            <p>
-              {clinic.services.length === 0
-                ? "This clinic has no services available for booking at this time."
-                : "This clinic has no available time slots configured."}
-            </p>
+        {/* Services and Booking Form Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          {/* Services List - Takes 1 column on mobile, 2 columns on lg screens */}
+          <div className="lg:col-span-2">
+            <ServicesList services={clinic.services} />
           </div>
-        )} */}
+
+          {/* Booking Form - Takes 1 column on mobile, 3 columns on lg screens */}
+          <div className="lg:col-span-3">
+            {clinic.services.length > 0 && clinic.timeslots.length > 0 ? (
+              <BookingForm clinic={clinic} />
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <p>
+                  {clinic.services.length === 0
+                    ? "This clinic has no services available for booking at this time."
+                    : "This clinic has no available time slots configured."}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -20,11 +20,11 @@ export function ServicesList({ services }: ServicesListProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Available Services</CardTitle>
+          <CardTitle>Serviços Disponíveis</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-center py-8">
-            No services available at this time.
+            Nenhum serviço disponível no momento.
           </p>
         </CardContent>
       </Card>
@@ -34,9 +34,9 @@ export function ServicesList({ services }: ServicesListProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Available Services</CardTitle>
+        <CardTitle>Serviços Disponíveis</CardTitle>
         <CardDescription>
-          Choose from our professional dental services
+          Escolha entre nossos serviços profissionais
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -51,7 +51,10 @@ export function ServicesList({ services }: ServicesListProps) {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-4">
-                  <Badge variant="secondary" className="flex items-center gap-1">
+                  <Badge
+                    variant="secondary"
+                    className="flex items-center gap-1"
+                  >
                     <Clock className="h-3 w-3" />
                     {service.duration} min
                   </Badge>
@@ -67,4 +70,3 @@ export function ServicesList({ services }: ServicesListProps) {
     </Card>
   );
 }
-

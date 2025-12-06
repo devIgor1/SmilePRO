@@ -30,6 +30,7 @@ import {
 import { CalendarIcon, Clock, Loader2, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
 import { toast } from "sonner";
 import {
   bookingFormSchema,
@@ -38,6 +39,7 @@ import {
 import { createPublicBooking } from "../_data-access/create-public-booking";
 import { getAvailableTimes } from "../_data-access/get-available-times";
 import type { ClinicInfo } from "../_data-access/get-clinic-info";
+import { getCalendarLocale } from "@/lib/utils/calendar-locale";
 
 interface BookingFormProps {
   clinic: ClinicInfo;
@@ -118,19 +120,19 @@ export function BookingForm({ clinic }: BookingFormProps) {
 
   if (isSuccess) {
     return (
-      <Card className="max-w-2xl mx-auto">
+      <Card>
         <CardContent className="pt-6">
           <div className="text-center space-y-4">
             <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto" />
             <h3 className="text-2xl font-bold text-green-600">
-              Appointment Booked!
+              Consulta Agendada!
             </h3>
             <p className="text-muted-foreground">
-              Your appointment has been successfully scheduled. You will receive
-              a confirmation email shortly.
+              Sua consulta foi agendada com sucesso. Você receberá um e-mail de
+              confirmação em breve.
             </p>
             <Button onClick={() => setIsSuccess(false)} className="mt-4">
-              Book Another Appointment
+              Agendar Outra Consulta
             </Button>
           </div>
         </CardContent>
@@ -143,26 +145,26 @@ export function BookingForm({ clinic }: BookingFormProps) {
   );
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <Card>
       <CardHeader>
-        <CardTitle>Book an Appointment</CardTitle>
+        <CardTitle>Agendar Consulta</CardTitle>
         <CardDescription>
-          Fill in your information to schedule an appointment with {clinic.name}
+          Preencha suas informações para agendar uma consulta com {clinic.name}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Personal Information */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Personal Information</h3>
+            <h3 className="font-semibold text-lg">Informações Pessoais</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">
-                  Full Name <span className="text-destructive">*</span>
+                  Nome Completo <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="name"
-                  placeholder="John Doe"
+                  placeholder="Igor Moraes"
                   {...register("name")}
                   disabled={isSubmitting}
                 />
@@ -175,12 +177,12 @@ export function BookingForm({ clinic }: BookingFormProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="email">
-                  Email <span className="text-destructive">*</span>
+                  E-mail <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="john@example.com"
+                  placeholder="igor@exemplo.com"
                   {...register("email")}
                   disabled={isSubmitting}
                 />
@@ -193,7 +195,7 @@ export function BookingForm({ clinic }: BookingFormProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="phone">
-                  Phone <span className="text-destructive">*</span>
+                  Telefone <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="phone"
@@ -210,7 +212,7 @@ export function BookingForm({ clinic }: BookingFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                <Label htmlFor="dateOfBirth">Data de Nascimento</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -223,8 +225,10 @@ export function BookingForm({ clinic }: BookingFormProps) {
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {watch("dateOfBirth")
-                        ? dayjs(watch("dateOfBirth")).format("MMMM D, YYYY")
-                        : "Pick a date"}
+                        ? dayjs(watch("dateOfBirth"))
+                            .locale("pt-br")
+                            .format("DD/MM/YYYY")
+                        : "Escolher uma data"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -236,6 +240,7 @@ export function BookingForm({ clinic }: BookingFormProps) {
                         date > new Date() || date < new Date("1900-01-01")
                       }
                       captionLayout="dropdown"
+                      formatters={getCalendarLocale()}
                     />
                   </PopoverContent>
                 </Popover>
@@ -245,12 +250,12 @@ export function BookingForm({ clinic }: BookingFormProps) {
 
           {/* Appointment Details */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Appointment Details</h3>
+            <h3 className="font-semibold text-lg">Detalhes da Consulta</h3>
 
             {/* Service Selection */}
             <div className="space-y-2">
               <Label htmlFor="service">
-                Service <span className="text-destructive">*</span>
+                Serviço <span className="text-destructive">*</span>
               </Label>
               <Select
                 value={selectedServiceId || ""}
@@ -290,7 +295,7 @@ export function BookingForm({ clinic }: BookingFormProps) {
             {/* Date Selection */}
             <div className="space-y-2">
               <Label>
-                Date <span className="text-destructive">*</span>
+                Data <span className="text-destructive">*</span>
               </Label>
               <Popover>
                 <PopoverTrigger asChild>
@@ -304,8 +309,8 @@ export function BookingForm({ clinic }: BookingFormProps) {
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {selectedDate
-                      ? dayjs(selectedDate).format("MMMM D, YYYY")
-                      : "Pick a date"}
+                      ? dayjs(selectedDate).locale("pt-br").format("DD/MM/YYYY")
+                      : "Escolher uma data"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -316,11 +321,20 @@ export function BookingForm({ clinic }: BookingFormProps) {
                       setValue("appointmentDate", date as Date);
                       setValue("appointmentTime", ""); // Reset time when date changes
                     }}
-                    disabled={(date) => date < new Date()}
+                    disabled={(date) => {
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      const maxDate = new Date(
+                        new Date().getFullYear() + 1,
+                        11,
+                        31
+                      );
+                      return date < today || date > maxDate;
+                    }}
                     captionLayout="dropdown"
-                    fromDate={new Date()}
-                    toDate={new Date(new Date().getFullYear() + 1, 11, 31)}
-                    initialFocus
+                    startMonth={new Date()}
+                    endMonth={new Date(new Date().getFullYear() + 1, 11, 31)}
+                    formatters={getCalendarLocale()}
                   />
                 </PopoverContent>
               </Popover>
@@ -334,7 +348,7 @@ export function BookingForm({ clinic }: BookingFormProps) {
             {/* Time Selection */}
             <div className="space-y-2">
               <Label htmlFor="time">
-                Time <span className="text-destructive">*</span>
+                Horário <span className="text-destructive">*</span>
               </Label>
               {loadingTimes ? (
                 <div className="flex items-center justify-center p-4 border rounded-md">
@@ -380,10 +394,10 @@ export function BookingForm({ clinic }: BookingFormProps) {
 
             {/* Notes */}
             <div className="space-y-2">
-              <Label htmlFor="notes">Additional Notes (Optional)</Label>
+              <Label htmlFor="notes">Observações Adicionais (Opcional)</Label>
               <Textarea
                 id="notes"
-                placeholder="Any special requests or information..."
+                placeholder="Qualquer informação adicional..."
                 rows={3}
                 {...register("notes")}
                 disabled={isSubmitting}
@@ -399,7 +413,7 @@ export function BookingForm({ clinic }: BookingFormProps) {
           {/* Submit Button */}
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Book Appointment
+            Agendar Consulta
           </Button>
         </form>
       </CardContent>

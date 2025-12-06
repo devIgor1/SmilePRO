@@ -5,10 +5,7 @@ export const appointmentFormSchema = z.object({
     .string()
     .min(2, "O nome deve ter pelo menos 2 caracteres")
     .max(100, "O nome deve ter menos de 100 caracteres"),
-  email: z
-    .string()
-    .email("Por favor, insira um endereço de e-mail válido")
-    .max(255, "O e-mail deve ter menos de 255 caracteres"),
+  email: z.email("Por favor, insira um endereço de e-mail válido"),
   phone: z
     .string()
     .min(10, "O telefone deve ter pelo menos 10 caracteres")

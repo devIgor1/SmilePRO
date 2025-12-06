@@ -13,10 +13,10 @@ export function getCalendarLocale() {
 
   return {
     formatMonthDropdown: (date: Date) => {
-      return dayjs(date).format("MMM");
+      return dayjs(date).locale("pt-br").format("MMM");
     },
     formatYearDropdown: (date: Date) => {
-      return dayjs(date).format("YYYY");
+      return dayjs(date).locale("pt-br").format("YYYY");
     },
     formatWeekdayName: (date: Date) => {
       // Get day of week (0 = Sunday, 6 = Saturday)
@@ -24,7 +24,7 @@ export function getCalendarLocale() {
       return weekdaysShort[dayOfWeek];
     },
     formatCaption: (date: Date) => {
-      return dayjs(date).format("MMMM YYYY");
+      return dayjs(date).locale("pt-br").format("MMMM YYYY");
     },
   };
 }

@@ -39,7 +39,7 @@ export function ClinicHeader({ clinic }: ClinicHeaderProps) {
                 {clinic.name}
               </h1>
               <Badge variant="default" className="w-fit">
-                Active
+                Ativo
               </Badge>
             </div>
 
@@ -78,4 +78,3 @@ export function ClinicHeader({ clinic }: ClinicHeaderProps) {
     </Card>
   );
 }
-
