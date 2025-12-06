@@ -19,7 +19,6 @@
 - ✅ **Gestão de Serviços** - Cadastro e gerenciamento de serviços oferecidos
 - ✅ **Sistema de Assinaturas** - Integração com Stripe para planos BASIC e PROFESSIONAL
 - ✅ **Dashboard Analytics** - Gráficos e métricas de receita, agendamentos e status
-- ✅ **Internacionalização (i18n)** - Suporte para Inglês e Português (Brasil)
 - ✅ **Upload de Fotos** - Armazenamento seguro de fotos de pacientes via AWS S3
 - ✅ **QR Code para Agendamento** - Geração automática de QR codes para links públicos
 - ✅ **Sistema de Permissões** - Controle de acesso baseado em planos de assinatura
@@ -39,7 +38,6 @@
 - **React Hook Form** - Gerenciamento de formulários
 - **Zod** - Validação de schemas
 - **dayjs** - Manipulação de datas
-- **Recharts** - Gráficos e visualizações
 
 ### Backend
 
@@ -263,15 +261,6 @@ O SmilePro utiliza um sistema de permissões baseado em planos:
 
 - **BASIC**: Até 3 serviços, suporte padrão
 - **PROFESSIONAL**: Até 40 serviços, suporte prioritário
-
-#### Internacionalização
-
-O sistema suporta múltiplos idiomas:
-
-- Inglês (en) - padrão
-- Português Brasil (pt-BR)
-
-O idioma é determinado pela preferência do usuário (armazenada no banco) ou pelo `localStorage` para visitantes.
 
 ---
 
