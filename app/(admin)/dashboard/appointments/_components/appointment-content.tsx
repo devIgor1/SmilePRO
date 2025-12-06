@@ -601,12 +601,19 @@ export default function AppointmentContent({
                               setValue("appointmentDate", date);
                             }
                           }}
-                          disabled={(date) =>
-                            date < new Date(new Date().setHours(0, 0, 0, 0))
-                          }
+                          disabled={(date) => {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const maxDate = new Date(
+                              new Date().getFullYear() + 1,
+                              11,
+                              31
+                            );
+                            return date < today || date > maxDate;
+                          }}
                           captionLayout="dropdown"
-                          fromDate={new Date()}
-                          toDate={
+                          startMonth={new Date()}
+                          endMonth={
                             new Date(new Date().getFullYear() + 1, 11, 31)
                           }
                           initialFocus
@@ -954,9 +961,9 @@ export default function AppointmentContent({
               </div>
               <div>
                 <strong>Data:</strong>{" "}
-                {dayjs(appointmentToCancel.appointmentDate).format(
-                  "D [de] MMMM [de] YYYY"
-                )}
+                {dayjs(appointmentToCancel.appointmentDate)
+                  .locale("pt-br")
+                  .format("D [de] MMMM [de] YYYY")}
               </div>
               <div>
                 <strong>Horário:</strong> {appointmentToCancel.appointmentTime}

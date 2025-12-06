@@ -23,8 +23,10 @@ import {
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
 import type { Patient } from "@/lib/types";
 import { formatDateByLanguage } from "@/lib/utils/date-formatter";
+import { getCalendarLocale } from "@/lib/utils/calendar-locale";
 import { useSession } from "next-auth/react";
 import {
   patientFormSchema,
@@ -212,9 +214,10 @@ export function PatientFormDialog({
                       date > new Date() || date < new Date("1900-01-01")
                     }
                     captionLayout="dropdown"
-                    fromDate={new Date(1900, 0, 1)}
-                    toDate={new Date()}
+                    startMonth={new Date(1900, 0, 1)}
+                    endMonth={new Date()}
                     initialFocus
+                    formatters={getCalendarLocale()}
                   />
                 </PopoverContent>
               </Popover>
