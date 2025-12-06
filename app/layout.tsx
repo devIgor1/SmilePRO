@@ -20,6 +20,10 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icon.svg",
   },
+  openGraph: {
+    title: "Smile PRO",
+    description: "Your dental care companion",
+  },
 };
 
 export default function RootLayout({
