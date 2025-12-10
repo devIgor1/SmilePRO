@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PLANS, getPlanFeatures, getPlanDescription } from "@/utils/plans";
 import { PLANS_LIMITS } from "@/utils/permissions/plan-limits";
+import { handleLogin } from "../_actions/login";
 
 export function Pricing() {
   // Always use Portuguese
@@ -107,14 +108,13 @@ export function Pricing() {
                       </li>
                     ))}
                   </ul>
-                  <Link href="/dashboard/appointments" className="block">
-                    <Button
-                      className="w-full cursor-pointer"
-                      variant={plan.buttonVariant}
-                    >
-                      Ativar assinatura
-                    </Button>
-                  </Link>
+                  <Button
+                    className="w-full cursor-pointer"
+                    variant={plan.buttonVariant}
+                    onClick={() => handleLogin("google")}
+                  >
+                    Ativar assinatura
+                  </Button>
                 </CardContent>
               </Card>
             );

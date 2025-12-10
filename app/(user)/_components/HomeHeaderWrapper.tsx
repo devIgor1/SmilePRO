@@ -6,4 +6,3 @@ export async function HomeHeaderWrapper() {
 
   return <HomeHeaderClient session={session} />;
 }
-
