@@ -465,7 +465,7 @@ export default function AppointmentContent({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            Agenda de Agendamentos
+            Agendamentos
           </h1>
           <p className="text-muted-foreground mt-2">
             Gerencie e agende consultas de pacientes
