@@ -41,14 +41,14 @@ export function DashboardSidebar() {
       icon: Users,
     },
     {
-      title: "Planos",
-      href: "/dashboard/plans",
-      icon: CreditCard,
-    },
-    {
       title: "Serviços",
       href: "/dashboard/services",
       icon: Settings,
+    },
+    {
+      title: "Planos",
+      href: "/dashboard/plans",
+      icon: CreditCard,
     },
     {
       title: "Perfil",
